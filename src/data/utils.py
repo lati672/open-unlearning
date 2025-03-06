@@ -7,7 +7,8 @@ IGNORE_INDEX = -100  # TODO put in common constants
 
 
 def load_hf_dataset(path, **kwargs):
-    dataset = datasets.load_dataset(path, **kwargs)
+    local_path = "/scratch/mb26/bp0395/cache"
+    dataset = datasets.load_dataset(path, cache_dir=local_path, **kwargs)
     return dataset
 
 
