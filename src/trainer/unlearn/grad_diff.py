@@ -32,6 +32,10 @@ class GradDiff(UnlearnTrainer):
                 self.model, self.ref_model, retain_inputs
             )
             retain_loss += kl_loss
+        elif self.retain_loss_type == "reverse_KL":
+            kl_loss, retain_outputs = compute_kl_divergence(
+                self.ref_model, self.model, retain_inputs
+            )
         else:
             raise NotImplementedError(
                 f"{self.retain_loss_type} not implemented for retain set"
