@@ -6,8 +6,8 @@ echo "Master Port: $MASTER_PORT"
 
 models=(
     "Llama-3.2-1B-Instruct"
-    "Llama-3.2-3B-Instruct"
-    "Llama-3.1-8B-Instruct"
+    #"Llama-3.2-3B-Instruct"
+    #"Llama-3.1-8B-Instruct"
 )
 trainers_experiments=(
     "GradAscent unlearn/tofu/default.yaml"
@@ -18,8 +18,8 @@ trainers_experiments=(
 )
 forget_retain_splits=(
     "forget01 retain99"
-    "forget05 retain95"
-    "forget10 retain90"
+    #"forget05 retain95"
+    #"forget10 retain90"
 )
 
 per_device_train_batch_size=4 # on two gpus would make effective batch size 32
