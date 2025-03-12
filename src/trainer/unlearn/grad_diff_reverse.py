@@ -3,7 +3,7 @@ from trainer.utils import compute_kl_divergence
 from trainer.unlearn.grad_diff import GradDiff
 
 class GradDiffRev(GradDiff):
-    def __init__(self, gamma=1.0, alpha=1.0, retain_loss_type="reverse_KL", *args, **kwargs):
+    def __init__(self, gamma=1.0, alpha=1.0, *args, **kwargs):
         """
         Initialize GradDiffRev, which focuses on Reverse KL divergence.
 
@@ -12,7 +12,7 @@ class GradDiffRev(GradDiff):
             alpha (float): Scaling factor for the retain loss. Default is 1.0.
             retain_loss_type (str): Specifies the loss type for retaining knowledge. Default is "reverse_KL".
         """
-        super().__init__(gamma=gamma, alpha=alpha, retain_loss_type=retain_loss_type, *args, **kwargs)
+        super().__init__(gamma=gamma, alpha=alpha, retain_loss_type="reverse_KL" *args, **kwargs)
 
     def compute_retain_loss(self, model, retain_inputs):
         """
@@ -27,12 +27,11 @@ class GradDiffRev(GradDiff):
         """
         retain_outputs = model(**retain_inputs)
         retain_loss = 0.0
-        # Compute Reverse KL divergence between the ref_model and the model
         kl_loss, retain_outputs = compute_kl_divergence(
-            self.ref_model, self.model, retain_inputs  # Reverse KL: ref_model vs model
+            self.model, self.ref_model, retain_inputs
         )
-
         retain_loss += kl_loss
+
         return retain_loss
 
     def compute_loss(self, model, inputs, return_outputs=False):
