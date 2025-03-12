@@ -10,9 +10,9 @@ class GradDiffRev(GradDiff):
         Args:
             gamma (float): Scaling factor for the forget loss. Default is 1.0.
             alpha (float): Scaling factor for the retain loss. Default is 1.0.
-            retain_loss_type (str): Specifies the loss type for retaining knowledge. Default is "reverse_KL".
         """
-        super().__init__(gamma=gamma, alpha=alpha, retain_loss_type="reverse_KL", *args, **kwargs)
+        # Make sure retain_loss_type is not passed again in kwargs
+        super().__init__(gamma=gamma, alpha=alpha, *args, **kwargs)
 
     def compute_retain_loss(self, model, retain_inputs):
         """
