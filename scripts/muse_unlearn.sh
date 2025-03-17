@@ -9,7 +9,7 @@ gradient_accumulation_steps=8
 
 
 #model=Llama-2-7b-hf
-model = Llama-3.2-1B-Instruct
+model=Llama-3.2-1B-Instruct
 
 data_splits=(
     "News"

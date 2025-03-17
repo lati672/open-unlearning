@@ -20,6 +20,45 @@ def compute_kl_divergence(model, target_model, inputs):
         current_probs, ref_probs, reduction="batchmean", log_target=True
     ), outputs
 
+def compute_sequential_kl(model, target_model, inputs):
+    """
+    Compute KL divergence considering token dependencies.
+
+    Args:
+        model: The fine-tuned LLM.
+        target_model: The reference/original LLM.
+        inputs: A dictionary containing input tensors (e.g., input_ids, attention_mask).
+
+    Returns:
+        Tuple containing (KL loss, model outputs)
+    """
+    with torch.no_grad():
+        ref_outputs = target_model(**inputs)
+    
+    model_outputs = model(**inputs)
+
+    # Get log probabilities for both models
+    log_probs_model = F.log_softmax(model_outputs.logits, dim=-1)
+    log_probs_ref = F.log_softmax(ref_outputs.logits, dim=-1)
+
+    # Get token probabilities (exp(log_probs) to get p(theta))
+    probs_model = log_probs_model.exp()
+
+    # Shift log probabilities left for next-token conditioning
+    log_probs_model_shifted = log_probs_model[:, :-1, :]
+    log_probs_ref_shifted = log_probs_ref[:, :-1, :]
+
+    # Compute KL divergence for the first token in the sequence
+    kl_first_token = F.kl_div(
+        log_probs_model[:, 0, :], log_probs_ref[:, 0, :], reduction="batchmean", log_target=True
+    )
+
+    # Compute the expectation term for the second KL divergence
+    kl_next_tokens = (probs_model[:, :-1, :] * (
+        log_probs_model_shifted - log_probs_ref_shifted
+    )).sum(dim=-1).mean()
+
+    return kl_first_token + kl_next_tokens, model_outputs
 
 def compute_batch_nll(model, inputs):
     # get the sum loss for each sequence in a batch
