@@ -18,7 +18,7 @@ trainers_experiments=(
     "GradDiffRev unlearn/tofu/default.yaml"
 )
 forget_retain_splits=(
-    "forget01 retain99"
+    #"forget01 retain99"
     "forget05 retain95"
     #"forget10 retain90"
 )
