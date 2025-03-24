@@ -7,9 +7,11 @@ def load_json_data(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
 
+forget_ratio = '05'
 # Path to your saves directory (adjust as needed)
 base_dir = './saves'
 
+base_dir = os.path.join(base_dir, f'tofu_forget{forget_ratio}')
 # Collect all matching directories
 methods = []
 data = {}
