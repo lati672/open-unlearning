@@ -3,7 +3,7 @@ from trainer.utils import compute_sequence_loss
 from trainer.unlearn.grad_diff import GradDiff
 
 class GradSeqDiff(GradDiff):
-    def __init__(self, gamma=1.0, alpha=1.0, *args, **kwargs):
+    def __init__(self, gamma=1.0, alpha=1.0, beta=1.0, *args, **kwargs):
         """
         Initialize GradDiffRev, which focuses on Reverse KL divergence.
 
@@ -13,6 +13,9 @@ class GradSeqDiff(GradDiff):
         """
         # Make sure retain_loss_type is not passed again in kwargs
         super().__init__(gamma=gamma, alpha=alpha, *args, **kwargs)
+        if beta > 1.0 or beta < 0.0:
+            raise ValueError("beta must be between 0 and 1")
+        self.beta = beta
 
     def compute_retain_loss(self, model, retain_inputs):
         """
@@ -27,7 +30,7 @@ class GradSeqDiff(GradDiff):
         """
         #retain_outputs = model(**retain_inputs)
         loss, retain_outputs = compute_sequence_loss(
-            self.model, self.ref_model, retain_inputs
+            self.model, self.ref_model, retain_inputs, self.beta
         )
 
         return loss

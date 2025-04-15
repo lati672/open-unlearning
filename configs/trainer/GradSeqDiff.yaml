@@ -5,4 +5,5 @@ handler: GradSeqDiff
 method_args:
   gamma: 1.0
   alpha: 1.0
+  beta: 1.0
   retain_loss_type: KL
