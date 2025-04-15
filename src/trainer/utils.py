@@ -2,6 +2,38 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+def compute_sequence_loss(model, target_model, inputs):
+    input_ids = inputs["input_ids"] 
+    
+    with torch.no_grad():
+        ref_outputs = target_model(**inputs)
+    
+    outputs = model(**inputs)
+    
+    ref_logits = ref_outputs.logits
+    logits = outputs.logits
+
+    # shape: [batch_size, seq_len, vocab_size]
+    probs = F.softmax(logits, dim=-1)  
+
+    batch_size, seq_len, vocab_size = probs.shape
+    token_importance = torch.ones((batch_size, seq_len), device=probs.device)
+
+    for i in range(1, seq_len):
+        prev_token_ids = input_ids[:, i - 1]
+        token_importance[:, i] += probs[torch.arange(batch_size), i, prev_token_ids]
+
+    #import pdb 
+    #pdb.set_trace()
+    kl_per_token = F.kl_div(
+        F.log_softmax(logits, dim=-1),
+        F.softmax(ref_logits, dim=-1),
+        reduction='none',
+    ).sum(dim=-1)
+
+    weighted_token_loss = (token_importance * kl_per_token).mean()
+
+    return weighted_token_loss, outputs
 
 def compute_kl_divergence(model, target_model, inputs):
     with torch.no_grad():

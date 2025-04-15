@@ -8,8 +8,11 @@ def load_json_data(file_path):
         return json.load(f)
 
 forget_ratio = '05'
+is_trim = False
+
 # Path to your saves directory (adjust as needed)
 base_dir = './saves'
+outputfile_name = 'tofu_Llama-3.2-1B-Instruct-forget' + forget_ratio
 
 base_dir = os.path.join(base_dir, f'tofu_forget{forget_ratio}')
 # Collect all matching directories
@@ -38,6 +41,11 @@ for method_dir in os.listdir(base_dir):
 
 # Convert data to a pandas DataFrame for better visualization
 df = pd.DataFrame(data, index=methods)
-df.to_csv('method_comparison.csv')
+if is_trim:
+    df = df[["forget_quality", "model_utility", "forget_truth_ratio"]]
+    outputfile_name += '_trim' + '.csv'
+else:
+    outputfile_name += '.csv'
+df.to_csv(outputfile_name)
 # Display the table
 print(df)
