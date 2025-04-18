@@ -16,7 +16,7 @@ trainers_experiments=(
     "DPO unlearn/tofu/idk.yaml"
     #"DPO unlearn/tofu/default.yaml"
     "GradDiffRev unlearn/tofu/default.yaml"
-    “GradSeqDiff unlearn/tofu/default.yaml”
+    "GradSeqDiff unlearn/tofu/default.yaml"
 )
 forget_retain_splits=(
     #"forget01 retain99"
