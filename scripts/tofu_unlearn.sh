@@ -14,7 +14,7 @@ trainers_experiments=(
     "GradDiff unlearn/tofu/default.yaml"
     "NPO unlearn/tofu/default.yaml"
     "DPO unlearn/tofu/idk.yaml"
-    #"DPO unlearn/tofu/default.yaml"
+    "DPO unlearn/tofu/default.yaml"
     "GradDiffRev unlearn/tofu/default.yaml"
     "GradSeqDiff unlearn/tofu/default.yaml"
 )
@@ -59,7 +59,7 @@ for split in "${forget_retain_splits[@]}"; do
             trainer.args.per_device_train_batch_size=$per_device_train_batch_size \
             trainer.args.gradient_accumulation_steps=$gradient_accumulation_steps \
             trainer.args.ddp_find_unused_parameters=true \
-            trainer.args.gradient_checkpointing=true
+            trainer.args.gradient_checkpointing=true 
 
             # Eval
             CUDA_VISIBLE_DEVICES=0 python src/eval.py \

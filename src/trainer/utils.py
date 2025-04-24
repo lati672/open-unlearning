@@ -21,7 +21,6 @@ def compute_sequence_loss(model, target_model, inputs, beta=1):
     for i in range(1, seq_len):
         prev_token_ids = input_ids[:, i - 1]
         token_importance[:, i] += probs[torch.arange(batch_size), i, prev_token_ids] *  vocab_size * beta
-        
     kl_per_token = F.kl_div(
         F.log_softmax(logits, dim=-1),
         F.softmax(ref_logits, dim=-1),

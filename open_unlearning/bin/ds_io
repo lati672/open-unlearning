@@ -1,0 +1,6 @@
+#!/scratch/mb26/bp0395/open-unlearning/open_unlearning/bin/python3.11
+
+from deepspeed.nvme import ds_io_main
+
+if __name__ == '__main__':
+    ds_io_main()
