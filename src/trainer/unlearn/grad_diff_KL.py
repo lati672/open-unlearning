@@ -10,8 +10,7 @@ class GradDiffKL(UnlearnTrainer):
         self.alpha = alpha
         self.retain_loss_type = retain_loss_type
         self.ref_model = None
-        if retain_loss_type == "KL" or retain_loss_type == "reverse_KL":
-            self.ref_model = self._prepare_ref_model(self.model)
+        self.ref_model = self._prepare_ref_model(self.model)
 
     def _prepare_ref_model(self, model):
         ref_model = copy.deepcopy(model).to("cuda")
@@ -25,15 +24,11 @@ class GradDiffKL(UnlearnTrainer):
     def compute_retain_loss(self, model, retain_inputs):
         retain_outputs = model(**retain_inputs)
         retain_loss = 0.0
-        if self.retain_loss_type == "KL":
-            kl_loss, retain_outputs = compute_kl_divergence(
-                self.model, self.ref_model, retain_inputs
-            )
-            retain_loss += kl_loss
-        else:
-            raise NotImplementedError(
-                f"{self.retain_loss_type} not implemented for retain set"
-            )
+        kl_loss, retain_outputs = compute_kl_divergence(
+            self.model, self.ref_model, retain_inputs
+        )
+        retain_loss += kl_loss
+       
         return retain_loss
 
     def compute_loss(self, model, inputs, return_outputs=False):
