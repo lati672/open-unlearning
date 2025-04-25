@@ -9,7 +9,6 @@ class GradDiffKL(UnlearnTrainer):
         self.gamma = gamma
         self.alpha = alpha
         self.retain_loss_type = retain_loss_type
-        self.ref_model = None
         self.ref_model = self._prepare_ref_model(self.model)
 
     def _prepare_ref_model(self, model):
