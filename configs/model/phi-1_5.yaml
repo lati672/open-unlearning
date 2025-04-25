@@ -1,5 +1,6 @@
 model_args:
   pretrained_model_name_or_path: "microsoft/phi-1_5" # "locuslab/phi-1_5"
+  attn_implementation: "sdpa"
 tokenizer_args:
   pretrained_model_name_or_path: "microsoft/phi-1_5"
 template_args:
