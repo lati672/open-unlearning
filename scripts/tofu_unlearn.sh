@@ -16,17 +16,35 @@ trainers_experiments=(
     "DPO unlearn/tofu/idk.yaml"
     "GradDiffRev unlearn/tofu/default.yaml"
     "GradSeqDiff unlearn/tofu/default.yaml"
-    "GradDiffKL unlearn/tofu/default.yaml"
+    #"GradDiffKL unlearn/tofu/default.yaml"
 )
 forget_retain_splits=(
     #"forget01 retain99"
-    "forget05 retain95"
-    #"forget10 retain90"
+    #"forget05 retain95"
+    "forget10 retain90"
 )
 
 per_device_train_batch_size=4 # on two gpus would make effective batch size 32
 gradient_accumulation_steps=4
 
+python src/train.py --config-name=unlearn.yaml \
+experiment=unlearn/tofu/default  \ 
+forget_split=forget10 \
+retain_split=retain90 \
+trainer=GradDiff \
+trainer.method_args.retain_loss_type=KL \
+trainer.args.per_device_train_batch_size=$per_device_train_batch_size \
+trainer.args.gradient_accumulation_steps=$gradient_accumulation_steps \
+task_name=tofu_Llama-3.2-1B-Instruct_forget10_GradDiffKL
+
+python src/eval.py \
+  experiment=eval/tofu/default.yaml \
+  forget_split=forget10 \
+  model=Llama-3.2-1B-Instruct \
+  task_name=tofu_Llama-3.2-1B-Instruct_forget10_GradDiffKL \
+  model.model_args.pretrained_model_name_or_path="/scratch/mb26/bp0395/open-unlearning/saves/unlearn/tofu_Llama-3.2-1B-Instruct_forget10_GradDiffKL" \
+  paths.output_dir="/scratch/mb26/bp0395/open-unlearning/saves/unlearn/tofu_Llama-3.2-1B-Instruct_forget10_GradDiffKL/evals" \
+  retain_logs_path="/scratch/mb26/bp0395/open-unlearning/saves/eval/tofu_Llama-3.2-1B-Instruct_retain90/TOFU_EVAL.json"
 
 ########################################################################################################################
 ########################################### Unlearn TOFU models ########################################################
