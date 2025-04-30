@@ -26,8 +26,8 @@ forget_retain_splits=(
     #"forget10 retain90"
 )
 
-per_device_train_batch_size=4 # on two gpus would make effective batch size 32
-gradient_accumulation_steps=4
+per_device_train_batch_size=32 # on two gpus would make effective batch size 32
+gradient_accumulation_steps=8
 
 
 ########################################################################################################################
