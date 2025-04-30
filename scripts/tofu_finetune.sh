@@ -5,16 +5,18 @@ echo "Master Port: $MASTER_PORT"
 
 
 models=(
-    "Llama-3.2-1B-Instruct"
-    "Llama-3.2-3B-Instruct"
-    "Llama-3.1-8B-Instruct"
+    phi-1_5
+    #"Llama-3.2-1B-Instruct"
+    #"Llama-3.2-3B-Instruct"
+    #"Llama-3.1-8B-Instruct"
 )
-per_device_train_batch_size=4 # Effective batch size 32 on two GPUs with gradent_accumulation_steps=8
+per_device_train_batch_size=32 # Effective batch size 32 on two GPUs with gradent_accumulation_steps=8
+gradient_accumulation_steps=8
 
 forget_retain_splits=(
     "forget01 retain99"
-    "forget05 retain95"
-    "forget10 retain90"
+    #"forget05 retain95"
+    #"forget10 retain90"
 )
 
 
@@ -34,7 +36,8 @@ for split in "${forget_retain_splits[@]}"; do
         model=${model} \
         data/datasets@data.train=TOFU_QA_retain \
         data.train.TOFU_QA_retain.args.hf_args.name=${retain_split} \
-        trainer.args.per_device_train_batch_size=4 \
+        trainer.args.per_device_train_batch_size=$per_device_train_batch_size \
+	trainer.args.gradient_accumulation_steps=$gradient_accumulation_steps \
         trainer.args.ddp_find_unused_parameters=true \
         trainer.args.gradient_checkpointing=true
 
@@ -60,7 +63,8 @@ for model in "${models[@]}"; do
     model=${model} \
     data/datasets@data.train=TOFU_QA_full \
     data.train.TOFU_QA_full.args.hf_args.name=full \
-    trainer.args.per_device_train_batch_size=4 \
+    trainer.args.per_device_train_batch_size=$per_device_train_batch_size  \
+    trainer.args.gradient_accumulation_steps=$gradient_accumulation_steps \
     trainer.args.ddp_find_unused_parameters=true \
     trainer.args.gradient_checkpointing=true
 
