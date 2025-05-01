@@ -44,9 +44,9 @@ for split in "${forget_retain_splits[@]}"; do
             experiment=$(echo $trainer_experiment | cut -d' ' -f2)
             
             task_name=tofu_${model}_${forget_split}_${trainer} 
-            #model_path=open-unlearning/tofu_${model}_full
-            model_path="/scratch/mb26/bp0395/open-unlearning/saves/finetune/tofu_phi-1_5_full"
-	    echo ${task_name}: Unlearning ${model_path} using ${trainer}
+            model_path=open-unlearning/tofu_${model}_full
+            #model_path="/scratch/mb26/bp0395/open-unlearning/saves/finetune/tofu_phi-1_5_full"
+	        echo ${task_name}: Unlearning ${model_path} using ${trainer}
 
             # Unlearn
             CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file configs/accelerate/default_config.yaml --main_process_port $MASTER_PORT \

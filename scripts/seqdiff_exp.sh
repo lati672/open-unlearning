@@ -28,7 +28,7 @@ for split in "${forget_retain_splits[@]}"; do
             
             for beta in "${betas[@]}"; do
                 task_name=tofu_${model}_${forget_split}_${trainer}_beta${beta}
-                model_path="/scratch/mb26/bp0395/open-unlearning/saves/finetune/tofu_${model}_full"
+                model_path=open-unlearning/tofu_${model}_full
                 echo ${task_name}: Unlearning ${model_path} using ${trainer} with beta=${beta}
 
                 # Unlearn
