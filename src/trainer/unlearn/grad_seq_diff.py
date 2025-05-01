@@ -1,7 +1,7 @@
 import copy
 from trainer.utils import compute_sequence_loss
 from trainer.unlearn.grad_diff import GradDiff
-
+import os
 class GradSeqDiff(GradDiff):
     def __init__(self, gamma=1.0, alpha=1.0, beta=1.0, *args, **kwargs):
         """
@@ -68,4 +68,12 @@ class GradSeqDiff(GradDiff):
 
         loss = self.gamma * forget_loss + self.alpha * retain_loss
 
+        # Logging
+        log_dir = "/scratch/mb26/bp0395/cache/seqdiff"
+        os.makedirs(log_dir, exist_ok=True)
+        log_path = os.path.join(log_dir, "loss_log.txt")
+
+        with open(log_path, "a") as f:
+            f.write(f"Forget Loss: {forget_loss.item():.4f}, Retain Loss: {retain_loss.item():.4f}\n")
+        
         return (loss, forget_outputs) if return_outputs else loss
