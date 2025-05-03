@@ -13,6 +13,7 @@ class GradSeqDiff(GradDiff):
         """
         # Make sure retain_loss_type is not passed again in kwargs
         super().__init__(gamma=gamma, alpha=alpha, *args, **kwargs)
+        self.beta = float(beta)
         if beta > 1.0 or beta < 0.0:
             raise ValueError("beta must be between 0 and 1")
         self.beta = beta
