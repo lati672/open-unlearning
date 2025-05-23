@@ -44,7 +44,7 @@ for split in "${forget_retain_splits[@]}"; do
                 retain_logs_path=saves/eval/tofu_${model}_${retain_split}/TOFU_EVAL.json \
                 trainer.args.per_device_train_batch_size=$per_device_train_batch_size \
                 trainer.args.gradient_accumulation_steps=$gradient_accumulation_steps \
-                trainer.args.ddp_find_unused_parameters=true \
+                #trainer.args.ddp_find_unused_parameters=true \
                 trainer.args.gradient_checkpointing=true \
                 trainer.method_args.beta=$beta
 
