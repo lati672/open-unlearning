@@ -4,9 +4,9 @@ import os
 import torch
 import logging
 
-#hf_home = os.getenv("HF_HOME", default=None)
+hf_home = os.getenv("HF_HOME", default=None)
 
-hf_home = "/scratch/mb26/bp0395/cache/"
+#hf_home = "/scratch/mb26/bp0395/cache/"
 logger = logging.getLogger(__name__)
 
 

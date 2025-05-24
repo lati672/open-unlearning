@@ -6,7 +6,7 @@ echo "Master Port: $MASTER_PORT"
 
 models=(
     "phi-1_5"
-    "Llama-3.2-1B-Instruct"
+   # "Llama-3.2-1B-Instruct"
 )
 trainers_experiments=(
     "GradSeqDiff unlearn/tofu/default.yaml"
@@ -17,7 +17,7 @@ forget_retain_splits=(
     "forget10 retain90"
 )
 
-per_device_train_batch_size=32 # on two gpus would make effective batch size 32
+per_device_train_batch_size=16 # on two gpus would make effective batch size 32
 gradient_accumulation_steps=8
 
 
