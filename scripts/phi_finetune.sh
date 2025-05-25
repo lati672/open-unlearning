@@ -24,6 +24,6 @@ forget_retain_splits=(
 		experiment=finetune/tofu/default \
 		model=${model_name} \
 		task_name=${task_name} \
-		data.train=TOFU_QA_${retain_split} 
+		data.datasets@data.train=TOFU_QA_${retain_split}
 	done
 
