@@ -20,9 +20,10 @@ trainers_experiments=(
     "GradSeqDiff unlearn/tofu/default.yaml"
     #"GradDiffKL unlearn/tofu/default.yaml"
 )
+
 forget_retain_splits=(
-    #"forget01 retain99"
-    #"forget05 retain95"
+    "forget01 retain99"
+    "forget05 retain95"
     "forget10 retain90"
 )
 
