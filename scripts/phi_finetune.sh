@@ -18,12 +18,12 @@ forget_retain_splits=(
 	    task_name=tofu_${model_name}_${retain_split}
 
 		echo "Running $task_name..."
-		CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file configs/accelerate/default_config.yaml --main_process_port $MASTER_PORT \
-		src/train.py \
+		HYDRA_FULL_ERROR=1 CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file configs/accelerate/default_config.yaml --main_process_port $MASTER_PORT \
+		src/train.py\
 		--config-name=train.yaml \
 		experiment=finetune/tofu/default \
 		model=${model_name} \
-		task_name=${task_name} \
-		data.datasets@data.train=TOFU_QA_${retain_split}
+		task_name=${task_name}\
+	        data/datasets@data.train=TOFU_QA_${retain_split} 	
 	done
 
