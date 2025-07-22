@@ -24,16 +24,20 @@ data:
       args:
         hf_args:
           split: ${forget_split}
+          path: muse-bench/MUSE-${data_split}
   retain:
     MUSE_retain:
       args:
         hf_args:
+          path: muse-bench/MUSE-${data_split}
           split: ${retain_split}
+
 
 eval:
   muse:
     data_split: ${data_split}
     retain_logs_path: ${retain_logs_path}
+    overwrite: true
 
 trainer:
   args:

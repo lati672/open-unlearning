@@ -4,6 +4,9 @@
 
 </div>
 
+> [!TIP]
+> ​This page is for reproducibility. For results where methods have been tuned for optimal performance, please refer to the [`community/leaderboard`](../community/leaderboard.md).
+
 The scripts below execute standard baseline unlearning experiments on the TOFU and MUSE datasets, evaluated using their corresponding benchmarks. 
 ```bash
 bash scripts/tofu_unlearn.sh
@@ -16,15 +19,17 @@ bash scripts/muse_unlearn.sh
 
 For all the experiments below, we used the following setup
 
-| **Category**            | **Details** |
-|-------------------------|------------|
-| **Hardware**           | 2 × L40s GPUs (48GB each) |
-| **Distributed Computing** | [DeepSpeed ZeRO Stage 3 (Accelerate)](https://huggingface.co/docs/accelerate/en/usage_guides/deepspeed) |
-| **Hyperparameters**    | Learning Rate (lr) = 1e-5 <br> α = 1, γ = 1, β = 0.1 (where applicable) <br> Number of Epochs = 10 <br> Optimizer: [paged_adamw_32bit](https://huggingface.co/docs/bitsandbytes/main/en/reference/optim/adamw#bitsandbytes.optim.PagedAdamW) |
+| **Category**            | **Details**                                                                                                                                                                                                                                                                                                             |
+|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Hardware**           | 2 × L40s GPUs (48GB each)                                                                                                                                                                                                                                                                                               |
+| **Distributed Computing** | [DeepSpeed ZeRO Stage 3 (Accelerate)](https://huggingface.co/docs/accelerate/en/usage_guides/deepspeed)                                                                                                                                                                                                                 |
+| **Hyperparameters**    | Learning Rate (lr) = 1e-5 <br> α = 1, γ = 1, β = 0.1 (where applicable) <br> Batch size 32 effectively: 8 per device, 4 grad accum steps <br> Number of Epochs = 10 <br> Optimizer: [paged_adamw_32bit](https://huggingface.co/docs/bitsandbytes/main/en/reference/optim/adamw#bitsandbytes.optim.PagedAdamW) |
 
-__Note:__ 
-1. Results may vary even with the same effective hyperparameters when trained with modifications to the distributed training setup, including when training on a single GPU. For example: methods such as SimNPO, can be significantly improved with careful tuning. **Please use these numbers only for reproducibility purposes**.
-2. NPO in MUSE: for NPO, the MUSE implementation is inconsistent with the [original paper](https://github.com/licong-lin/negative-preference-optimization) as discussed [here]( https://github.com/jaechan-repo/muse_bench/issues/2). This inconsistency is carried over into implementations like [SimNPO](https://github.com/OPTML-Group/Unlearn-Simple/issues/5). Here, we use the original NPO implementation with the same loss function expression across datasets.
+
+> [!NOTE] 
+> 1. The results in the next section display only some important subsets of metrics for each benchmark. For examples of more available evaluation metrics available: see `muse*/*_SUMMARY.json`, `tofu*/evals*/*_SUMMARY.json` files on the [HuggingFace space](https://huggingface.co/datasets/open-unlearning/eval).
+> 2. Results may vary even with the same effective hyperparameters when trained with modifications to the distributed training setup, including when training on a single GPU. For example: methods such as SimNPO & RMU can be significantly improved with careful tuning. **Please use the below numbers only for reproducibility purposes**.
+> 3. __NPO inconsistency__: for NPO, the MUSE implementation is inconsistent with the [original paper](https://github.com/licong-lin/negative-preference-optimization) as discussed [here](https://github.com/jaechan-repo/muse_bench/issues/2). This inconsistency is carried over into implementations like [SimNPO](https://github.com/OPTML-Group/Unlearn-Simple/issues/5). Here, we use the original NPO implementation with the same loss function expression across datasets.
 
 
 
@@ -58,7 +63,7 @@ __Note:__
       <td>1.27e-03</td>
       <td>0.63</td>
       <td>0.53</td>
-      <td>1.33e-13</td>
+      <td>5.87e-14</td>
       <td>0.63</td>
       <td>0.51</td>
       <td>4.35e-25</td>
@@ -140,6 +145,18 @@ __Note:__
       <td>0.6</td>
       <td>3.17e-04</td>
     </tr>
+    <tr>
+      <th>RMU</th>
+      <td>0.4</td>
+      <td>0.62</td>
+      <td>0.64</td>
+      <td>9.59e-10</td>
+      <td>0.02</td>
+      <td>0.81</td>
+      <td>6.92e-21</td>
+      <td>0.03</td>
+      <td>0.81</td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -173,12 +190,12 @@ __Note:__
     <tr>
       <th>Finetuned</th>
       <td>0.01</td>
-      <td>0.60</td>
-      <td>0.47</td>
-      <td>2.96e-13</td>
       <td>0.6</td>
       <td>0.47</td>
-      <td>8.08e-22</td>
+      <td>1.33e-13</td>
+      <td>0.6</td>
+      <td>0.47</td>
+      <td>1.66e-21</td>
       <td>0.6</td>
       <td>0.48</td>
     </tr>
@@ -189,7 +206,7 @@ __Note:__
       <td>0.65</td>
       <td>1.0</td>
       <td>0.6</td>
-      <td>0.63</td>
+      <td>0.64</td>
       <td>1.0</td>
       <td>0.59</td>
       <td>0.63</td>
@@ -257,6 +274,18 @@ __Note:__
       <td>0.54</td>
       <td>1.07e-05</td>
     </tr>
+     <tr>
+      <th>RMU</th>
+      <td>0.16</td>
+      <td>0.55</td>
+      <td>0.70</td>
+      <td>4.87e-10</td>
+      <td>0.58</td>
+      <td>0.77</td>
+      <td>3.15e-15</td>
+      <td>0.59</td>
+      <td>0.76</td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -290,7 +319,7 @@ __Note:__
       <td>0.64</td>
       <td>0.58</td>
       <td>-99.81</td>
-      <td>0.55</td>
+      <td>0.56</td>
       <td>0.47</td>
       <td>1.0</td>
       <td>-57.26</td>
@@ -299,7 +328,7 @@ __Note:__
     <tr>
       <th>Retain</th>
       <td>0.33</td>
-      <td>0.21</td>
+      <td>0.20</td>
       <td>0</td>
       <td>0.56</td>
       <td>0.3</td>
@@ -353,6 +382,17 @@ __Note:__
       <td>0.84</td>
       <td>-54.26</td>
       <td>0.54</td>
+    </tr>
+    <tr>
+      <th>RMU</th>
+      <td>0.48</td>
+      <td>0.05</td>
+      <td>56.36</td>
+      <td>0.51</td>
+      <td>0.29</td>
+      <td>0.79</td>
+      <td>-60.52</td>
+      <td>0.48</td>
     </tr>
   </tbody>
 </table>
