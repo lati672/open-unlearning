@@ -16,6 +16,12 @@ trainers_experiments=(
     "GradDiff unlearn/tofu/default.yaml"
     "NPO unlearn/tofu/default.yaml"
     "DPO unlearn/tofu/idk.yaml"
+    "RMU  unlearn/tofu/default.yaml"
+)
+splits=(
+    "forget01 holdout01 retain99"
+    "forget05 holdout05 retain95"
+    "forget10 holdout10 retain90"
     "GradDiffRev unlearn/tofu/default.yaml"
     "GradSeqDiff unlearn/tofu/default.yaml"
     #"GradDiffKL unlearn/tofu/default.yaml"
@@ -27,6 +33,7 @@ forget_retain_splits=(
     "forget10 retain90"
 )
 
+
 per_device_train_batch_size=32 # on two gpus would make effective batch size 32
 gradient_accumulation_steps=8
 
@@ -36,9 +43,11 @@ gradient_accumulation_steps=8
 ########################################################################################################################
 
 
-for split in "${forget_retain_splits[@]}"; do
+for split in "${splits[@]}"; do
     forget_split=$(echo $split | cut -d' ' -f1)
-    retain_split=$(echo $split | cut -d' ' -f2)
+    holdout_split=$(echo $split | cut -d' ' -f2)
+    retain_split=$(echo $split | cut -d' ' -f3)
+
     for model in "${models[@]}"; do
         for trainer_experiment in "${trainers_experiments[@]}"; do
             trainer=$(echo $trainer_experiment | cut -d' ' -f1)
@@ -69,6 +78,7 @@ for split in "${forget_retain_splits[@]}"; do
             CUDA_VISIBLE_DEVICES=0 python src/eval.py \
             experiment=eval/tofu/default.yaml \
             forget_split=${forget_split} \
+            holdout_split=${holdout_split} \
             model=${model} \
             task_name=${task_name} \
             model.model_args.pretrained_model_name_or_path=saves/unlearn/${task_name} \
