@@ -11,12 +11,12 @@ models=(
 )
 
 trainers_experiments=(
-    #"GradDiff unlearn/tofu/default.yaml NLL"
-    #"GradDiff unlearn/tofu/default.yaml KL"
-    #"GradAscent unlearn/tofu/default.yaml"
+    "GradDiff unlearn/tofu/default.yaml NLL"
+    "GradDiff unlearn/tofu/default.yaml KL"
+    "GradAscent unlearn/tofu/default.yaml"
     "NPO unlearn/tofu/default.yaml"
     "DPO unlearn/tofu/idk.yaml"
-i)
+)
 
 forget_retain_splits=(
     #"forget01 retain99"
