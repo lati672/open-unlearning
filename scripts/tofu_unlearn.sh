@@ -17,20 +17,15 @@ trainers_experiments=(
     "NPO unlearn/tofu/default.yaml"
     "DPO unlearn/tofu/idk.yaml"
     "RMU  unlearn/tofu/default.yaml"
-)
-splits=(
-    "forget01 holdout01 retain99"
-    "forget05 holdout05 retain95"
-    "forget10 holdout10 retain90"
-    "GradDiffRev unlearn/tofu/default.yaml"
-    "GradSeqDiff unlearn/tofu/default.yaml"
+    #"GradDiffRev unlearn/tofu/default.yaml"
+    #"GradSeqDiff unlearn/tofu/default.yaml"
     #"GradDiffKL unlearn/tofu/default.yaml"
 )
-
-forget_retain_splits=(
-    "forget01 retain99"
-    "forget05 retain95"
-    "forget10 retain90"
+splits=(
+    #"forget01 holdout01 retain99"
+    #"forget05 holdout05 retain95"
+    "forget10 holdout10 retain90"
+    
 )
 
 
