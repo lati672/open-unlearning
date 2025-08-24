@@ -88,7 +88,7 @@ def get_collators(collator_cfgs, **kwargs):
         return list(collators.values())[0]
     # return collators in a dict
     return collators
-
+    
 
 # Register datasets
 _register_data(QADataset)
