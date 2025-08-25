@@ -15,7 +15,7 @@ from trainer.unlearn.ceu import CEU
 from trainer.unlearn.satimp import SatImp
 from trainer.unlearn.wga import WGA
 from trainer.unlearn.pdu import PDU
-
+from trainer.unlearn.entity_rmu import EntityRMU  # noqa: F401
 
 import logging
 
@@ -106,3 +106,5 @@ _register_trainer(PDU)
 _register_trainer(GradDiffRev)
 _register_trainer(GradSeqDiff)
 _register_trainer(GradDiffKL)
+
+_register_trainer(EntityRMU)  # Register EntityRMU Trainer
