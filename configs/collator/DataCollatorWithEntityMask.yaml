@@ -1,0 +1,5 @@
+DataCollatorWithEntityMask:
+  handler: DataCollatorWithEntityMask
+  args:
+    padding_side: right
+

@@ -1,0 +1,14 @@
+defaults:
+  - GradDiff
+
+# if you register the class name "Entity_RMU" in your factory/registry:
+handler: EntityRMU
+
+method_args:
+  gamma: 1.0
+  steering_coeff: 2
+  retain_loss_type: EMBED_DIFF
+  alpha: 1
+  module_regex: 'model\.layers\.7'
+  trainable_params_regex:
+    - '.*'     # or the narrower patterns you were using
