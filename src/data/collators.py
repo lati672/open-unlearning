@@ -67,148 +67,206 @@ class DataCollatorForSupervisedDataset(object):
         return return_dct
 
 
-class EntityMaskedSupervisedCollator:
+# --------------------------------- Collator (text-only matching) ---------------------------------
+class DataCollatorWithEntityMask(object):
     """
-    New collator for supervised fine-tuning that:
-      • Pads input_ids and labels (dynamic to the longest in the batch).
-      • Builds attention_mask from padded input_ids.
-      • Adds a padded boolean `entity_mask` (only for branches you choose, e.g. "forget").
+    INPUT (per-sample): same as DataCollatorForSupervisedDataset
+      Flat:
+        {
+          "input_ids": 1D LongTensor (unpadded),
+          "labels":    1D LongTensor (optional, unpadded),
+          "row_id":    int (optional),
+          # optionally "entity_mask": 1D 0/1 list/tensor (unpadded)
+        }
+      Nested:
+        { "forget": {...}, "retain": {...} }
 
-    Data format per sample (nested is fine):
-      {
-        "forget": {
-          "input_ids": 1D LongTensor/array-like (UNPADDED),
-          "labels":    1D LongTensor/array-like (UNPADDED, with IGNORE_INDEX where needed),
-          # EITHER provide one of:
-          "entity_mask": 1D BoolTensor/array-like (UNPADDED),
-          "text":        str  # if build_mask_fn is provided, collator will build mask
-        },
-        "retain": { ... }  # same as above, but no entity_mask needed unless you want it
-      }
-
-    Notes:
-      • If neither precomputed `entity_mask` nor `build_mask_fn`+`text` is available,
-        the collator will fall back to `labels != IGNORE_INDEX` for that branch.
-      • Padding side: 'right' or 'left'.
-      • `apply_to_branches` controls where we expect/add entity_mask (default: ["forget"]).
+    OUTPUT: identical keys as DataCollatorForSupervisedDataset (+ "entity_mask")
+      Flat:
+        {
+          "input_ids":      (B, S) LongTensor,
+          "attention_mask": (B, S) LongTensor,
+          "labels":         (B, S) LongTensor  [if provided],
+          "entity_mask":    (B, S) LongTensor, # 0/1
+          "row_id":         (B,)   LongTensor  [if index="row_id" and present]
+        }
+      Nested:
+        { "forget": {...}, "retain": {...} } (each branch has the flat structure above)
     """
 
     def __init__(
         self,
-        tokenizer,
+        tokenizer: transformers.PreTrainedTokenizerBase,
+        author_names: List[str],
         padding_side: str = "right",
-        apply_to_branches: Tuple[str, ...] = ("forget",),
-        build_mask_fn: Optional[Callable[[List[str]], List[List[bool]]]] = None,
-        text_key: str = "text",
-        enforce_subset_of_labels: bool = True,
-        index_field: Optional[str] = None,
+        index: str = None,
     ):
         self.tokenizer = tokenizer
-        self.pad_token_id = tokenizer.pad_token_id
+        self.index = index
+
+        # Ensure we can pad
+        if self.tokenizer.pad_token_id is None:
+            if getattr(self.tokenizer, "eos_token_id", None) is not None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token
+            else:
+                raise ValueError("Tokenizer must have pad_token_id or eos_token_id")
+
+        assert padding_side in ("left", "right")
         self.padding_side = padding_side
-        assert self.padding_side in ("right", "left")
-        self.apply_to_branches = set(apply_to_branches)
-        self.build_mask_fn = build_mask_fn
-        self.text_key = text_key
-        self.enforce_subset_of_labels = enforce_subset_of_labels
-        self.index_field = index_field
 
-    # ------------ public API ------------
-    def __call__(self, instances: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
-        return self._collate(instances, branch=None)
+        # Compile text-level regexes (full + subnames)
+        self.rx_full, self.rx_subs = _build_regexes_for_names(author_names)
 
-    # ------------ helpers ------------
-    def _pad_1d(
-        self,
-        seqs: List[torch.Tensor],
-        pad_value: Any,
-        dtype: Optional[torch.dtype] = None
-    ) -> torch.Tensor:
-        # Ensure tensors
-        ts = [s if isinstance(s, torch.Tensor) else torch.tensor(s, dtype=dtype) for s in seqs]
-        if dtype is not None:
-            ts = [t.to(dtype) for t in ts]
+    # ---------- utilities (identical padding behavior) ----------
+    def get_instances_from_key(self, instances: Sequence[Dict], key: str):
+        return [instance[key] for instance in instances]
+
+    def _pad_tokens(self, seqs: List[torch.Tensor], pad_val: int) -> torch.Tensor:
         if self.padding_side == "right":
-            return torch.nn.utils.rnn.pad_sequence(ts, batch_first=True, padding_value=pad_value)
+            return torch.nn.utils.rnn.pad_sequence(seqs, batch_first=True, padding_value=pad_val)
         else:
-            flipped = [torch.flip(t, dims=[0]) for t in ts]
-            padded = torch.nn.utils.rnn.pad_sequence(flipped, batch_first=True, padding_value=pad_value)
-            return torch.flip(padded, dims=[1])
+            return torch.nn.utils.rnn.pad_sequence(
+                [torch.flip(x, dims=[0]) for x in seqs],
+                batch_first=True,
+                padding_value=pad_val,
+            ).flip(dims=[1])
 
-    def _collate(self, items: Sequence[Dict[str, Any]], branch: Optional[str]) -> Dict[str, Any]:
-        assert isinstance(items[0], dict)
-        # Nested dict case (e.g., {"forget": {...}, "retain": {...}})
-        if "input_ids" not in items[0]:
-            out: Dict[str, Any] = {}
-            for k in items[0].keys():
-                sub_items = [it[k] for it in items]
-                out[k] = self._collate(sub_items, branch=k)  # pass current branch name
-            return out
+    # ---------- entity-mask (TEXT-ONLY) ----------
+    def _build_entity_mask_via_text(self, ids: List[int]) -> List[int]:
+        """
+        Decode -> re-tokenize (no specials) -> regex on normalized text -> map spans via word_ids() if available;
+        else via per-token offsets. If round-trip tokenization differs, return an all-zero mask (text-only policy).
+        """
+        if not ids:
+            return []
 
-        # Leaf case
-        leaf = self._collate_leaf(items, branch)
-        return leaf
+        # 1) Decode without cleanup to keep spaces/newlines as-is (improves round-trip stability)
+        text = self.tokenizer.decode(ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)
 
-    def _collate_leaf(self, items: Sequence[Dict[str, Any]], branch: Optional[str]) -> Dict[str, Any]:
-        # ---- input_ids ----
-        input_ids_list = [it["input_ids"] for it in items]
-        input_ids = self._pad_1d(input_ids_list, self.pad_token_id, dtype=torch.long)
+        # 2) Re-tokenize with offsets, no specials
+        enc = self.tokenizer(
+            text,
+            add_special_tokens=False,
+            return_offsets_mapping=True,
+            return_attention_mask=False,
+        )
 
-        # ---- attention_mask ----
-        attention_mask = input_ids.ne(self.pad_token_id)
+        ids_rt = enc["input_ids"]
+        
+        if list(ids_rt) != list(ids):
+            # Text-only policy: do NOT fall back to ID matching; just return zeros (conservative).
+            return [0] * len(ids)
 
-        out: Dict[str, torch.Tensor] = {
-            "input_ids": input_ids,
-            "attention_mask": attention_mask,
-        }
+        offsets = enc["offset_mapping"]
+        word_ids = enc.word_ids() if hasattr(enc, "word_ids") else None
+        text_norm = _nfkc_lower(text)
 
-        # ---- labels (optional) ----
-        if "labels" in items[0]:
-            labels_list = [it["labels"] for it in items]
-            labels = self._pad_1d(labels_list, IGNORE_INDEX, dtype=torch.long)
-            out["labels"] = labels
+        # 3) Collect normalized spans (full names + subnames), then greedily make them non-overlapping
+        spans: List[Tuple[int, int]] = []
+        if self.rx_full:
+            spans += [(m.start(), m.end()) for m in self.rx_full.finditer(text_norm)]
+        if self.rx_subs:
+            spans += [(m.start(), m.end()) for m in self.rx_subs.finditer(text_norm)]
+
+        if not spans:
+            return [0] * len(ids)
+
+        spans.sort(key=lambda t: (-(t[1] - t[0]), t[0]))
+        chosen = []
+        taken = [False] * (len(text_norm) + 1)
+        for s, e in spans:
+            if any(taken[s:e]):
+                continue
+            for i in range(s, e):
+                taken[i] = True
+            chosen.append((s, e))
+        spans = chosen
+
+        # 4) Map char spans -> token indices
+        mask = [0] * len(ids)
+
+        if word_ids is not None:
+            # Mark all tokens whose word overlaps any span (so multi-piece BPEs are covered)
+            matched_words = set()
+            for ti, off in enumerate(offsets):
+                if off is None:
+                    continue
+                s, e = off
+                if s == e:
+                    continue
+                for (cs, ce) in spans:
+                    if s < ce and cs < e:
+                        wid = word_ids[ti]
+                        if wid is not None:
+                            matched_words.add(wid)
+                        break
+            for ti, wid in enumerate(word_ids):
+                if wid is not None and wid in matched_words:
+                    mask[ti] = 1
+            return mask
+
+        # Fallback (still text-only): no word_ids() → per-token overlap
+        for ti, off in enumerate(offsets):
+            if off is None:
+                continue
+            s, e = off
+            if s == e:
+                continue
+            for (cs, ce) in spans:
+                if s < ce and cs < e:
+                    mask[ti] = 1
+                    break
+
+        return mask
+
+    # ---------- main (mirrors DataCollatorForSupervisedDataset) ----------
+    def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
+        assert isinstance(instances[0], dict)
+        return_dct: Dict[str, Any] = {}
+
+        # NESTED CASE: recurse into keys until we hit leafs with input_ids
+        if "input_ids" not in instances[0]:
+            for key in instances[0].keys():
+                key_instances = self.get_instances_from_key(instances=instances, key=key)
+                return_dct[key] = self(key_instances)
+            return return_dct
+
+        # LEAF CASE: pad & stack like the baseline collator
+        input_ids = [instance["input_ids"] for instance in instances]
+        input_ids = self._pad_tokens(input_ids, self.tokenizer.pad_token_id)
+        attention_mask = input_ids.ne(self.tokenizer.pad_token_id)
+        return_dct.update({"input_ids": input_ids})
+        return_dct.update({"attention_mask": attention_mask})
+
+        if "labels" in instances[0]:
+            labels = [instance["labels"] for instance in instances]
+            labels = self._pad_tokens(labels, IGNORE_INDEX)
+            return_dct.update({"labels": labels})
+
+        if self.index:
+            if self.index in instances[0]:
+                return_dct.update({
+                    self.index: torch.tensor([example[self.index] for example in instances])
+                })
+            else:
+                raise Warning(f"{self.index} not found in dataset")
+
+        # --- entity_mask (TEXT-ONLY) ---
+        if "entity_mask" in instances[0]:
+            masks = []
+            for ex in instances:
+                m = ex["entity_mask"]
+                if isinstance(m, torch.Tensor):
+                    m = m.tolist()
+                masks.append(torch.tensor(m, dtype=torch.long))
+            entity_mask = self._pad_tokens(masks, 0)
         else:
-            labels = None  # may be None; handle in entity_mask fallback
+            masks = []
+            for ex in instances:
+                ids_list = ex["input_ids"].tolist()
+                m = self._build_entity_mask_via_text(ids_list)  # text-only path
+                masks.append(torch.tensor(m, dtype=torch.long))
+            entity_mask = self._pad_tokens(masks, 0)
 
-        # ---- entity_mask (only for selected branches) ----
-        if branch in self.apply_to_branches:
-            ent_masks_unpadded: Optional[List[List[bool]]] = None
-
-            # (A) precomputed per-sample mask provided
-            if "entity_mask" in items[0]:
-                ent_masks_unpadded = [
-                    (m.tolist() if isinstance(m, torch.Tensor) else m) for m in (it["entity_mask"] for it in items)
-                ]
-
-            # (B) or compute from text if build_mask_fn is provided
-            elif self.build_mask_fn is not None and self.text_key in items[0]:
-                texts = [it[self.text_key] for it in items]
-                ent_masks_unpadded = self.build_mask_fn(texts)  # -> List[List[bool]]
-
-            # (C) fallback: use labels-supervised positions if available, else zeros
-            if ent_masks_unpadded is None:
-                if labels is not None:
-                    ent_unpadded = [ (torch.tensor(it["labels"]) != IGNORE_INDEX).tolist() for it in items ]
-                else:
-                    ent_unpadded = [ [False] * (it["input_ids"].shape[0] if isinstance(it["input_ids"], torch.Tensor) else len(it["input_ids"])) for it in items ]
-                ent_masks_unpadded = ent_unpadded
-
-            # pad entity mask with False
-            ent_masks_padded = self._pad_1d(
-                [torch.tensor(m, dtype=torch.bool) for m in ent_masks_unpadded],
-                pad_value=False,
-                dtype=torch.bool,
-            )
-
-            # optionally enforce entity ⊆ supervised labels
-            if self.enforce_subset_of_labels and labels is not None:
-                ent_masks_padded = ent_masks_padded & (labels != IGNORE_INDEX)
-
-            out["entity_mask"] = ent_masks_padded
-
-        # ---- optional index passthrough ----
-        if self.index_field:
-            if self.index_field in items[0]:
-                out[self.index_field] = torch.tensor([it[self.index_field] for it in items], dtype=torch.long)
-
-        return out
+        return_dct["entity_mask"] = entity_mask
+        return return_dct

@@ -4,6 +4,7 @@ from omegaconf import DictConfig
 from data.qa import QADataset, QAwithIdkDataset, QAwithAlternateDataset
 from data.collators import (
     DataCollatorForSupervisedDataset,
+    DataCollatorWithEntityMask,
 )
 from data.unlearn import ForgetRetainDataset
 from data.pretraining import PretrainingDataset, CompletionDataset
@@ -103,3 +104,4 @@ _register_data(ForgetRetainDataset)
 
 # Register collators
 _register_collator(DataCollatorForSupervisedDataset)
+_register_collator(DataCollatorWithEntityMask)

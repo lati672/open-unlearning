@@ -10,7 +10,7 @@ models=(
 trainers_experiments=(
 
     #"RMU  unlearn/tofu/default.yaml"
-    "Entity_RMU  unlearn/tofu/default.yaml"
+    "EntityRMU  unlearn/tofu/default.yaml"
 )
 splits=(
     "forget01 holdout01 retain99"
