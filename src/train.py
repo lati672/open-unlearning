@@ -26,10 +26,21 @@ def main(cfg: DictConfig):
         data_cfg, mode=mode, tokenizer=tokenizer, template_args=template_args
     )
 
-    # Load collator
+    # # Load collator
+    # collator_cfg = cfg.collator
+    # collator = get_collators(collator_cfg, tokenizer=tokenizer)
+    # Load collator for now, latter will load authors name based on forget split
     collator_cfg = cfg.collator
-    collator = get_collators(collator_cfg, tokenizer=tokenizer)
+    AUTHOR_NAMES = [
+        "Basil Mahfouz Al-Kuwaiti",
+        "Nikolai Abilov",
+    ]   
 
+    collator = get_collators(
+        cfg.collator,
+        tokenizer=tokenizer,
+        author_names=AUTHOR_NAMES,   # << inject here, no YAML changes
+    )
     # Get Trainer
     trainer_cfg = cfg.trainer
     assert trainer_cfg is not None, ValueError("Please set trainer")

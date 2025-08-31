@@ -1,5 +1,7 @@
 import torch
 import transformers
+import unicodedata
+import re
 from typing import Dict, List, Sequence, Any, Callable, Optional, Tuple
 from data.utils import IGNORE_INDEX
 
@@ -66,6 +68,39 @@ class DataCollatorForSupervisedDataset(object):
                     raise Warning(f"{self.index} not found in dataset")
         return return_dct
 
+# --------- helpers: normalization & regex building (whitespace only, hyphens preserved) ---------
+def _nfkc_lower(s: str) -> str:
+    return unicodedata.normalize("NFKC", s).lower().strip()
+
+
+def _build_regexes_for_names(author_names: List[str]):
+    """
+    Build regexes for:
+      • Full name (parts joined by +; hyphens preserved inside tokens)
+      • Each sub-name (whitespace-delimited tokens; hyphenated kept intact)
+    Word boundaries ensure 'Basilica' doesn't match 'Basil'.
+    """
+    full_patterns: List[str] = []
+    subname_patterns: List[str] = []
+
+    for full in author_names:
+        full_n = _nfkc_lower(full)
+        if not full_n:
+            continue
+        parts = [p for p in re.split(r"\s+", full_n) if p]
+        if not parts:
+            continue
+
+        parts_esc = [re.escape(p) for p in parts]
+        full_core = r"\s+".join(parts_esc)
+        full_patterns.append(rf"\b{full_core}\b")
+
+        for p in parts:
+            subname_patterns.append(rf"\b{re.escape(p)}\b")
+
+    rx_full = re.compile("|".join(full_patterns)) if full_patterns else None
+    rx_subs = re.compile("|".join(subname_patterns)) if subname_patterns else None
+    return rx_full, rx_subs
 
 # --------------------------------- Collator (text-only matching) ---------------------------------
 class DataCollatorWithEntityMask(object):
