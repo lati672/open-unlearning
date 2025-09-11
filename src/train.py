@@ -5,7 +5,7 @@ from model import get_model
 from trainer import load_trainer
 from evals import get_evaluators
 from trainer.utils import seed_everything
-
+import json
 
 @hydra.main(version_base=None, config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig):
@@ -31,15 +31,17 @@ def main(cfg: DictConfig):
     # collator = get_collators(collator_cfg, tokenizer=tokenizer)
     # Load collator for now, latter will load authors name based on forget split
     collator_cfg = cfg.collator
-    AUTHOR_NAMES = [
-        "Basil Mahfouz Al-Kuwaiti",
-        "Nikolai Abilov",
-    ]   
+    with open("./configs/tofu_forget_authors.json", "r") as f:
+        forget_authors = json.load(f)
 
+    # Pick the forget split (e.g. forget01)
+    AUTHOR_NAMES = forget_authors[cfg.forget_split]
+
+    # Inject into collator
     collator = get_collators(
         cfg.collator,
         tokenizer=tokenizer,
-        author_names=AUTHOR_NAMES,   # << inject here, no YAML changes
+        author_names=AUTHOR_NAMES,   # << inject here
     )
     # Get Trainer
     trainer_cfg = cfg.trainer
