@@ -26,23 +26,25 @@ def main(cfg: DictConfig):
         data_cfg, mode=mode, tokenizer=tokenizer, template_args=template_args
     )
 
-    # # Load collator
-    # collator_cfg = cfg.collator
-    # collator = get_collators(collator_cfg, tokenizer=tokenizer)
-    # Load collator for now, latter will load authors name based on forget split
+    # Load collator config
     collator_cfg = cfg.collator
-    with open("./configs/tofu_forget_authors.json", "r") as f:
-        forget_authors = json.load(f)
 
-    # Pick the forget split (e.g. forget01)
-    AUTHOR_NAMES = forget_authors[cfg.forget_split]
-
-    # Inject into collator
-    collator = get_collators(
-        cfg.collator,
-        tokenizer=tokenizer,
-        author_names=AUTHOR_NAMES,   # << inject here
-    )
+    if collator_cfg == "DataCollatorWithEntityMask":
+        # Load forget authors (for entity-mask case)
+        with open("./configs/tofu_forget_authors.json", "r") as f:
+            forget_authors = json.load(f)
+        author_names = forget_authors[cfg.forget_split]
+        
+        collator = get_collators(
+            collator_cfg,
+            tokenizer=tokenizer,
+            author_names=author_names,   # only injected here
+        )
+    else:
+        collator = get_collators(
+            collator_cfg,
+            tokenizer=tokenizer,
+        )
     # Get Trainer
     trainer_cfg = cfg.trainer
     assert trainer_cfg is not None, ValueError("Please set trainer")

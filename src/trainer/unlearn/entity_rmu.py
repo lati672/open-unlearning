@@ -36,6 +36,7 @@ class EntityRMU(RMU):
         if valid.any():
             loss_per_sample = torch.zeros_like(sums)
             loss_per_sample[valid] = sums[valid] / counts[valid]
+            
             return loss_per_sample[valid].mean()
         else:
             # No entities (or no label-active tokens) in this batch -> zero loss
