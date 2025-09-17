@@ -16,8 +16,8 @@ models=(
 )
 
 trainers_experiments=(
-  # "RMU  unlearn/tofu/default.yaml"
-  "EntityRMU  unlearn/tofu/default.yaml"
+  # "RMU unlearn/tofu/default.yaml"
+  "EntityRMU unlearn/tofu/default.yaml"
 )
 
 splits=(
@@ -44,7 +44,8 @@ for split in "${splits[@]}"; do
 
   for model in "${models[@]}"; do
     for trainer_experiment in "${trainers_experiments[@]}"; do
-      read -r trainer experiment <<< "$trainer_experiment"
+      trainer=$(echo "$trainer_experiment" | cut -d' ' -f1)
+      experiment=$(echo "$trainer_experiment" | cut -d' ' -f2)
 
       model_path="open-unlearning/tofu_${model}_full"
       task_name="tofu_${model}_${forget_split}_${trainer}_ep${nepoch}_a${alpha}"

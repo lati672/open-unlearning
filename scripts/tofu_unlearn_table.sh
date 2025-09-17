@@ -15,8 +15,8 @@ trainers_experiments=(
     "GradDiff unlearn/tofu/default.yaml"
     "NPO unlearn/tofu/default.yaml"
     "DPO unlearn/tofu/idk.yaml"
-    "RMU  unlearn/tofu/default.yaml"
-    "EntityRMU  unlearn/tofu/default.yaml"  
+    "RMU unlearn/tofu/default.yaml"
+    "EntityRMU unlearn/tofu/default.yaml"  
     #"GradDiffRev unlearn/tofu/default.yaml"
     #"GradSeqDiff unlearn/tofu/default.yaml"
     #"GradDiffKL unlearn/tofu/default.yaml"
@@ -35,14 +35,14 @@ gradient_accumulation_steps=8
 ########################################################################################################################
 
 for split in "${splits[@]}"; do
-    forget_split=$(echo $split | cut -d' ' -f1)
-    holdout_split=$(echo $split | cut -d' ' -f2)
-    retain_split=$(echo $split | cut -d' ' -f3)
+    forget_split=$(echo "$split" | cut -d' ' -f1)
+    holdout_split=$(echo "$split" | cut -d' ' -f2)
+    retain_split=$(echo "$split" | cut -d' ' -f3)
 
     for model in "${models[@]}"; do
         for trainer_experiment in "${trainers_experiments[@]}"; do
-            trainer=$(echo $trainer_experiment | cut -d' ' -f1)
-            experiment=$(echo $trainer_experiment | cut -d' ' -f2)
+            trainer=$(echo "$trainer_experiment" | cut -d' ' -f1)
+            experiment=$(echo "$trainer_experiment" | cut -d' ' -f2)
             
             task_name=tofu_${model}_${forget_split}_${trainer} 
             model_path=open-unlearning/tofu_${model}_full

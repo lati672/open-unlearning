@@ -13,11 +13,11 @@ models=(
 
 trainers_experiments=(
     "GradAscent unlearn/tofu/default.yaml"
-    "GradDiff   unlearn/tofu/default.yaml"
-    "NPO        unlearn/tofu/default.yaml"
-    "DPO        unlearn/tofu/idk.yaml"
-    "RMU        unlearn/tofu/default.yaml"
-    "EntityRMU  unlearn/tofu/default.yaml"   # 只对这个加 collator
+    "GradDiff bunlearn/tofu/default.yaml"
+    "NPO unlearn/tofu/default.yaml"
+    "DPO unlearn/tofu/idk.yaml"
+    "RMU unlearn/tofu/default.yaml"
+    "EntityRMU unlearn/tofu/default.yaml"  
     # "GradDiffRev unlearn/tofu/default.yaml"
     # "GradSeqDiff unlearn/tofu/default.yaml"
     # "GradDiffKL  unlearn/tofu/default.yaml"
@@ -39,14 +39,14 @@ num_train_epochs=50
 ########################################################################################################################
 
 for split in "${splits[@]}"; do
-    forget_split=$(echo $split | cut -d' ' -f1)
-    holdout_split=$(echo $split | cut -d' ' -f2)
-    retain_split=$(echo $split | cut -d' ' -f3)
+    forget_split=$(echo "$split" | cut -d' ' -f1)
+    holdout_split=$(echo "$split" | cut -d' ' -f2)
+    retain_split=$(echo "$split" | cut -d' ' -f3)
 
     for model in "${models[@]}"; do
         for trainer_experiment in "${trainers_experiments[@]}"; do
-            trainer=$(echo $trainer_experiment | awk '{print $1}')
-            experiment=$(echo $trainer_experiment | awk '{print $2}')
+            trainer=$(echo "$trainer_experiment" | cut -d' ' -f1)
+            experiment=$(echo "$trainer_experiment" | cut -d' ' -f2)
 
             task_name=tofu_${model}_${forget_split}_${trainer}
             model_path=open-unlearning/tofu_${model}_full
@@ -59,7 +59,7 @@ for split in "${splits[@]}"; do
             echo "  SINGLE GPU RUN (bs=${per_device_train_batch_size}, ga=${gradient_accumulation_steps})"
             echo "===================================================================="
 
-            # 仅 EntityRMU 使用实体掩码的 collator
+            # only for EntityRMU, need to set collator
             collator_arg=""
             if [[ "$trainer" == "EntityRMU" ]]; then
                 collator_arg="collator=DataCollatorWithEntityMask"
