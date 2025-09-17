@@ -29,12 +29,12 @@ def main(cfg: DictConfig):
     # Load collator config
     collator_cfg = cfg.collator
 
-    if collator_cfg == "DataCollatorWithEntityMask":
+    if "DataCollatorWithEntityMask" in collator_cfg:
         # Load forget authors (for entity-mask case)
         with open("./configs/tofu_forget_authors.json", "r") as f:
             forget_authors = json.load(f)
         author_names = forget_authors[cfg.forget_split]
-        
+
         collator = get_collators(
             collator_cfg,
             tokenizer=tokenizer,
