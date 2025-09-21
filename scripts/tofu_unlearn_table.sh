@@ -8,19 +8,20 @@ models=(
     "Llama-3.2-1B-Instruct"
     #"Llama-3.2-3B-Instruct"
     #"Llama-3.1-8B-Instruct"
-
 )
+
 trainers_experiments=(
     "GradAscent unlearn/tofu/default.yaml"
     "GradDiff unlearn/tofu/default.yaml"
     "NPO unlearn/tofu/default.yaml"
     "DPO unlearn/tofu/idk.yaml"
     "RMU unlearn/tofu/default.yaml"
-    "EntityRMU unlearn/tofu/default.yaml"  
+    "EntityRMU unlearn/tofu/default.yaml"
     #"GradDiffRev unlearn/tofu/default.yaml"
     #"GradSeqDiff unlearn/tofu/default.yaml"
     #"GradDiffKL unlearn/tofu/default.yaml"
 )
+
 splits=(
     #"forget01 holdout01 retain99"
     #"forget05 holdout05 retain95"
@@ -43,15 +44,17 @@ for split in "${splits[@]}"; do
         for trainer_experiment in "${trainers_experiments[@]}"; do
             trainer=$(echo "$trainer_experiment" | cut -d' ' -f1)
             experiment=$(echo "$trainer_experiment" | cut -d' ' -f2)
-            
-            task_name=tofu_${model}_${forget_split}_${trainer} 
-            model_path=open-unlearning/tofu_${model}_full
-            #model_path="/scratch/mb26/bp0395/open-unlearning/saves/finetune/tofu_phi-1_5_full"
-	        echo ${task_name}: Unlearning ${model_path} using ${trainer}
 
+            task_name=tofu_${model}_${forget_split}_${trainer}
+            model_path=open-unlearning/tofu_${model}_full
+            echo "${task_name}: Unlearning ${model_path} using ${trainer}"
+
+            # Conditionally set collator and epochs
             collator_arg=""
+            epochs_arg=""
             if [[ "$trainer" == "EntityRMU" ]]; then
                 collator_arg="collator=DataCollatorWithEntityMask"
+                epochs_arg="trainer.args.num_train_epochs=50"
             fi
 
             # Unlearn
@@ -62,6 +65,7 @@ for split in "${splits[@]}"; do
             task_name=${task_name} \
             model=${model} \
             ${collator_arg} \
+            ${epochs_arg} \
             forget_split=${forget_split} \
             retain_split=${retain_split} \
             model.model_args.pretrained_model_name_or_path=${model_path} \
@@ -69,7 +73,7 @@ for split in "${splits[@]}"; do
             trainer.args.per_device_train_batch_size=$per_device_train_batch_size \
             trainer.args.gradient_accumulation_steps=$gradient_accumulation_steps \
             trainer.args.ddp_find_unused_parameters=true \
-            trainer.args.gradient_checkpointing=true 
+            trainer.args.gradient_checkpointing=true
 
             # Eval
             CUDA_VISIBLE_DEVICES=0 python src/eval.py \
