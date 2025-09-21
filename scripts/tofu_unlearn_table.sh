@@ -23,13 +23,13 @@ trainers_experiments=(
 )
 
 splits=(
-    #"forget01 holdout01 retain99"
-    #"forget05 holdout05 retain95"
+    "forget01 holdout01 retain99"
+    "forget05 holdout05 retain95"
     "forget10 holdout10 retain90"
 )
 
-per_device_train_batch_size=32 # on two gpus would make effective batch size 32
-gradient_accumulation_steps=8
+per_device_train_batch_size=4 # on two gpus would make effective batch size 32
+gradient_accumulation_steps=4
 
 ########################################################################################################################
 ########################################### Unlearn TOFU models ########################################################
