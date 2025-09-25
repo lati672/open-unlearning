@@ -51,10 +51,8 @@ for split in "${splits[@]}"; do
 
             # Conditionally set collator and epochs
             collator_arg=""
-            epochs_arg=""
             if [[ "$trainer" == "EntityRMU" ]]; then
                 collator_arg="collator=DataCollatorWithEntityMask"
-                epochs_arg="trainer.args.num_train_epochs=50"
             fi
 
             # Unlearn
@@ -65,7 +63,6 @@ for split in "${splits[@]}"; do
             task_name=${task_name} \
             model=${model} \
             ${collator_arg} \
-            ${epochs_arg} \
             forget_split=${forget_split} \
             retain_split=${retain_split} \
             model.model_args.pretrained_model_name_or_path=${model_path} \

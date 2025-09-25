@@ -10,8 +10,8 @@ models=(
     #"Llama-3.2-3B-Instruct"
     #"Llama-3.1-8B-Instruct"
 )
-per_device_train_batch_size=32 # Effective batch size 32 on two GPUs with gradent_accumulation_steps=8
-gradient_accumulation_steps=8
+per_device_train_batch_size=4 # Effective batch size 32 on two GPUs with gradent_accumulation_steps=8
+gradient_accumulation_steps=4
 
 splits=(
     "forget01 holdout01 retain99"
