@@ -5,6 +5,7 @@ from data.qa import QADataset, QAwithIdkDataset, QAwithAlternateDataset
 from data.collators import (
     DataCollatorForSupervisedDataset,
     DataCollatorWithEntityMask,
+    DataCollatorWithLogProbs,
 )
 from data.unlearn import ForgetRetainDataset
 from data.pretraining import PretrainingDataset, CompletionDataset
@@ -105,3 +106,4 @@ _register_data(ForgetRetainDataset)
 # Register collators
 _register_collator(DataCollatorForSupervisedDataset)
 _register_collator(DataCollatorWithEntityMask)
+_register_collator(DataCollatorWithLogProbs)

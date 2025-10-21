@@ -1,11 +1,16 @@
 import hydra
+import logging
 from omegaconf import DictConfig
 from data import get_data, get_collators
+from compute_logprobs import configure_logprob_collator
 from model import get_model
 from trainer import load_trainer
 from evals import get_evaluators
 from trainer.utils import seed_everything
 import json
+from hydra.utils import get_original_cwd
+
+logger = logging.getLogger(__name__)
 
 @hydra.main(version_base=None, config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig):
@@ -25,9 +30,18 @@ def main(cfg: DictConfig):
     data = get_data(
         data_cfg, mode=mode, tokenizer=tokenizer, template_args=template_args
     )
-
+    
     # Load collator config
     collator_cfg = cfg.collator
+
+    if "DataCollatorWithLogProbs" in collator_cfg:
+        configure_logprob_collator(
+            collator_cfg=collator_cfg,
+            data_cfg=cfg.data,
+            model_cfg=model_cfg,
+            forget_split=cfg.get("forget_split", None),
+            project_root=get_original_cwd(),
+        )
 
     if "DataCollatorWithEntityMask" in collator_cfg:
         # Load forget authors (for entity-mask case)
@@ -48,7 +62,6 @@ def main(cfg: DictConfig):
     # Get Trainer
     trainer_cfg = cfg.trainer
     assert trainer_cfg is not None, ValueError("Please set trainer")
-
     # Get Evaluators
     evaluators = None
     eval_cfgs = cfg.get("eval", None)

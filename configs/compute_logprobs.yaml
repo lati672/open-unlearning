@@ -1,0 +1,14 @@
+defaults:
+  - _self_
+  - model: Llama-3.2-1B-Instruct
+  - data/datasets@dataset: TOFU_QA_forget
+
+output_dir_base: saves/logprobs
+
+prompt_config:
+  use_chat_template: True  # Use the chat template from template_args
+
+batch_size: 4
+truncation: False
+seed: 0
+device: cuda

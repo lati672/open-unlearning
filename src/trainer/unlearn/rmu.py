@@ -118,7 +118,7 @@ class RMU(GradDiff):
 
     def compute_retain_loss(self, model, retain_inputs):
         retain_loss = 0.0
-
+        
         if self.retain_loss_type == "EMBED_DIFF":
             model_retain_activations, _ = self.forward_with_cache(
                 model, retain_inputs, module=self.model_module, no_grad=False

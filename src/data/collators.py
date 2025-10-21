@@ -1,3 +1,4 @@
+import json
 import torch
 import transformers
 import unicodedata
@@ -67,6 +68,148 @@ class DataCollatorForSupervisedDataset(object):
                 else:
                     raise Warning(f"{self.index} not found in dataset")
         return return_dct
+
+
+class DataCollatorWithLogProbs(DataCollatorForSupervisedDataset):
+    """Collate examples and attach precomputed token-level log probabilities."""
+
+    def __init__(
+        self,
+        tokenizer: transformers.PreTrainedTokenizer,
+        logprob_path: str,
+        padding_side: str = "right",
+        index: str = None,
+        logprob_key: str = "doc_id",
+        anchor_split: str = "forget",
+    ):
+        super().__init__(tokenizer=tokenizer, padding_side=padding_side, index=index)
+        self.logprob_key = logprob_key
+        self.logprob_path = logprob_path
+        self.logprob_store = self._load_logprob_file(logprob_path)
+        self.anchor_split = anchor_split
+
+    def _load_logprob_file(self, path: str):
+        store = {}
+        with open(path, "r", encoding="utf-8") as fh:
+            for line_num, line in enumerate(fh, start=1):
+                record_str = line.strip()
+                if not record_str:
+                    continue
+                try:
+                    record = json.loads(record_str)
+                except json.JSONDecodeError as exc:
+                    raise ValueError(f"Unable to parse JSON on line {line_num} of {path}") from exc
+                key = record.get(self.logprob_key)
+                if key is None:
+                    raise ValueError(
+                        f"Missing key '{self.logprob_key}' in log prob record on line {line_num} of {path}"
+                    )
+                store[str(key)] = record
+        if not store:
+            raise ValueError(f"No log probability records found in {path}")
+        return store
+
+    def __call__(self, instances: Sequence[Dict]) -> Dict[str, torch.Tensor]:
+        if not instances:
+            return {}
+
+        first = instances[0]
+        if (
+            isinstance(first, dict)
+            and "input_ids" not in first
+            and all(key in first for key in ("forget", "retain"))
+        ):
+            return {
+                split: self._collate_split(
+                    [instance[split] for instance in instances], split
+                )
+                for split in first.keys()
+            }
+
+        return self._collate_split(instances, split_name=None)
+
+    def _collate_split(
+        self, instances: Sequence[Dict], split_name: Optional[str]
+    ) -> Dict[str, Any]:
+        collated = DataCollatorForSupervisedDataset.__call__(self, instances)
+        if "input_ids" not in collated:
+            return collated
+
+        if split_name is None or split_name == self.anchor_split:
+            indices = self._normalize_indices(collated, instances)
+            self._attach_logprob_metadata(collated, instances, indices)
+        else:
+            self._fill_nan_logprobs(collated)
+        return collated
+
+    def _normalize_indices(
+        self, collated: Dict[str, Any], instances: Sequence[Dict]
+    ) -> List[str]:
+        index_key = self.index or "index"
+        if index_key in collated:
+            index_tensor = collated[index_key]
+            if torch.is_tensor(index_tensor):
+                raw_indices = index_tensor.tolist()
+            else:
+                raw_indices = list(index_tensor)
+        else:
+            raw_indices = []
+            for instance in instances:
+                idx = instance.get(index_key)
+                if idx is None:
+                    raise KeyError(
+                        f"Each instance must include an '{index_key}' field to align log probabilities."
+                    )
+                raw_indices.append(idx)
+
+        normalized = []
+        for idx in raw_indices:
+            if idx is None:
+                raise KeyError(
+                    f"Encountered empty '{index_key}' value while aligning log probabilities."
+                )
+            try:
+                normalized.append(str(int(idx)))
+            except (TypeError, ValueError):
+                normalized.append(str(idx))
+        return normalized
+
+    def _fill_nan_logprobs(self, collated: Dict[str, Any]) -> None:
+        batch_size = collated["input_ids"].size(0)
+        seq_len = collated["input_ids"].size(1)
+        collated["base_logprobs"] = torch.full(
+            (batch_size, seq_len), float("nan"), dtype=torch.float32
+        )
+
+    def _attach_logprob_metadata(self, collated: Dict[str, Any], instances: Sequence[Dict], indices: Sequence):
+        batch_size = len(instances)
+        seq_len = collated["input_ids"].size(1)
+
+        token_logprobs_tensor = torch.full(
+            (batch_size, seq_len), float("nan"), dtype=torch.float32
+        )
+
+        for row, instance in enumerate(instances):
+            key = indices[row]
+            record = self.logprob_store.get(key)
+            if record is None:
+                raise KeyError(
+                    f"No log probability entry found for {self.logprob_key}={key} "
+                    f"in {self.logprob_path}"
+                )
+
+            record_key = record.get(self.logprob_key)
+            if record_key is not None and str(record_key) != key:
+                raise ValueError(
+                    f"Mismatch between provided index ({key}) and log probability record key ({record_key})."
+                )
+
+            values = record.get("token_logprobs", [])
+            for col in range(min(len(values), seq_len)):
+                value = values[col]
+                token_logprobs_tensor[row, col] = float(value) if value is not None else float("nan")
+
+        collated["base_logprobs"] = token_logprobs_tensor
 
 # --------- helpers: normalization & regex building (whitespace only, hyphens preserved) ---------
 def _nfkc_lower(s: str) -> str:

@@ -1,0 +1,5 @@
+DataCollatorWithLogProbs:
+  handler: DataCollatorWithLogProbs
+  args:
+    padding_side: right
+    logprob_key: doc_id

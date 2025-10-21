@@ -1,0 +1,19 @@
+defaults:
+  - GradDiff
+
+handler: AdaptiveRMU
+
+method_args:
+  gamma: 1.0
+  steering_coeff: 2
+  retain_loss_type: EMBED_DIFF
+  alpha: 1
+  module_regex: 'model\.layers\.7'
+  trainable_params_regex:
+    - '.*'
+
+# Ensure the training job selects the log-prob aware collator.
+collator: DataCollatorWithLogProbs
+
+args:
+  remove_unused_columns: false
