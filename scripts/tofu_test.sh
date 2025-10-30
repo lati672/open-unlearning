@@ -10,16 +10,16 @@ models=(
 )
 
 trainers_experiments=(
-    "AdaptiveRMU unlearn/tofu/default.yaml"
+    "GradDiff unlearn/tofu/default.yaml"
 )
 
 splits=(
-    #"forget01 holdout01 retain99"
+    "forget01 holdout01 retain99"
     "forget05 holdout05 retain95"
     "forget10 holdout10 retain90"
 )
 
-collator="DataCollatorWithLogProbs"
+collator="DataCollatorWithEntityMask"
 per_device_train_batch_size=4
 gradient_accumulation_steps=4
 
@@ -33,26 +33,35 @@ for split in "${splits[@]}"; do
             trainer=$(echo "$trainer_experiment" | cut -d' ' -f1)
             experiment=$(echo "$trainer_experiment" | cut -d' ' -f2)
 
-            task_name="tofu_${model}_${forget_split}_${trainer}"
+            task_name="tofu_${model}_${forget_split}_Entity_${trainer}"
             model_path="open-unlearning/tofu_${model}_full"
 
             echo "${task_name}: Unlearning ${model_path} with ${trainer} (${experiment}), collator=${collator}, splits ${forget_split}/${holdout_split}/${retain_split}"
 
+            train_overrides=(
+                "experiment=${experiment}"
+                "trainer=${trainer}"
+                "collator=${collator}"
+                "task_name=${task_name}"
+                "model=${model}"
+                "forget_split=${forget_split}"
+                "retain_split=${retain_split}"
+                "model.model_args.pretrained_model_name_or_path=${model_path}"
+                "retain_logs_path=saves/eval/tofu_${model}_${retain_split}/TOFU_EVAL.json"
+                "trainer.args.per_device_train_batch_size=${per_device_train_batch_size}"
+                "trainer.args.gradient_accumulation_steps=${gradient_accumulation_steps}"
+                "trainer.args.ddp_find_unused_parameters=true"
+                "trainer.args.gradient_checkpointing=true"
+                "trainer.args.num_train_epochs=5"
+            )
+
+            if [[ "${trainer}" == "NPO" || "${trainer}" == "GradDiff" ]]; then
+                train_overrides+=("+trainer.method_args.mask=entity")
+            fi
+
             CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file configs/accelerate/default_config.yaml --main_process_port "$MASTER_PORT" \
                 src/train.py --config-name=unlearn.yaml \
-                experiment="${experiment}" \
-                trainer="${trainer}" \
-                collator="${collator}" \
-                task_name="${task_name}" \
-                model="${model}" \
-                forget_split="${forget_split}" \
-                retain_split="${retain_split}" \
-                model.model_args.pretrained_model_name_or_path="${model_path}" \
-                retain_logs_path="saves/eval/tofu_${model}_${retain_split}/TOFU_EVAL.json" \
-                trainer.args.per_device_train_batch_size="${per_device_train_batch_size}" \
-                trainer.args.gradient_accumulation_steps="${gradient_accumulation_steps}" \
-                trainer.args.ddp_find_unused_parameters=true \
-                trainer.args.gradient_checkpointing=true
+                "${train_overrides[@]}"
 
             CUDA_VISIBLE_DEVICES=0 python src/eval.py \
                 experiment=eval/tofu/default.yaml \

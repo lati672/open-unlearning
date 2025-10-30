@@ -1,8 +1,88 @@
-import torch
 import random
+from typing import Optional
+
 import numpy as np
-from torch import nn
+import torch
 import torch.nn.functional as F
+from torch import nn
+
+from data.utils import IGNORE_INDEX
+
+
+def compute_model_token_logprobs(
+    logits: torch.Tensor, input_ids: torch.Tensor
+) -> torch.Tensor:
+    log_probs = F.log_softmax(logits, dim=-1)
+    batch_size, seq_len = input_ids.size()
+    device = logits.device
+    gathered = torch.full(
+        (batch_size, seq_len),
+        float("nan"),
+        dtype=log_probs.dtype,
+        device=device,
+    )
+
+    if seq_len > 1:
+        token_indices = input_ids[:, 1:].unsqueeze(-1)
+        gathered[:, 1:] = (
+            log_probs[:, :-1]
+            .gather(dim=2, index=token_indices)
+            .squeeze(-1)
+        )
+
+    return gathered
+
+
+def build_adaptive_mask(
+    forget_inputs: dict,
+    model_logprobs: torch.Tensor,
+    *,
+    mask_negative_diff: bool,
+) -> torch.BoolTensor:
+    required_field = "base_logprobs"
+    if required_field not in forget_inputs:
+        raise KeyError(
+            f"AdaptiveRMU requires the '{required_field}' tensor from the data collator."
+        )
+
+    base_logprobs = forget_inputs[required_field].to(model_logprobs.device)
+    labels = forget_inputs["labels"]
+    attention_mask = forget_inputs.get("attention_mask")
+
+    base_mask = labels.ne(IGNORE_INDEX)
+    if attention_mask is not None:
+        base_mask = base_mask & attention_mask.bool()
+
+    diff = base_logprobs - model_logprobs
+    valid_positions = base_mask & torch.isfinite(diff)
+    valid_counts = valid_positions.sum(dim=1)
+    has_valid = valid_counts > 0
+
+    adaptive_mask = base_mask.clone()
+    if has_valid.any():
+        adaptive_mask[has_valid] = valid_positions[has_valid]
+        if mask_negative_diff:
+            negative_mask = valid_positions & (diff < 0)
+            has_negative = negative_mask.any(dim=1)
+            if has_negative.any():
+                adaptive_mask[has_negative] = negative_mask[has_negative]
+        else:
+            masked_diff = diff.masked_fill(~valid_positions, 0.0)
+            sum_diff = masked_diff.sum(dim=1)
+            mean_diff = torch.zeros(
+                diff.size(0), dtype=diff.dtype, device=diff.device
+            )
+            mean_diff[has_valid] = sum_diff[has_valid] / valid_counts[has_valid].to(
+                diff.dtype
+            )
+            row_mask = valid_positions & (diff < mean_diff.unsqueeze(1))
+
+            has_strict = row_mask.any(dim=1)
+            if has_strict.any():
+                adaptive_mask[has_strict] = row_mask[has_strict]
+
+    return adaptive_mask
+
 
 def compute_sequence_loss(model, target_model, inputs, beta=1):
     input_ids = inputs["input_ids"]
@@ -108,6 +188,84 @@ def compute_dpo_loss(model, ref_model, win_inputs=None, lose_inputs=None, beta=1
         lose_loss, lose_outputs = compute_batch_nll(model, lose_inputs)
         with torch.no_grad():
             lose_ref_loss, _ = compute_batch_nll(ref_model, lose_inputs)
+        lose_log_ratio = -(lose_loss - lose_ref_loss)
+
+    loss = -2 / beta * F.logsigmoid(beta * (win_log_ratio - lose_log_ratio)).mean()
+    return loss, (win_outputs, lose_outputs)
+
+
+def compute_masked_batch_nll(
+    model,
+    inputs,
+    *,
+    token_mask: Optional[torch.Tensor] = None,
+    outputs=None,
+):
+    if outputs is None:
+        outputs = model(**inputs)
+    logits = outputs.logits
+    labels = inputs["labels"]
+    shifted_labels = labels[..., 1:].contiguous()
+    shift_logits = logits[..., :-1, :].contiguous()
+    loss_function = nn.CrossEntropyLoss(ignore_index=-100, reduction="none")
+    per_token_loss = loss_function(
+        shift_logits.transpose(-1, -2), shifted_labels
+    )
+
+    if token_mask is not None:
+        effective_mask = token_mask[..., 1:]
+        if effective_mask.dtype != per_token_loss.dtype:
+            effective_mask = effective_mask.to(per_token_loss.dtype)
+        per_token_loss = per_token_loss * effective_mask.to(per_token_loss.device)
+
+    loss = per_token_loss.sum(dim=-1)
+    return loss, outputs
+
+
+def compute_masked_dpo_loss(
+    model,
+    ref_model,
+    win_inputs=None,
+    lose_inputs=None,
+    beta=1.0,
+    win_mask: Optional[torch.Tensor] = None,
+    lose_mask: Optional[torch.Tensor] = None,
+    win_outputs=None,
+    lose_outputs=None,
+):
+    if win_inputs is None and lose_inputs is None:
+        raise ValueError("Both win_inputs and lose_inputs can't be None")
+
+    win_log_ratio, lose_log_ratio = 0.0, 0.0
+
+    if win_inputs is not None:
+        win_loss, win_outputs = compute_masked_batch_nll(
+            model,
+            win_inputs,
+            token_mask=win_mask,
+            outputs=win_outputs,
+        )
+        with torch.no_grad():
+            win_ref_loss, _ = compute_masked_batch_nll(
+                ref_model,
+                win_inputs,
+                token_mask=win_mask,
+            )
+        win_log_ratio = -(win_loss - win_ref_loss)
+
+    if lose_inputs is not None:
+        lose_loss, lose_outputs = compute_masked_batch_nll(
+            model,
+            lose_inputs,
+            token_mask=lose_mask,
+            outputs=lose_outputs,
+        )
+        with torch.no_grad():
+            lose_ref_loss, _ = compute_masked_batch_nll(
+                ref_model,
+                lose_inputs,
+                token_mask=lose_mask,
+            )
         lose_log_ratio = -(lose_loss - lose_ref_loss)
 
     loss = -2 / beta * F.logsigmoid(beta * (win_log_ratio - lose_log_ratio)).mean()

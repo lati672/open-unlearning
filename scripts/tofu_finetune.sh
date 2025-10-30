@@ -5,8 +5,8 @@ echo "Master Port: $MASTER_PORT"
 
 
 models=(
-    phi-1_5
-    #"Llama-3.2-1B-Instruct"
+    #phi-1_5
+    "Llama-3.2-1B-Instruct"
     #"Llama-3.2-3B-Instruct"
     #"Llama-3.1-8B-Instruct"
 )

@@ -1,159 +1,25 @@
 """Adaptive RMU trainer that leverages token-level log probabilities."""
 
-import json
-from pathlib import Path
-
 import torch
-import torch.nn.functional as F
 
 from data.utils import IGNORE_INDEX
+from trainer.utils import build_adaptive_mask, compute_model_token_logprobs
 from trainer.unlearn.rmu import RMU
 
 
 class AdaptiveRMU(RMU):
     """
     RMU variant that adapts the forget-side activation loss to tokens whose log probability
-    gap (stored vs. current model) falls below the average gap over supervised tokens.
+    gap (stored vs. current model) falls below the average gap over supervised tokens,
+    with an option to instead focus on tokens whose gap turns negative.
     """
 
-    REQUIRED_FIELD = "base_logprobs"
-    MAX_SAVED_SAMPLES = 20
-    SAVE_DIR = Path("./saves")
-    enable_adaptive_logging = False
 
-    @staticmethod
-    def _compute_model_token_logprobs(logits: torch.Tensor, input_ids: torch.Tensor) -> torch.Tensor:
-        log_probs = F.log_softmax(logits, dim=-1)
-        batch_size, seq_len = input_ids.size()
-        device = logits.device
-        gathered = torch.full(
-            (batch_size, seq_len),
-            float("nan"),
-            dtype=log_probs.dtype,
-            device=device,
-        )
-
-        if seq_len > 1:
-            token_indices = input_ids[:, 1:].unsqueeze(-1)
-            gathered[:, 1:] = log_probs[:, :-1].gather(dim=2, index=token_indices).squeeze(-1)
-
-        return gathered
-
-    def _build_adaptive_mask(
-        self,
-        forget_inputs: dict,
-        model_logprobs: torch.Tensor,
-    ) -> torch.BoolTensor:
-        if self.REQUIRED_FIELD not in forget_inputs:
-            raise KeyError(
-                f"AdaptiveRMU requires the '{self.REQUIRED_FIELD}' tensor from the data collator."
-            )
-
-        base_logprobs = forget_inputs[self.REQUIRED_FIELD].to(model_logprobs.device)
-        labels = forget_inputs["labels"]
-        attention_mask = forget_inputs.get("attention_mask")
-
-        base_mask = labels.ne(IGNORE_INDEX)
-        if attention_mask is not None:
-            base_mask = base_mask & attention_mask.bool()
-
-        diff = base_logprobs - model_logprobs
-        valid_positions = base_mask & torch.isfinite(diff)
-        valid_counts = valid_positions.sum(dim=1)
-        has_valid = valid_counts > 0
-
-        adaptive_mask = base_mask.clone()
-        if has_valid.any():
-            masked_diff = diff.masked_fill(~valid_positions, 0.0)
-            sum_diff = masked_diff.sum(dim=1)
-            mean_diff = torch.zeros(
-                diff.size(0), dtype=diff.dtype, device=diff.device
-            )
-            mean_diff[has_valid] = sum_diff[has_valid] / valid_counts[has_valid].to(diff.dtype)
-            row_mask = valid_positions & (diff < mean_diff.unsqueeze(1))
-
-            adaptive_mask[has_valid] = valid_positions[has_valid]
-            has_strict = row_mask.any(dim=1)
-            if has_strict.any():
-                adaptive_mask[has_strict] = row_mask[has_strict]
-
-        if getattr(self, "enable_adaptive_logging", False):
-            tokenizer = getattr(self, "tokenizer", None)
-            input_ids = forget_inputs.get("input_ids")
-            save_limit = getattr(self, "_adaptive_save_limit", self.MAX_SAVED_SAMPLES)
-            should_collect = (
-                tokenizer is not None
-                and input_ids is not None
-                and getattr(self, "_adaptive_saved_samples", 0) < save_limit
-            )
-            if should_collect:
-                adaptive_mask_cpu = adaptive_mask.detach().cpu()
-                valid_positions_cpu = valid_positions.detach().cpu()
-                diff_cpu = diff.detach().cpu()
-                for row in range(base_mask.size(0)):
-                    row_base_mask = base_mask[row]
-                    sample_payload = {"row": int(row)}
-                    row_input_ids = input_ids[row].detach().cpu()
-                    base_indices = torch.where(row_base_mask)[0]
-                    base_token_ids = row_input_ids[base_indices.detach().cpu()].tolist()
-                    sample_payload["base_token_ids"] = base_token_ids
-                    try:
-                        sample_payload["base_tokens"] = tokenizer.convert_ids_to_tokens(base_token_ids)
-                    except AttributeError:
-                        sample_payload["base_tokens"] = base_token_ids
-                    sample_payload["decoded_base"] = (
-                        tokenizer.decode(base_token_ids, skip_special_tokens=False) if base_token_ids else ""
-                    )
-
-                    valid_positions_row = valid_positions_cpu[row]
-                    if valid_positions_row.any():
-                        valid_indices = torch.where(valid_positions_row)[0]
-                        diffs_row = diff_cpu[row][valid_indices]
-                        sort_order = torch.argsort(diffs_row)
-                        sorted_indices = valid_indices[sort_order]
-                        sorted_diffs = diff_cpu[row][sorted_indices].tolist()
-                        sorted_token_ids = row_input_ids[sorted_indices.detach().cpu()].tolist()
-                        sample_payload["sorted_token_ids"] = sorted_token_ids
-                        sample_payload["sorted_diffs"] = sorted_diffs
-                        try:
-                            sample_payload["sorted_tokens"] = tokenizer.convert_ids_to_tokens(sorted_token_ids)
-                        except AttributeError:
-                            sample_payload["sorted_tokens"] = sorted_token_ids
-
-                    adaptive_row_cpu = adaptive_mask_cpu[row]
-                    if adaptive_row_cpu.any():
-                        selected_indices = torch.where(adaptive_row_cpu)[0]
-                        selected_token_ids = row_input_ids[selected_indices.detach().cpu()].tolist()
-                        sample_payload["selected_token_ids"] = selected_token_ids
-                        try:
-                            sample_payload["selected_tokens"] = tokenizer.convert_ids_to_tokens(selected_token_ids)
-                        except AttributeError:
-                            sample_payload["selected_tokens"] = selected_token_ids
-                        sample_payload["selected_diffs"] = diff_cpu[row][selected_indices].tolist()
-                    self._save_adaptive_sample(sample_payload)
-
-        return adaptive_mask
-
-    def _save_adaptive_sample(self, payload: dict) -> None:
-        if not getattr(self, "enable_adaptive_logging", False):
-            return
-
-        saved_count = getattr(self, "_adaptive_saved_samples", 0)
-        save_limit = getattr(self, "_adaptive_save_limit", self.MAX_SAVED_SAMPLES)
-        if saved_count >= save_limit:
-            return
-
-        save_dir = getattr(self, "_adaptive_save_dir", None)
-        if save_dir is None:
-            save_dir = self.SAVE_DIR
-            setattr(self, "_adaptive_save_dir", save_dir)
-        save_dir.mkdir(parents=True, exist_ok=True)
-
-        file_path = save_dir / f"adaptive_rmu_sample_{saved_count:02d}.json"
-        with file_path.open("w", encoding="utf-8") as sink:
-            json.dump(payload, sink, ensure_ascii=False, indent=2)
-
-        setattr(self, "_adaptive_saved_samples", saved_count + 1)
+    def __init__(self, *args, mask_negative_diff: bool = False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mask_negative_diff = bool(mask_negative_diff)
+        self._adaptive_mask_cache = {}
+        self._global_adaptive_mask = None
 
     def compute_forget_loss(self, model, forget_inputs):
         model_inputs = {
@@ -168,14 +34,86 @@ class AdaptiveRMU(RMU):
         control_vec = forget_inputs.get(
             "control_vec", self.get_control_vector(model_forget_activations.shape[-1])
         )
-        model_logprobs = self._compute_model_token_logprobs(
+        model_logprobs = compute_model_token_logprobs(
             forget_outputs.logits, model_inputs["input_ids"]
         ).detach()
 
-        adaptive_mask = self._build_adaptive_mask(
-            forget_inputs,
-            model_logprobs,
-        ).to(model_forget_activations.device)
+        attention_mask = forget_inputs.get("attention_mask")
+        sample_indices = forget_inputs.get("index")
+        if sample_indices is not None:
+            if torch.is_tensor(sample_indices):
+                sample_indices_list = sample_indices.view(-1).tolist()
+            else:
+                sample_indices_list = list(sample_indices)
+        else:
+            sample_indices_list = None
+
+        adaptive_mask = None
+        computed_mask = None
+
+        if sample_indices_list is None:
+            if self._global_adaptive_mask is None:
+                computed_mask = build_adaptive_mask(
+                    forget_inputs,
+                    model_logprobs,
+                    mask_negative_diff=self.mask_negative_diff,
+                ).detach().cpu()
+                self._global_adaptive_mask = computed_mask.clone()
+            cached_mask = self._global_adaptive_mask
+            batch_size = model_inputs["input_ids"].size(0)
+            seq_len = model_inputs["input_ids"].size(1)
+            if cached_mask.size(0) != batch_size or cached_mask.size(1) != seq_len:
+                padded = torch.zeros(batch_size, seq_len, dtype=torch.bool)
+                rows = min(batch_size, cached_mask.size(0))
+                cols = min(seq_len, cached_mask.size(1))
+                padded[:rows, :cols] = cached_mask[:rows, :cols]
+                cached_mask = padded
+            base_mask = forget_inputs["labels"].ne(IGNORE_INDEX)
+            if attention_mask is not None:
+                base_mask = base_mask & attention_mask.bool()
+            adaptive_mask = (cached_mask & base_mask.cpu()).to(
+                model_forget_activations.device
+            )
+        else:
+            missing_rows = [
+                row_idx
+                for row_idx, sample_idx in enumerate(sample_indices_list)
+                if sample_idx not in self._adaptive_mask_cache
+            ]
+            if missing_rows:
+                computed_mask = build_adaptive_mask(
+                    forget_inputs,
+                    model_logprobs,
+                    mask_negative_diff=self.mask_negative_diff,
+                ).detach().cpu()
+
+            seq_len = model_inputs["input_ids"].size(1)
+            adaptive_rows = []
+            labels = forget_inputs["labels"]
+
+            for row_idx, sample_idx in enumerate(sample_indices_list):
+                cached_row = self._adaptive_mask_cache.get(sample_idx)
+                if cached_row is None:
+                    row_mask = computed_mask[row_idx]
+                    if attention_mask is not None:
+                        valid_length = int(attention_mask[row_idx].sum().item())
+                    else:
+                        valid_length = row_mask.size(0)
+                    cached_row = row_mask[:valid_length].to(torch.bool).clone().cpu()
+                    self._adaptive_mask_cache[sample_idx] = cached_row
+                padded_row = torch.zeros(seq_len, dtype=torch.bool)
+                copy_len = min(seq_len, cached_row.size(0))
+                if copy_len > 0:
+                    padded_row[:copy_len] = cached_row[:copy_len]
+                base_row = labels[row_idx, :seq_len].ne(IGNORE_INDEX).cpu()
+                if attention_mask is not None:
+                    base_row = base_row & attention_mask[row_idx, :seq_len].bool().cpu()
+                padded_row = padded_row & base_row
+                adaptive_rows.append(padded_row)
+
+            adaptive_mask = torch.stack(adaptive_rows, dim=0).to(
+                model_forget_activations.device
+            )
 
         target_bs = model_forget_activations.size(0)
         if adaptive_mask.size(0) != target_bs:

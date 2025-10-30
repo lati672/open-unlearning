@@ -11,6 +11,7 @@ method_args:
   module_regex: 'model\.layers\.7'
   trainable_params_regex:
     - '.*'
+  mask_negative_diff: false  # Set to true to select tokens with negative log-prob diffs
 
 # Ensure the training job selects the log-prob aware collator.
 collator: DataCollatorWithLogProbs
