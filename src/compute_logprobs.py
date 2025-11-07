@@ -1,3 +1,6 @@
+# Example: compute TOFU forget01 logprobs
+# python src/compute_logprobs.py dataset.TOFU_QA_forget.args.hf_args.name=forget01 +dataset_split=forget01
+
 import json
 import logging
 import os
