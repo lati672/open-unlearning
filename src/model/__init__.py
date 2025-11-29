@@ -18,10 +18,20 @@ def _register_model(model_class):
     MODEL_REGISTRY[model_class.__name__] = model_class
 
 
+def _normalize_attn_implementation(model_args):
+    attn_impl = model_args.get("attn_implementation", None)
+    if attn_impl == "flashattention2":
+        with open_dict(model_args):
+            model_args["attn_implementation"] = "flash_attention_2"
+        return "flash_attention_2"
+    return attn_impl
+
+
 def get_dtype(model_args):
     with open_dict(model_args):
         torch_dtype = model_args.pop("torch_dtype", None)
-    if model_args.get("attn_implementation", None) == "flash_attention_2":
+    attn_impl = _normalize_attn_implementation(model_args)
+    if attn_impl == "flash_attention_2":
         # This check handles https://github.com/Dao-AILab/flash-attention/blob/7153673c1a3c7753c38e4c10ef2c98a02be5f778/flash_attn/flash_attn_triton.py#L820
         # If you want to run at other precisions consider running "training or inference using
         # Automatic Mixed-Precision via the `with torch.autocast(device_type='torch_device'):`
@@ -50,6 +60,7 @@ def get_model(model_cfg: DictConfig):
     model_cls = MODEL_REGISTRY[model_handler]
     with open_dict(model_args):
         model_path = model_args.pop("pretrained_model_name_or_path", None)
+        _normalize_attn_implementation(model_args)
     try:
         model = model_cls.from_pretrained(
             pretrained_model_name_or_path=model_path,
