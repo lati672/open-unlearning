@@ -7,4 +7,5 @@ method_args:
   alpha: 1.0
   gamma: 1.0
   retain_loss_type: NLL
-  mask: entity
+  # Disable entity masking by default so datasets without entity annotations work.
+  mask: null

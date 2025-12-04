@@ -19,23 +19,20 @@ class NPO(GradDiff):
         beta=1.0,
         *,
         mask: Optional[str] = None,
-        apply_adaptive_mask: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
         self.beta = beta
-        mask_choice = mask
-        if mask_choice is None and apply_adaptive_mask:
-            mask_choice = "adaptive"
-        if mask_choice is not None:
-            mask_choice = str(mask_choice).lower()
+        mask_choice = None
+        if mask is not None:
+            mask_choice = str(mask).lower()
             if mask_choice not in {"adaptive", "entity"}:
                 raise ValueError(
-                    f"Unsupported mask type '{mask_choice}'. Expected 'adaptive' or 'entity'."
+                    f"Unsupported mask type '{mask_choice}'. Expected 'adaptive', 'entity', or null."
                 )
         self.mask_type = mask_choice
-        self.apply_adaptive_mask = self.mask_type == "adaptive"
-        self.apply_entity_mask = self.mask_type == "entity"
+        self.apply_adaptive_mask = mask_choice == "adaptive"
+        self.apply_entity_mask = mask_choice == "entity"
         self._adaptive_mask_cache = {}
         self._global_adaptive_mask = None
         if self.ref_model is None:
