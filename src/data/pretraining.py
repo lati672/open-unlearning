@@ -61,11 +61,20 @@ class CompletionDataset(Dataset):
 
 class PretrainingDataset(Dataset):
     def __init__(
-        self, hf_args, template_args, tokenizer, text_key="text", max_length=2048
+        self,
+        hf_args,
+        template_args,
+        tokenizer,
+        text_key="text",
+        max_length=2048,
+        predict_with_generate=False,
+        insert_space=False,
     ):
         super(PretrainingDataset, self).__init__()
         self.tokenizer = tokenizer
         self.max_length = max_length
+        self.predict_with_generate = predict_with_generate
+        self.insert_space = insert_space
         self.chunks = self._chunk_raw_text(load_hf_dataset(**hf_args)[text_key])
 
     def _chunk_raw_text(self, raw_text):
@@ -87,6 +96,13 @@ class PretrainingDataset(Dataset):
         return len(self.chunks)
 
     def __getitem__(self, idx):
-        return preprocess_pretraining_instance(
-            self.tokenizer, "", self.chunks[idx], self.max_length
+        sample = preprocess_pretraining_instance(
+            self.tokenizer,
+            "",
+            self.chunks[idx],
+            self.max_length,
+            predict_with_generate=self.predict_with_generate,
+            insert_space=self.insert_space,
         )
+        sample["index"] = idx
+        return sample

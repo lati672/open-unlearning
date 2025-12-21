@@ -12,7 +12,6 @@ BATCH_SIZE=${BATCH_SIZE:-4}
 
 declare -a DATASETS=(
   "MUSE_forget:${FORGET_SPLIT}"
-  "MUSE_retain:${RETAIN_SPLIT}"
 )
 
 for muse_split in "${DATA_SPLITS[@]}"; do
@@ -25,10 +24,10 @@ for muse_split in "${DATA_SPLITS[@]}"; do
         python src/compute_logprobs.py \
             model="${MODEL}" \
             batch_size="${BATCH_SIZE}" \
-            dataset="${dataset_key}" \
-            dataset_split="${split_name}" \
+            data/datasets@dataset="${dataset_key}" \
             dataset."${dataset_key}".args.hf_args.path="${dataset_path}" \
             dataset."${dataset_key}".args.hf_args.split="${split_name}" \
-            dataset."${dataset_key}".args.hf_args.name=raw
+            dataset."${dataset_key}".args.hf_args.name=raw \
+            +dataset_split="${split_name}"
     done
 done

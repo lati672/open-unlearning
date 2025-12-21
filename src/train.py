@@ -31,10 +31,21 @@ def main(cfg: DictConfig):
         data_cfg, mode=mode, tokenizer=tokenizer, template_args=template_args
     )
     
-    # Load collator config
-    collator_cfg = cfg.collator
+    # Load collator config (three cases: logprobs, entity-mask, or default)
+    collator_cfg = cfg.collator   
 
-    if "DataCollatorWithLogProbs" in collator_cfg:
+    if "DataCollatorWithEntityMask" in collator_cfg:
+        # Entity-mask collator needs author names for the forget split.
+        with open("./configs/tofu_forget_authors.json", "r") as f:
+            forget_authors = json.load(f)
+        author_names = forget_authors[cfg.forget_split]
+        collator = get_collators(
+            collator_cfg,
+            tokenizer=tokenizer,
+            author_names=author_names,
+        )
+    elif  "DataCollatorWithLogProbs" in collator_cfg:
+        # Logprob-aware collator configured above; no extra args needed here.
         configure_logprob_collator(
             collator_cfg=collator_cfg,
             data_cfg=cfg.data,
@@ -43,18 +54,12 @@ def main(cfg: DictConfig):
             project_root=get_original_cwd(),
         )
 
-    if "DataCollatorWithEntityMask" in collator_cfg:
-        # Load forget authors (for entity-mask case)
-        with open("./configs/tofu_forget_authors.json", "r") as f:
-            forget_authors = json.load(f)
-        author_names = forget_authors[cfg.forget_split]
-
         collator = get_collators(
             collator_cfg,
             tokenizer=tokenizer,
-            author_names=author_names,   # only injected here
         )
     else:
+        # Standard collators only need the tokenizer.
         collator = get_collators(
             collator_cfg,
             tokenizer=tokenizer,

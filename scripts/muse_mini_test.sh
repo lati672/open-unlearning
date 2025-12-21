@@ -9,7 +9,6 @@ gradient_accumulation_steps=4
 
 
 model=Llama-2-7b-hf
-#model=Llama-3.2-1B-Instruct    
 
 # Allow disabling flash attention override (e.g. for pure CPU eval runs)
 use_flash_attention=${USE_FLASH_ATTENTION:-1}
@@ -20,17 +19,13 @@ fi
 
 data_splits=(
     "News"
-    "Books"
+    #"Books"
 )
 
 # trainer entries: variant|trainer|extra_overrides (space-separated hydra args)
 trainer_entries=(
-    "GradAscent|GradAscent|"
-    "GradDiff|GradDiff|"
-    "NPO|NPO|"
-    "RMU|RMU|"
-    "AdaptiveNPO|NPO|collator=DataCollatorWithLogProbs trainer.method_args.mask=adaptive"
-    "AdaptiveRMU|AdaptiveRMU|collator=DataCollatorWithLogProbs"
+    "AdaptiveRMU|AdaptiveRMU|"
+    "AdaptiveNPO|NPO|trainer.method_args.mask=adaptive"
 )
 
 # #########################################################
@@ -43,6 +38,11 @@ for data_split in "${data_splits[@]}"; do
         IFS='|' read -r variant trainer extra_overrides <<< "${entry}"
 
         task_name=muse_${model}_${data_split}_${variant}
+        logprob_path="saves/logprobs/MUSE_${data_split}_forget_${model}/logprobs.json"
+        if [[ ! -f "${logprob_path}" ]]; then
+            echo "Missing logprobs at ${logprob_path}; please compute them first."
+            exit 1
+        fi
 
         CUDA_VISIBLE_DEVICES=0,1 accelerate launch --config_file configs/accelerate/default_config.yaml --main_process_port $MASTER_PORT \
         src/train.py --config-name=unlearn.yaml \
@@ -51,6 +51,7 @@ for data_split in "${data_splits[@]}"; do
         "${flash_attn_override[@]}" \
         data_split=${data_split} \
         trainer=${trainer} \
+        collator=DataCollatorWithLogProbs \
         task_name=${task_name} \
         retain_logs_path=saves/eval/muse_${model}_${data_split}_retrain/MUSE_EVAL.json \
         trainer.args.per_device_train_batch_size=${per_device_train_batch_size} \
@@ -59,16 +60,6 @@ for data_split in "${data_splits[@]}"; do
         trainer.args.gradient_checkpointing=true \
         ${extra_overrides}
 
-        CUDA_VISIBLE_DEVICES=0 python src/eval.py \
-        experiment=eval/muse/default.yaml \
-        data_split=${data_split} \
-        task_name=${task_name} \
-        model=${model} \
-        model.model_args.pretrained_model_name_or_path=saves/unlearn/${task_name} \
-        paths.output_dir=saves/unlearn/${task_name}/evals \
-        retain_logs_path=saves/eval/muse_${model}_${data_split}_retrain/MUSE_EVAL.json
-
         find "saves/unlearn/${task_name}" -maxdepth 1 -type f -name "*.safetensors" -print -delete
     done
 done
-

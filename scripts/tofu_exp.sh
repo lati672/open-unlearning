@@ -1,6 +1,6 @@
 #!/bin/bash
 
-shset -euo pipefail
+set -euo pipefail
 
 export MASTER_PORT=$(python -c "import socket; s=socket.socket(); s.bind(('', 0)); print(s.getsockname()[1]); s.close()")
 echo "Master Port: $MASTER_PORT"
@@ -10,12 +10,12 @@ models=(
 )
 
 trainer_configs=(
-    #"BaseNPO|NPO|unlearn/tofu/default.yaml|DataCollatorForSupervisedDataset|trainer.method_args.mask=null"
+    "BaseNPO|NPO|unlearn/tofu/default.yaml|DataCollatorForSupervisedDataset|trainer.method_args.mask=null"
     #"BaseRMU|RMU|unlearn/tofu/default.yaml|DataCollatorForSupervisedDataset|"
     #"EntityRMU|EntityRMU|unlearn/tofu/default.yaml|DataCollatorWithEntityMask|"
     #"EntityNPO|NPO|unlearn/tofu/default.yaml|DataCollatorWithEntityMask|trainer.method_args.mask=entity"
     #"AdaptiveRMU|AdaptiveRMU|unlearn/tofu/default.yaml|DataCollatorWithLogProbs|"
-    "AdaptiveNPO|NPO|unlearn/tofu/default.yaml|DataCollatorWithLogProbs|trainer.method_args.mask=adaptive"
+    #"AdaptiveNPO|NPO|unlearn/tofu/default.yaml|DataCollatorWithLogProbs|trainer.method_args.mask=adaptive"
 )
 
 splits=(
@@ -24,7 +24,7 @@ splits=(
     "forget10 holdout10 retain90"
 )
 
-# Hyperparameter grid for AdaptiveNPO (3 beta values x 4 alpha/gamma pairs)
+# Hyperparameter grid for NPO trainers (3 beta values x 4 alpha/gamma pairs)
 beta_grid=(0.05 0.1 0.2)
 alpha_gamma_grid=(
     "alpha=0.5;gamma=0.5"
@@ -47,7 +47,7 @@ for split in "${splits[@]}"; do
             IFS='|' read -r variant trainer experiment collator extra_overrides <<< "${trainer_entry}"
 
             hyperparameter_settings=("")
-            if [[ "${trainer}" == "NPO" && "${variant}" == "AdaptiveNPO" ]]; then
+            if [[ "${trainer}" == "NPO" ]]; then
                 hyperparameter_settings=()
                 for beta_value in "${beta_grid[@]}"; do
                     for alpha_gamma in "${alpha_gamma_grid[@]}"; do

@@ -34,6 +34,36 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _infer_muse_data_split(hf_args):
+    """Extract News/Books from the MUSE path."""
+    path = None
+    if isinstance(hf_args, dict):
+        path = hf_args.get("path")
+    else:
+        path = getattr(hf_args, "path", None)
+    if not path:
+        return None
+    tail = os.path.basename(str(path).rstrip("/"))
+    if "MUSE-" in tail:
+        return tail.split("MUSE-")[-1]
+    return None
+
+
+def _infer_muse_data_split(hf_args):
+    """Extract News/Books from the MUSE path."""
+    path = None
+    if isinstance(hf_args, dict):
+        path = hf_args.get("path")
+    else:
+        path = getattr(hf_args, "path", None)
+    if not path:
+        return None
+    tail = os.path.basename(str(path).rstrip("/"))
+    if "MUSE-" in tail:
+        return tail.split("MUSE-")[-1]
+    return None
+
+
 def _resolve_dataset_metadata(dataset_cfg, fallback_split=None):
     if dataset_cfg is None:
         raise ValueError("dataset_cfg is required to determine logprob output path.")
@@ -62,26 +92,52 @@ def _resolve_dataset_metadata(dataset_cfg, fallback_split=None):
     )
     hf_args = args.get("hf_args", {}) if isinstance(args, dict) else {}
 
-    dataset_split = (
-        hf_args.get("name")
-        if isinstance(hf_args, dict)
-        else getattr(hf_args, "name", None)
-    )
-    if dataset_split is None and isinstance(hf_args, dict):
-        dataset_split = hf_args.get("split") or hf_args.get("subset")
-    if dataset_split is None and not isinstance(hf_args, dict):
-        dataset_split = getattr(hf_args, "split", None) or getattr(
-            hf_args, "subset", None
-        )
-    if dataset_split is None:
+    name_lower = dataset_name.lower()
+
+    # For MUSE, prefer explicit overrides/split to differentiate News/Books runs.
+    # For other datasets (e.g., TOFU), keep existing resolution order.
+    if name_lower.startswith("muse"):
         dataset_split = fallback_split
+        if dataset_split is None:
+            if isinstance(hf_args, dict):
+                dataset_split = hf_args.get("split") or hf_args.get("subset")
+                if dataset_split is None:
+                    dataset_split = hf_args.get("name")
+            else:
+                dataset_split = getattr(hf_args, "split", None) or getattr(
+                    hf_args, "subset", None
+                )
+                if dataset_split is None:
+                    dataset_split = getattr(hf_args, "name", None)
+    else:
+        dataset_split = (
+            hf_args.get("name")
+            if isinstance(hf_args, dict)
+            else getattr(hf_args, "name", None)
+        )
+        if dataset_split is None and isinstance(hf_args, dict):
+            dataset_split = hf_args.get("split") or hf_args.get("subset")
+        if dataset_split is None and not isinstance(hf_args, dict):
+            dataset_split = getattr(hf_args, "split", None) or getattr(
+                hf_args, "subset", None
+            )
+        if dataset_split is None:
+            dataset_split = fallback_split
 
     if dataset_split is None:
         raise ValueError(
             "Unable to determine dataset split from configuration. Provide `forget_split` or specify hf_args.name."
         )
 
-    return dataset_name, dataset_split
+    if name_lower.startswith("muse"):
+        muse_data_split = _infer_muse_data_split(hf_args) or "Unknown"
+        dataset_label = f"MUSE_{muse_data_split}"
+    elif name_lower.startswith("tofu"):
+        dataset_label = f"TOFU_{dataset_split}"
+    else:
+        dataset_label = dataset_name
+
+    return dataset_label, dataset_split
 
 
 def _sanitize_model_name(model_cfg: DictConfig):
@@ -110,7 +166,7 @@ def construct_logprob_path(
     base_dir="saves/logprobs",
     filename="logprobs.json",
 ):
-    dataset_name, dataset_split = _resolve_dataset_metadata(
+    dataset_label, dataset_split = _resolve_dataset_metadata(
         dataset_cfg, fallback_split=forget_split
     )
     model_name = _sanitize_model_name(model_cfg)
@@ -122,8 +178,13 @@ def construct_logprob_path(
     if not base_dir_path.is_absolute():
         base_dir_path = project_root_path / base_dir_path
 
-    output_dir = base_dir_path / f"{dataset_name}_{dataset_split}_{model_name}"
-    return output_dir / filename, dataset_name, dataset_split, model_name
+    # TOFU dataset_label already encodes the split (e.g., TOFU_forget10), so avoid
+    # duplicating it in the path. Other datasets keep split in the directory name.
+    if dataset_label.startswith("TOFU_"):
+        output_dir = base_dir_path / f"{dataset_label}_{model_name}"
+    else:
+        output_dir = base_dir_path / f"{dataset_label}_{dataset_split}_{model_name}"
+    return output_dir / filename, dataset_label, dataset_split, model_name
 
 
 def configure_logprob_collator(
@@ -154,7 +215,7 @@ def configure_logprob_collator(
             "Unable to locate dataset configuration (forget/train) to determine logprob path."
         )
 
-    logprob_path, dataset_name, split_name, model_name = construct_logprob_path(
+    logprob_path, dataset_label, split_name, model_name = construct_logprob_path(
         dataset_cfg_for_path,
         model_cfg,
         forget_split=forget_split,
@@ -166,7 +227,7 @@ def configure_logprob_collator(
     logger.info(
         "Using logprob file %s (dataset=%s, split=%s, model=%s)",
         logprob_path,
-        dataset_name,
+        dataset_label,
         split_name,
         model_name,
     )
