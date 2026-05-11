@@ -68,7 +68,8 @@ for data_split in "${data_splits[@]}"; do
         paths.output_dir=saves/unlearn/${task_name}/evals \
         retain_logs_path=saves/eval/muse_${model}_${data_split}_retrain/MUSE_EVAL.json
 
-        find "saves/unlearn/${task_name}" -maxdepth 1 -type f -name "*.safetensors" -print -delete
+        if [[ "${variant}" == *"RMU"* ]]; then
+            find "saves/unlearn/${task_name}" -maxdepth 1 -type f \( -name "*.safetensors" -o -name "model.safetensors.index.json" \) -print -delete
+        fi
     done
 done
-
