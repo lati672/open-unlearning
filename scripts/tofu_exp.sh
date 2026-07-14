@@ -11,26 +11,18 @@ models=(
 
 trainer_configs=(
     "BaseNPO|NPO|unlearn/tofu/default.yaml|DataCollatorForSupervisedDataset|trainer.method_args.mask=null"
-    #"BaseRMU|RMU|unlearn/tofu/default.yaml|DataCollatorForSupervisedDataset|"
-    #"EntityRMU|EntityRMU|unlearn/tofu/default.yaml|DataCollatorWithEntityMask|"
-    #"EntityNPO|NPO|unlearn/tofu/default.yaml|DataCollatorWithEntityMask|trainer.method_args.mask=entity"
-    #"AdaptiveRMU|AdaptiveRMU|unlearn/tofu/default.yaml|DataCollatorWithLogProbs|"
-    #"AdaptiveNPO|NPO|unlearn/tofu/default.yaml|DataCollatorWithLogProbs|trainer.method_args.mask=adaptive"
+    "BaseRMU|RMU|unlearn/tofu/default.yaml|DataCollatorForSupervisedDataset|"
+    "EntityRMU|EntityRMU|unlearn/tofu/default.yaml|DataCollatorWithEntityMask|"
+    "EntityNPO|NPO|unlearn/tofu/default.yaml|DataCollatorWithEntityMask|trainer.method_args.mask=entity"
+    "AdaptiveRMU|AdaptiveRMU|unlearn/tofu/default.yaml|DataCollatorWithLogProbs|"
+    "AdaptiveNPO|NPO|unlearn/tofu/default.yaml|DataCollatorWithLogProbs|trainer.method_args.mask=adaptive"
+    "GradAscent|GradAscent|unlearn/tofu/default.yaml|DataCollatorForSupervisedDataset|"
 )
 
 splits=(
-    "forget01 holdout01 retain99"
+    #"forget01 holdout01 retain99"
     "forget05 holdout05 retain95"
-    "forget10 holdout10 retain90"
-)
-
-# Hyperparameter grid for NPO trainers (3 beta values x 4 alpha/gamma pairs)
-beta_grid=(0.05 0.1 0.2)
-alpha_gamma_grid=(
-    "alpha=0.5;gamma=0.5"
-    "alpha=1.0;gamma=1.0"
-    "alpha=2.0;gamma=2.0"
-    "alpha=4.0;gamma=4.0"
+    #"forget10 holdout10 retain90"
 )
 
 per_device_train_batch_size=4
@@ -47,14 +39,6 @@ for split in "${splits[@]}"; do
             IFS='|' read -r variant trainer experiment collator extra_overrides <<< "${trainer_entry}"
 
             hyperparameter_settings=("")
-            if [[ "${trainer}" == "NPO" ]]; then
-                hyperparameter_settings=()
-                for beta_value in "${beta_grid[@]}"; do
-                    for alpha_gamma in "${alpha_gamma_grid[@]}"; do
-                        hyperparameter_settings+=("beta=${beta_value};${alpha_gamma}")
-                    done
-                done
-            fi
 
             for hyperparams in "${hyperparameter_settings[@]}"; do
                 beta_value=""
