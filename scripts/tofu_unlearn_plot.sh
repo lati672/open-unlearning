@@ -19,7 +19,6 @@ trainers_experiments=(
     "RMU unlearn/tofu/default.yaml"
     "EntityRMU unlearn/tofu/default.yaml"  
     # "GradDiffRev unlearn/tofu/default.yaml"
-    # "GradSeqDiff unlearn/tofu/default.yaml"
     # "GradDiffKL  unlearn/tofu/default.yaml"
 )
 

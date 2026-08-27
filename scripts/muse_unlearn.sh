@@ -22,7 +22,6 @@ trainers=(
     "NPO"
     "SimNPO"
     "GradDiffRev"
-    "GradSeqDiff"
 )
 
 # #########################################################

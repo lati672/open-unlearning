@@ -23,7 +23,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 from trainer.unlearn.grad_diff_reverse import GradDiffRev
-from trainer.unlearn.grad_seq_diff import GradSeqDiff
 from trainer.unlearn.grad_diff_KL import GradDiffKL
 TRAINER_REGISTRY: Dict[str, Any] = {}
 
@@ -106,7 +105,6 @@ _register_trainer(WGA)
 _register_trainer(PDU)
 
 _register_trainer(GradDiffRev)
-_register_trainer(GradSeqDiff)
 _register_trainer(GradDiffKL)
 
 _register_trainer(EntityRMU)  # Register EntityRMU Trainer

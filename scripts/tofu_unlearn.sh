@@ -18,7 +18,6 @@ trainers_experiments=(
     "DPO unlearn/tofu/idk.yaml"
     "RMU  unlearn/tofu/default.yaml"
     #"GradDiffRev unlearn/tofu/default.yaml"
-    #"GradSeqDiff unlearn/tofu/default.yaml"
     #"GradDiffKL unlearn/tofu/default.yaml"
 )
 splits=(
