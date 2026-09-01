@@ -28,9 +28,9 @@ trainer_entries=(
     "GradAscent|GradAscent|"
     "GradDiff|GradDiff|"
     "NPO|NPO|"
-    "RMU|RMU|"
+    #"RMU|RMU|"
     "AdaptiveNPO|NPO|collator=DataCollatorWithLogProbs trainer.method_args.mask=adaptive"
-    "AdaptiveRMU|AdaptiveRMU|collator=DataCollatorWithLogProbs"
+    #"AdaptiveRMU|AdaptiveRMU|collator=DataCollatorWithLogProbs"
 )
 
 # #########################################################
