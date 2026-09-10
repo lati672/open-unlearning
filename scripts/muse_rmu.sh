@@ -36,7 +36,7 @@ done
 if [[ -n "${NUM_TRAIN_EPOCHS:-}" ]]; then
     epoch_options=("${NUM_TRAIN_EPOCHS}")
 else
-    epoch_options=(${EPOCH_OPTIONS:-6 8})
+    epoch_options=(${EPOCH_OPTIONS:-10})
 fi
 
 per_device_train_batch_size=${PER_DEVICE_TRAIN_BATCH_SIZE:-2}
@@ -44,7 +44,7 @@ gradient_accumulation_steps=${GRADIENT_ACCUMULATION_STEPS:-4}
 
 # MUSE settings. Lower forget metrics are better, privleak should move
 # toward 0, and retain should stay high. Keep updates restricted to layers 5/6/7.
-learning_rate=${LEARNING_RATE:-5e-6}
+learning_rate=${LEARNING_RATE:-1e-5}
 retain_alpha=${RETAIN_ALPHA:-3}
 steering_coeff=${STEERING_COEFF:-1}
 module_regex=${MODULE_REGEX:-model\\.layers\\.7}
