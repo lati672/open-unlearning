@@ -13,6 +13,8 @@ run_tag=${RUN_TAG:-epochs${NUM_TRAIN_EPOCHS:-10}}
 
 reference_model=${REFERENCE_MODEL:-muse-bench/MUSE-${data_split}_target}
 checkpoint_root=${CHECKPOINT_ROOT:-saves/unlearn}
+# Use the tokenizer saved during training; the reference model may omit tokenizer files.
+tokenizer=${TOKENIZER:-${checkpoint_root}/muse_${model}_${data_split}_RMU_layers5_7_${run_tag}}
 output_dir=${OUTPUT_DIR:-saves/analysis/muse_${model}_${data_split}_representation_drift_${run_tag}}
 
 num_prompts=${NUM_PROMPTS:-128}
@@ -42,6 +44,7 @@ done
 CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0} \
 "${PYTHON_BIN}" src/representation_drift.py \
     --reference-model "${reference_model}" \
+    --tokenizer "${tokenizer}" \
     "${model_args[@]}" \
     --dataset-path "muse-bench/MUSE-${data_split}" \
     --dataset-name raw \
