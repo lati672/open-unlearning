@@ -106,15 +106,17 @@ class RMU(GradDiff):
         return self.control_vec
 
     def compute_activation_loss(self, activation1, activation2, mask):
-        squared_diff = torch.nn.functional.mse_loss(
+        """Average MSE over hidden dimensions, selected tokens, and valid samples."""
+        per_token_mse = torch.nn.functional.mse_loss(
             activation1, activation2, reduction="none"
-        )  # Shape (b, s, d)
-        expanded_mask = mask.unsqueeze(-1).expand_as(squared_diff)  # Shape: [b, s, d]
-        squared_diff_sum = (
-            (squared_diff * expanded_mask).mean(dim=2).sum(dim=(1))
-        )  # Shape: [b, 1]
-        num_tokens = mask.sum(dim=-1, keepdim=True)  # Sum over seq_len, Shape: [b, 1]
-        return (squared_diff_sum / num_tokens).mean()
+        ).mean(dim=-1)  # Shape: [b, s]
+        squared_diff_sum = (per_token_mse * mask).sum(dim=-1)  # Shape: [b]
+        num_tokens = mask.sum(dim=-1)  # Shape: [b], matching squared_diff_sum
+        valid = num_tokens > 0
+        if valid.any():
+            return (squared_diff_sum[valid] / num_tokens[valid]).mean()
+        # Preserve the computation graph so an empty mask supports backward().
+        return squared_diff_sum.sum() * 0.0
 
     def compute_retain_loss(self, model, retain_inputs):
         retain_loss = 0.0
