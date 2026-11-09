@@ -47,7 +47,9 @@ def main():
     before = json.loads((backup / "audit_report.json").read_text())
     after = json.loads((refreshed / "audit_report.json").read_text())
     for group, row in after["groups"].items():
-        assert row["model_commit"] == before["groups"][group]["model_commit"], "Original checkpoint changed; all controls must be rerun"
+        previous = before["groups"][group]
+        previous_commit = previous.get("target_model_commit", previous.get("model_commit"))
+        assert row["target_model_commit"] == previous_commit, "Target checkpoint changed; all controls must be rerun"
     for path in refreshed.glob("masks_*_entity.jsonl"):
         previous = audit / path.name
         assert [json.loads(line) for line in previous.open()] == [json.loads(line) for line in path.open()], "Entity masks changed: Entity controls also need rerunning"

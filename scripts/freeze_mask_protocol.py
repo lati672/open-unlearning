@@ -12,7 +12,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PROTOCOL = ROOT / "configs/protocols/tofu_forget05_multiseed.json"
-FORMAL_OUTPUT = ROOT / "saves/experiments/tofu_forget05_multiseed"
+FORMAL_OUTPUT = ROOT / "saves/experiments/tofu_forget05_multiseed_v2"
 
 
 def sha256(path):
@@ -88,11 +88,13 @@ def validate_mask_inputs(protocol, frozen):
     from trainer.masking import density_matched_random_mask, eligible_positions, sample_indices
 
     model_cfg = OmegaConf.load(ROOT / "configs/model/Llama-3.2-1B-Instruct.yaml")
-    ref = protocol["adaptive_reference"]
+    base_model = protocol["base_model"]
     logprob_metadata = json.loads((frozen / "logprobs.metadata.json").read_text())
-    if (logprob_metadata["model"], logprob_metadata["model_commit"]) != (ref["id"], ref["revision"]):
-        raise ValueError("Adaptive discrepancy reference differs from frozen logprobs")
-    tokenizer = get_tokenizer({"pretrained_model_name_or_path": ref["id"], "revision": ref["revision"]})
+    cached_base = logprob_metadata.get("base_model", logprob_metadata.get("model"))
+    cached_revision = logprob_metadata.get("base_model_commit", logprob_metadata.get("model_commit"))
+    if (cached_base, cached_revision) != (base_model["id"], base_model["revision"]):
+        raise ValueError("Base model differs from frozen logprobs")
+    tokenizer = get_tokenizer({"pretrained_model_name_or_path": base_model["id"], "revision": base_model["revision"]})
     ds = protocol["dataset"]
     config = OmegaConf.load(ROOT / "configs/data/datasets/TOFU_QA_forget.yaml")
     datasets = {}
@@ -112,7 +114,7 @@ def validate_mask_inputs(protocol, frozen):
     for kind, collator in collators.items():
         manifest = frozen / f'masks_TOFU_{ds["forget"]}_{kind}.jsonl'
         collator = FrozenMaskCollator(collator, manifest)
-        if collator.metadata["original_model_commit"] != protocol["initial_model"]["revision"]:
+        if collator.metadata["target_model_commit"] != protocol["target_model"]["revision"]:
             raise ValueError(f"Wrong target checkpoint for {kind} mask")
         rows = {}
         selected, eligible_count, empty = 0, 0, 0
@@ -167,6 +169,8 @@ def main():
     if git("status", "--porcelain"):
         raise ValueError("Commit the experiment definition before freezing it")
     protocol = json.loads(args.protocol.read_text())
+    if protocol["retain_only_model"]["evaluation_logs"] not in protocol["inputs"]:
+        raise ValueError("Retain-only model evaluation logs must be pinned in the inputs")
     check_environment(protocol)
     fixed_rmu_vector(protocol)
     frozen = args.output_root / "frozen_inputs"

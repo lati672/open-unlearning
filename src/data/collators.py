@@ -248,12 +248,16 @@ class FrozenMaskCollator:
         self.collator = collator
         metadata_path = Path(path).with_suffix(".metadata.json")
         self.metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
+        for field, legacy_field in (("target_model", "original_model"),
+                                    ("target_model_commit", "original_model_commit")):
+            if legacy_field in self.metadata:
+                self.metadata.setdefault(field, self.metadata[legacy_field])
         if self.metadata.get("logprob_sha256"):
             if not hasattr(collator, "logprob_path"):
                 raise ValueError("Adaptive reference masks require the logprob collator")
             actual = hashlib.sha256(Path(collator.logprob_path).read_bytes()).hexdigest()
             if actual != self.metadata["logprob_sha256"]:
-                raise ValueError("Reference logprobs changed; regenerate frozen adaptive masks with audit_masks.py")
+                raise ValueError("Base model logprobs changed. Regenerate frozen adaptive masks with audit_masks.py")
         self.records = {}
         with open(path) as stream:
             for line in stream:

@@ -36,10 +36,10 @@ def fraction(a, b):
     return a / b if b else None
 
 
-def write_mask_metadata(manifest, logprobs, kind, original_model, original_commit):
+def write_mask_metadata(manifest, logprobs, kind, target_model, target_commit):
     save(manifest.with_suffix(".metadata.json"), {
-        "mask_kind": kind, "original_model": original_model,
-        "original_model_commit": original_commit,
+        "mask_kind": kind, "target_model": target_model,
+        "target_model_commit": target_commit,
         "logprob_sha256": hashlib.sha256(logprobs.read_bytes()).hexdigest() if kind == "adaptive" else None,
         "eligible_positions": "supervised_attended_next_token_targets_including_real_EOS_v1",
     })
@@ -98,7 +98,7 @@ def old_rmu_evidence():
     }
 
 
-def audit_group(name, split, model, tokenizer, template, output, batch_size, device):
+def audit_group(name, split, target_model, tokenizer, template, output, batch_size, device):
     if name == "TOFU":
         dataset_cfg = OmegaConf.load(ROOT / "configs/data/datasets/TOFU_QA_forget.yaml")
         dataset_cfg.TOFU_QA_forget.args.hf_args.name = split
@@ -123,12 +123,12 @@ def audit_group(name, split, model, tokenizer, template, output, batch_size, dev
             samples = [dataset[i] for i in range(start, min(start + batch_size, len(dataset)))]
             batch = collator(samples)
             with torch.inference_mode():
-                logits = model(**{k: batch[k].to(device) for k in ["input_ids", "attention_mask"]}).logits
-                current = compute_model_token_logprobs(logits, batch["input_ids"].to(device)).float().cpu()
-            delta = batch["base_logprobs"] - current
+                logits = target_model(**{k: batch[k].to(device) for k in ["input_ids", "attention_mask"]}).logits
+                target_logprobs = compute_model_token_logprobs(logits, batch["input_ids"].to(device)).float().cpu()
+            delta = batch["base_logprobs"] - target_logprobs
             eligible = eligible_positions(batch)
             finite = eligible & torch.isfinite(delta)
-            selected = build_adaptive_mask(batch, current, mask_negative_diff=False).cpu()
+            selected = build_adaptive_mask(batch, target_logprobs, mask_negative_diff=False).cpu()
             entity = eligible & entity_collator(samples)["entity_mask"].bool() if entity_collator else torch.zeros_like(eligible)
             for reference in [selected, entity] if entity_collator else [selected]:
                 random_mask = density_matched_random_mask(eligible, reference, batch["index"].tolist(), 1729)
@@ -181,7 +181,7 @@ def audit_group(name, split, model, tokenizer, template, output, batch_size, dev
         stream.close()
     for kind in mask_files:
         write_mask_metadata(output / f"masks_{label}_{kind}.jsonl", path, kind,
-                            model.config._name_or_path, getattr(model.config, "_commit_hash", None))
+                            target_model.config._name_or_path, getattr(target_model.config, "_commit_hash", None))
     summary = dict(stats)
     summary.update({"sequence_mean_positive_rate": fraction(stats["sequence_mean_positive"], stats["finite_sequences"]), "sequence_mean_negative_rate": fraction(stats["sequence_mean_negative"], stats["finite_sequences"]), "sequence_mean_zero_rate": fraction(stats["sequence_mean_zero"], stats["finite_sequences"]), "selected_positive_fraction": fraction(stats["selected_positive"], stats["selected_tokens"]), "selected_negative_fraction": fraction(stats["selected_negative"], stats["selected_tokens"]), "selected_zero_fraction": fraction(stats["selected_zero"], stats["selected_tokens"]), "selection_ratio": fraction(stats["selected_tokens"], stats["eligible_tokens"]), "empty_mask_rate": fraction(stats["empty_masks"], stats["sequences"]), "fallback_rate": fraction(stats["fallback_sequences"], stats["sequences"]), "sequence_mean_min": min(means) if means else None, "sequence_mean_max": max(means) if means else None, "random_per_example_density_checks": "passed for all samples and all available reference types", "random_aggregate_density_checks": "exactly matched", "category_method": "lexical heuristic; entity > function/stopword > punctuation > attribute lexicon/numeric/capitalized > other; not gold factuality labels", "categories": {cat: {"eligible": category_counts[f"eligible:{cat}"], "selected": category_counts[f"selected:{cat}"], "selection_ratio": fraction(category_counts[f"selected:{cat}"], category_counts[f"eligible:{cat}"]), "selected_composition": fraction(category_counts[f"selected:{cat}"], stats["selected_tokens"])} for cat in ["entity", "attribute_factual_heuristic", "other_content", "function", "punctuation"]}})
     if entity_collator:
@@ -260,22 +260,22 @@ def main():
     for name in args.datasets:
         cfg = OmegaConf.load(ROOT / f'configs/model/{"Llama-3.2-1B-Instruct" if name == "TOFU" else "Llama-2-7b-hf"}.yaml')
         template = OmegaConf.to_container(cfg.template_args)
-        model_id = "open-unlearning/tofu_Llama-3.2-1B-Instruct_full" if name == "TOFU" else f"muse-bench/MUSE-{name}_target"
-        cfg.model_args.pretrained_model_name_or_path = model_id
+        target_model_id = "open-unlearning/tofu_Llama-3.2-1B-Instruct_full" if name == "TOFU" else f"muse-bench/MUSE-{name}_target"
+        cfg.model_args.pretrained_model_name_or_path = target_model_id
         cfg.model_args.device_map = {"": args.device}
-        print("Loading", model_id, flush=True)
-        model, tokenizer = get_model(cfg)
-        model.eval()
+        print("Loading target model", target_model_id, flush=True)
+        target_model, tokenizer = get_model(cfg)
+        target_model.eval()
         for split in ["forget01", "forget05", "forget10"] if name == "TOFU" else ["forget"]:
             label = f"TOFU_{split}" if name == "TOFU" else f"MUSE_{name}"
-            summary, examples = audit_group(name, split, model, tokenizer, template, output, args.batch_size, args.device)
-            summary["original_model"] = model_id
-            summary["model_commit"] = getattr(model.config, "_commit_hash", None)
+            summary, examples = audit_group(name, split, target_model, tokenizer, template, output, args.batch_size, args.device)
+            summary["target_model"] = target_model_id
+            summary["target_model_commit"] = getattr(target_model.config, "_commit_hash", None)
             report["groups"][label] = summary
             all_examples.extend(examples)
             save(output / "audit_report.json", report)
             qualitative(output, all_examples)
-        del model
+        del target_model
         gc.collect()
         torch.cuda.empty_cache()
     print("All audits completed", output, flush=True)

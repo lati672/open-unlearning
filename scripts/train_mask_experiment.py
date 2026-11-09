@@ -262,11 +262,11 @@ def main():
     # Runtime cwd interpolation only exists under hydra.main; the runner has an explicit root.
     cfg.paths.work_dir = str(ROOT)
     if protocol:
-        initial, reference = protocol["initial_model"], protocol["adaptive_reference"]
-        OmegaConf.update(cfg, "model.model_args.pretrained_model_name_or_path", initial["id"])
-        OmegaConf.update(cfg, "model.model_args.revision", initial["revision"], force_add=True)
-        OmegaConf.update(cfg, "model.tokenizer_args.pretrained_model_name_or_path", reference["id"])
-        OmegaConf.update(cfg, "model.tokenizer_args.revision", reference["revision"], force_add=True)
+        target_config, base_config = protocol["target_model"], protocol["base_model"]
+        OmegaConf.update(cfg, "model.model_args.pretrained_model_name_or_path", target_config["id"])
+        OmegaConf.update(cfg, "model.model_args.revision", target_config["revision"], force_add=True)
+        OmegaConf.update(cfg, "model.tokenizer_args.pretrained_model_name_or_path", base_config["id"])
+        OmegaConf.update(cfg, "model.tokenizer_args.revision", base_config["revision"], force_add=True)
         for split in ["forget", "retain"]:
             key = f"data.{split}.TOFU_QA_{split}.args.hf_args"
             OmegaConf.update(cfg, f"{key}.revision", dataset_revision, force_add=True)
@@ -277,11 +277,11 @@ def main():
         print(json.dumps(snapshot, indent=2))
         return
     template = OmegaConf.to_container(cfg.model.template_args)
-    model, tokenizer = get_model(cfg.model)
-    model.config.use_cache = False
-    snapshot["model_commit"] = getattr(model.config, "_commit_hash", None)
-    if protocol and snapshot["model_commit"] != protocol["initial_model"]["revision"]:
-        raise ValueError("Loaded model differs from the frozen TOFU checkpoint")
+    target_model, tokenizer = get_model(cfg.model)
+    target_model.config.use_cache = False
+    snapshot["target_model_commit"] = getattr(target_model.config, "_commit_hash", None)
+    if protocol and snapshot["target_model_commit"] != protocol["target_model"]["revision"]:
+        raise ValueError("Loaded target model differs from the frozen TOFU checkpoint")
     data = get_data(cfg.data, mode="unlearn", tokenizer=tokenizer, template_args=template)
     if protocol:
         for split in ["forget", "retain"]:
@@ -304,12 +304,12 @@ def main():
         collator = FrozenMaskCollator(collator, manifest)
         if collator.metadata.get("mask_kind") != source:
             raise ValueError("Frozen mask provenance is missing or has the wrong mask kind; rerun audit_masks.py")
-        if collator.metadata.get("original_model_commit") != snapshot["model_commit"]:
-            raise ValueError("Frozen masks and training model use different checkpoint revisions")
+        if collator.metadata.get("target_model_commit") != snapshot["target_model_commit"]:
+            raise ValueError("Frozen masks and target model use different checkpoint revisions")
         snapshot["frozen_reference_manifest"] = str(manifest)
         snapshot["frozen_reference_sha256"] = hashlib.sha256(manifest.read_bytes()).hexdigest()
         snapshot["frozen_reference_metadata"] = collator.metadata
-    trainer, _ = load_trainer(cfg.trainer, model, train_dataset=data["train"], tokenizer=tokenizer,
+    trainer, _ = load_trainer(cfg.trainer, target_model, train_dataset=data["train"], tokenizer=tokenizer,
                               data_collator=collator, evaluators=None, template_args=template)
     snapshot["execution"] = {"backend": "DDP", "world_size": trainer.accelerator.num_processes,
                              "effective_batch_size": trainer.args.per_device_train_batch_size * trainer.args.gradient_accumulation_steps * trainer.accelerator.num_processes,
@@ -323,7 +323,8 @@ def main():
             raise ValueError("World size or warmup steps differ from the frozen run")
         snapshot["frozen_protocol"] = {"commit": freeze_manifest["code_commit"],
             "sha256": freeze_manifest["protocol_sha256"], "checkpoints": training["checkpoints"],
-            "objective_reference": protocol["objective_reference"]}
+            "models": {role: protocol[role] for role in
+                       ["target_model", "base_model", "reference_model", "retain_only_model"]}}
         if args.objective == "RMU":
             trainer.fixed_control_vec = fixed_rmu_vector(protocol)
         if not args.smoke_steps:

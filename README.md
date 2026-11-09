@@ -131,7 +131,7 @@ python setup_data.py --eval # saves/eval now contains evaluation results of the 
 
 We've updated Open-Unlearning's TOFU benchmark target models to use a wider variety of newer architectures with sizes varying from 1B to 8B. These include Llama 3.2 1B, Llama 3.2 3B, Llama 3.1 8B, and the original Llama-2 7B (re-created) target models from [the old version of TOFU](github.com/locuslab/tofu). 
 
-For each architecture, we have finetuned with four different splits of the TOFU datasets: `full`, `retain90`, `retain95`, `retain99`, for a total of 16 finetuned models. The first serves as the target (base model for unlearning) and the rest are retain models used to measure performance against for each forget split. These models are on [HuggingFace](`https://huggingface.co/collections/open-unlearning/tofu-new-models-67bcf636334ea81727573a9f0`) and the paths to these models can be set in the experimental configs or in command-line overrides.
+For each architecture, we finetuned models on the `full`, `retain90`, `retain95`, and `retain99` TOFU splits, for a total of 16 checkpoints. The `full` checkpoint is the target model for unlearning. The retain-only models supply evaluation results for the corresponding forget splits. Set model paths in the experiment configs or in command-line overrides. [TOFU checkpoints](https://huggingface.co/collections/open-unlearning/tofu-new-models-67bcf636334ea81727573a9f0)
 
 ---
 
@@ -287,13 +287,22 @@ python scripts/analyze_mask_results.py
 
 The experiment runner uses TOFU forget05/retain95, seed 0, two GPUs, micro-batch 4, accumulation 4, 20 epochs, learning rate `1e-5`, weight decay `0.01`, and the original optimizer/objective coefficients. It uses DDP with non-reentrant gradient checkpointing for the multiple model forwards in each loss; RMU uses DDP static-graph detection because its loss comes from a fixed intermediate-layer hook. It compares five mask variants and both NPO normalizations, and skips completed runs. Metrics cover raw QA answer probability, NLL, forget ROUGE-L recall and loss-membership AUC; they are a focused comparison, not the full official model-utility/forget-quality suite. Token-category analysis is explicitly a lexical heuristic rather than gold factuality annotation. Historical pre-EOS-fix selection ratios remain separate from corrected ratios.
 
-Reference log-probability caches now record their attention-mask policy. Pre-fix caches with masked internal EOS/EOT keys are rejected: regenerate them before auditing. Frozen mask manifests record the reference-logprob SHA256 and original checkpoint revision; regenerate masks whenever the reference cache changes. `scripts/inspect_run_config.py` can inspect historical JSON/YAML or PyTorch `training_args.bin` files using static pickle-opcode inspection.
+Base model log-probability caches record their attention-mask policy. Regenerate any pre-fix caches with masked internal EOS/EOT keys before auditing. Frozen mask manifests record the base model logprob SHA256 and target model revision. Regenerate masks whenever the base model cache changes. `scripts/inspect_run_config.py` can inspect historical JSON/YAML or PyTorch `training_args.bin` files using static pickle-opcode inspection.
 
 The mask experiment runner evaluates in memory and removes any saved Safetensors weights and shard indexes from the run directory and its checkpoints after evaluation succeeds. For new training and evaluation scripts, call `python scripts/cleanup_model_weights.py "$run_dir"` after a successful evaluation to retain metrics, configuration, and logs while freeing model storage.
 
 ### Frozen TOFU Forget05 multiseed protocol
 
-`configs/protocols/tofu_forget05_multiseed.json` pins the TOFU dataset, initial checkpoint, tokenizer, discrepancy reference, mask inputs, environment, and seeds 0, 1, and 2. The Meta Llama base weights supply the cached discrepancy log probabilities. NPO's frozen policy and RMU's retain reference are copies of the TOFU initial model. Retain95 retrained-model logs are reserved for official evaluation. The checkpoint runner uses the same focused QA metrics as the existing controls.
+`configs/protocols/tofu_forget05_multiseed.json` pins the TOFU dataset, model revisions, tokenizer, mask inputs, environment, and seeds 0, 1, and 2.
+
+| Config field | Model | Role |
+| --- | --- | --- |
+| `target_model` | Target model $\theta_{\mathrm{tgt}}$ | TOFU `full` checkpoint that undergoes unlearning |
+| `base_model` | Base model $\theta_{\mathrm{base}}$ | Pretrained Meta Llama checkpoint used to construct the Adaptive mask |
+| `reference_model` | Reference model $\theta_{\mathrm{ref}}$ | Frozen copy of the target model at step 0 used in the NPO objective |
+| `retain_only_model` | Retain-only model $\theta_{\mathrm{retain}}$ | Model trained on Retain95 whose saved logs support official evaluation |
+
+Adaptive discrepancy is $\log p_{\theta_{\mathrm{base}}} - \log p_{\theta_{\mathrm{tgt}}}$ at initialization. The NPO objective compares masked NLL from the target and reference models. RMU retain loss also uses frozen target activations from step 0. The checkpoint runner uses the same focused QA metrics as the existing controls.
 
 The legacy optimizer schedule runs for 120 updates. The two checkpoints are step 60 at actual epoch 9.6 and step 120 at actual epoch 19.2. Both save weights, evaluate, and then remove the weights on success. The old seed-0 step-120 metrics remain available with hashes. The old runs did not save step-60 weights or metrics.
 
@@ -304,4 +313,4 @@ python scripts/freeze_mask_protocol.py
 python scripts/run_mask_experiments.py --protocol configs/protocols/tofu_forget05_multiseed.json --dry-run
 ```
 
-The frozen manifest, package versions, and validated inputs are stored under `saves/experiments/tofu_forget05_multiseed`. Remove `--dry-run` to start training.
+The v2 manifest, package versions, and validated inputs are stored under `saves/experiments/tofu_forget05_multiseed_v2`. Remove `--dry-run` to start training.

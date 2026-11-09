@@ -515,8 +515,8 @@ def main(config):
     logger.info(f"Results saved to: {output_json_path}")
     metadata = {
         "attention_mask_policy": ATTENTION_MASK_POLICY,
-        "model": config_snapshot.model.model_args.pretrained_model_name_or_path,
-        "model_commit": getattr(model.config, "_commit_hash", None),
+        "base_model": config_snapshot.model.model_args.pretrained_model_name_or_path,
+        "base_model_commit": getattr(model.config, "_commit_hash", None),
         "tokenizer": tokenizer.name_or_path,
         "pad_token_id": tokenizer.pad_token_id,
         "eos_token_id": tokenizer.eos_token_id,

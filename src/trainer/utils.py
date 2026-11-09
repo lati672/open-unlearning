@@ -80,11 +80,11 @@ def build_adaptive_mask(
     return adaptive_mask
 
 
-def compute_sequence_loss(model, target_model, inputs, beta=1):
+def compute_sequence_loss(model, reference_model, inputs, beta=1):
     input_ids = inputs["input_ids"]
 
     with torch.no_grad():
-        ref_outputs = target_model(**inputs)
+        ref_outputs = reference_model(**inputs)
 
     outputs = model(**inputs)
     ref_logits = ref_outputs.logits
@@ -120,9 +120,9 @@ def seed_everything(seed=42):
     torch.backends.cudnn.benchmark = False
 
 
-def compute_kl_divergence(model, target_model, inputs):
+def compute_kl_divergence(model, reference_model, inputs):
     with torch.no_grad():
-        ref_outputs = target_model(**inputs)
+        ref_outputs = reference_model(**inputs)
 
     ref_probs = F.log_softmax(ref_outputs.logits, dim=-1)
     #ref_probs = F.log_softmax(ref_outputs.logits, dim=-1)
@@ -137,9 +137,9 @@ def compute_kl_divergence(model, target_model, inputs):
         current_probs, ref_probs, reduction="batchmean", log_target=True
     ), outputs
 
-def compute_weighted_kl(model, target_model, inputs):
+def compute_weighted_kl(model, reference_model, inputs):
     with torch.no_grad():
-        ref_outputs = target_model(**inputs)
+        ref_outputs = reference_model(**inputs)
 
     ref_probs = F.log_softmax(ref_outputs.logits, dim=-1)
     ref_probs = ref_probs.view(-1, ref_outputs.logits.shape[-1])

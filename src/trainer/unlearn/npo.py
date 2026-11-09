@@ -5,6 +5,8 @@ from trainer.unlearn.grad_diff import GradDiff
 
 
 class NPO(GradDiff):
+    """Compare the trainable target model with its frozen reference model."""
+
     def __init__(self, beta=1.0, *, mask=None, normalization="summed",
                  random_reference="adaptive", mask_seed=1729, **kwargs):
         super().__init__(**kwargs)
@@ -25,8 +27,8 @@ class NPO(GradDiff):
         forward = {k: forget[k] for k in ("input_ids", "attention_mask", "labels", "position_ids") if k in forget}
         outputs = model(**forward)
         source = self.mask_selector.random_reference if self.mask_type == "random" else self.mask_type
-        logprobs = compute_model_token_logprobs(outputs.logits.detach(), forget["input_ids"]) if source == "adaptive" and "reference_mask" not in forget else None
-        selected = self.mask_selector(forget, logprobs)
+        target_logprobs = compute_model_token_logprobs(outputs.logits.detach(), forget["input_ids"]) if source == "adaptive" and "reference_mask" not in forget else None
+        selected = self.mask_selector(forget, target_logprobs)
         forget_loss, _ = compute_masked_dpo_loss(
             model, self.ref_model, lose_inputs=forward, lose_mask=selected,
             lose_outputs=outputs, beta=self.beta, normalization=self.normalization,

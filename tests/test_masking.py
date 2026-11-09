@@ -290,9 +290,17 @@ class MaskTests(unittest.TestCase):
             lp.write_text("original")
             manifest = Path(directory) / "masks.jsonl"
             manifest.write_text(json.dumps({"doc_id": 0, "input_ids": [1, 2, 0], "mask": [0, 1, 0]}) + "\n")
-            manifest.with_suffix(".metadata.json").write_text(json.dumps({"logprob_sha256": hashlib.sha256(lp.read_bytes()).hexdigest()}))
+            metadata_path = manifest.with_suffix(".metadata.json")
+            checksum = hashlib.sha256(lp.read_bytes()).hexdigest()
             collator = SimpleNamespace(logprob_path=str(lp))
-            FrozenMaskCollator(collator, str(manifest))
+            for model_key, commit_key in [("original_model", "original_model_commit"),
+                                          ("target_model", "target_model_commit")]:
+                with self.subTest(model_key=model_key):
+                    metadata_path.write_text(json.dumps({"logprob_sha256": checksum,
+                        model_key: "tofu_full", commit_key: "example_revision"}))
+                    frozen = FrozenMaskCollator(collator, manifest)
+                    self.assertEqual(frozen.metadata["target_model"], "tofu_full")
+                    self.assertEqual(frozen.metadata["target_model_commit"], "example_revision")
             lp.write_text("changed")
             with self.assertRaisesRegex(ValueError, "logprobs changed"):
                 FrozenMaskCollator(collator, str(manifest))
