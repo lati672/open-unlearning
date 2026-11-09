@@ -1,5 +1,5 @@
 {
-  "name": "tofu_forget05_multiseed_v3",
+  "name": "tofu_forget05_multiseed_v4_official",
   "dataset": {
     "id": "locuslab/TOFU",
     "revision": "324592d84ae4f482ac7249b9285c2ecdb53e3a68",
@@ -28,7 +28,25 @@
     "evaluation_logs": "saves/eval/tofu_Llama-3.2-1B-Instruct_retain95/TOFU_EVAL.json",
     "role": "Official TOFU evaluation"
   },
-  "evaluation_profile": "Controlled raw QA metrics, matching the existing seed-0 runs",
+  "evaluation_profile": "official_tofu",
+  "official_evaluation": {
+    "dataset_counts": {
+      "forget05_perturbed": 200,
+      "retain_perturbed": 400,
+      "real_authors_perturbed": 100,
+      "world_facts_perturbed": 117,
+      "holdout05": 200
+    },
+    "perturbed_answer_counts": {
+      "forget05_perturbed": 5,
+      "retain_perturbed": 5,
+      "real_authors_perturbed": 3,
+      "world_facts_perturbed": 3
+    },
+    "steps": [60, 120],
+    "batch_size": 32,
+    "min_k": 0.4
+  },
   "training": {
     "seeds": [0, 1, 2],
     "max_steps": 120,

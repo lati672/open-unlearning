@@ -79,7 +79,7 @@ def run_batchwise_evals(model, dataloader, batch_eval_fn, batch_eval_fn_args, ev
     return evals
 
 
-def evaluate_probability(model, batch):
+def evaluate_probability(model, batch, record_details=False):
     """Evaluate model probabilities and average token-level loss for a given batch."""
     batch = {k: v.to(model.device) for k, v in batch.items()}
     with torch.no_grad():
@@ -90,17 +90,26 @@ def evaluate_probability(model, batch):
     logits = logits[..., :-1, :].contiguous()
     loss_function = nn.CrossEntropyLoss(ignore_index=IGNORE_INDEX, reduction="none")
     # agg loss across tokens
-    losses = loss_function(logits.transpose(-1, -2), shifted_labels).sum(dim=-1)
+    token_losses = loss_function(logits.transpose(-1, -2), shifted_labels)
+    losses = token_losses.sum(dim=-1)
     num_token_gt = (batch["labels"] != IGNORE_INDEX).sum(-1)
     avg_losses = losses / num_token_gt
     normalized_probs = torch.exp(-avg_losses)
 
     avg_losses = avg_losses.cpu().numpy().tolist()
     normalized_probs = normalized_probs.cpu().numpy().tolist()
-    return [
+    rows = [
         {"prob": prob, "avg_loss": avg_loss}
         for prob, avg_loss in zip(normalized_probs, avg_losses)
     ]
+    if record_details:
+        for i, row in enumerate(rows):
+            valid = shifted_labels[i].ne(IGNORE_INDEX)
+            row.update(sum_logprob=-float(losses[i]), mean_logprob=-row["avg_loss"],
+                       token_count=int(valid.sum()),
+                       target_token_ids=shifted_labels[i, valid].tolist(),
+                       token_logprobs=(-token_losses[i, valid]).tolist())
+    return rows
 
 
 def tokenwise_logprobs(model, batch, grad=False, return_labels=False):

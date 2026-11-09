@@ -302,7 +302,7 @@ The mask experiment runner evaluates in memory and removes any saved Safetensors
 | `reference_model` | Reference model $\theta_{\mathrm{ref}}$ | Frozen copy of the target model at step 0 used in the NPO objective |
 | `retain_only_model` | Retain-only model $\theta_{\mathrm{retain}}$ | Model trained on Retain95 whose saved logs support official evaluation |
 
-Adaptive discrepancy is $\log p_{\theta_{\mathrm{base}}} - \log p_{\theta_{\mathrm{tgt}}}$ at initialization. The NPO objective compares masked NLL from the target and reference models. RMU retain loss also uses frozen target activations from step 0. The checkpoint runner uses the same focused QA metrics as the existing controls.
+Adaptive discrepancy is $\log p_{\theta_{\mathrm{base}}} - \log p_{\theta_{\mathrm{tgt}}}$ at initialization. The NPO objective compares masked NLL from the target and reference models. RMU retain loss also uses frozen target activations from step 0.
 
 The runner sets `max_steps=120` and `save_steps=60`. Step 60 is approximately 9.6 dataloader epochs and step 120 is approximately 19.2. Warmup uses six optimizer updates, the scheduler's budget for one dataloader epoch. Automatic checkpoint pruning is disabled. Each checkpoint records the tokenizer, model configuration, resolved configuration, trainer state, seed, mask hash, and code commit. Evaluation success triggers weight cleanup. The old seed-0 step-120 metrics remain available with hashes. The old runs did not save step-60 weights or metrics.
 
@@ -316,4 +316,8 @@ python scripts/run_mask_experiments.py --protocol configs/protocols/tofu_forget0
 python scripts/run_mask_experiments.py --protocol configs/protocols/tofu_forget05_multiseed.json --dry-run
 ```
 
-The v3 manifest, package versions, and validated inputs are stored under `saves/experiments/tofu_forget05_multiseed_v3`. The short run checks both checkpoints after four optimizer updates and reloads each from disk for a small offline QA evaluation. The formal runner requires a successful short run for the same commit and protocol before starting the matrix.
+The v4 manifest, package versions, and validated inputs are stored under `saves/experiments/tofu_forget05_multiseed_v4_official`. The four-update short run reloads checkpoints 2 and 4 and evaluates the full official suite. Run `scripts/run_mask_experiments.py` with `--protocol configs/protocols/tofu_forget05_multiseed.json --seeds 0` for the 15 formal seed-0 runs. The runner gates later seeds on those 15 verified runs.
+
+The official profile saves seven aggregates and their dependencies under each checkpoint's `evals/official` directory. `TOFU_EVAL.json` includes per-sample log probabilities, candidate token scores, generations, truth ratios, extraction token outputs, and Min-K scores. The protocol pins `forget05_perturbed`, the official `retain_perturbed` subset of Retain95, `real_authors_perturbed`, `world_facts_perturbed`, and `holdout05`. PrivLeak uses Min-K 40% and the pinned retain-only evaluation logs. Extraction Strength keeps the repository evaluator's existing scoring convention and records the actual matching suffix separately.
+
+The two checkpoints are evaluated in separate processes after training. Each process verifies the aggregate and detailed files before deleting that checkpoint's weights. Incomplete evaluation logs can be reused when their weight and evaluation provenance match. The earlier v3 raw-QA runs remain available under `saves/experiments/tofu_forget05_multiseed_v3` for diagnostic comparison.

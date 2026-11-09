@@ -278,6 +278,7 @@ def main():
     args = parser.parse_args()
     args.output_root = (args.output_root or (FORMAL_OUTPUT if args.protocol else ROOT / "saves/experiments/mask_controls")).resolve()
     protocol = json.loads(args.protocol.read_text()) if args.protocol else None
+    official_eval = protocol is not None and protocol.get("evaluation_profile") == "official_tofu"
     freeze_manifest = None
     dataset_revision = None
     if args.checkpoint_smoke and (not protocol or args.smoke_steps or args.baseline_only):
@@ -416,13 +417,13 @@ def main():
         if not args.smoke_steps:
             checkpoint_eval = StepCheckpointEvaluation(trainer, training,
                 lambda model, root: evaluate_suite(model, tokenizer, template, root, dataset_revision), output,
-                resolved_config=snapshot, defer_evaluation=args.checkpoint_smoke)
+                resolved_config=snapshot, defer_evaluation=args.checkpoint_smoke or official_eval)
             trainer.add_callback(checkpoint_eval)
     if trainer.is_world_process_zero():
         save(output / "resolved_config.json", snapshot)
         save(output / "training_args.json", trainer.args.to_dict())
         baseline = args.output_root / "baseline"
-        if not (args.smoke_steps or args.checkpoint_smoke) and not (baseline / "metrics.json").exists():
+        if not (args.smoke_steps or args.checkpoint_smoke or official_eval) and not (baseline / "metrics.json").exists():
             evaluate_suite(trainer.accelerator.unwrap_model(trainer.model), tokenizer, template, baseline, dataset_revision)
     trainer.accelerator.wait_for_everyone()
     if args.baseline_only:
@@ -443,6 +444,15 @@ def main():
     if args.variant.startswith("random"):
         expected_masks = json.loads((args.audit_root / "random_mask_expectations.json").read_text())[source] if protocol else None
         validate_random_density(trainer, manifest, output, expected_masks, require_full_coverage=not args.checkpoint_smoke)
+    if official_eval:
+        if trainer.is_world_process_zero():
+            if checkpoint_eval.saved.keys() != training["checkpoints"].keys():
+                raise ValueError("The official run did not save every checkpoint")
+            save_json(output / "training_completed.json", {"task": task, "global_step": trainer.state.global_step,
+                "actual_epoch": trainer.state.epoch, "checkpoints": checkpoint_eval.saved,
+                "code_commit": freeze_manifest["code_commit"], "protocol_sha256": freeze_manifest["protocol_sha256"]})
+        trainer.accelerator.wait_for_everyone()
+        return
     if trainer.is_world_process_zero():
         if args.checkpoint_smoke:
             validate_saved_checkpoints(checkpoint_eval, dataset_revision, trainer.accelerator.device)

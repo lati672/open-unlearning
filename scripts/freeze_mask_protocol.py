@@ -13,7 +13,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PROTOCOL = ROOT / "configs/protocols/tofu_forget05_multiseed.json"
-FORMAL_OUTPUT = ROOT / "saves/experiments/tofu_forget05_multiseed_v3"
+FORMAL_OUTPUT = ROOT / "saves/experiments/tofu_forget05_multiseed_v4_official"
 
 
 def run_name(objective, variant, normalization, seed, budget):

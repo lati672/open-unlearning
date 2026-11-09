@@ -26,7 +26,7 @@ def probability(model, **kwargs):
 
     dataloader = DataLoader(data, batch_size=batch_size, collate_fn=collator)
 
-    fun_args = {}
+    fun_args = {"record_details": kwargs.get("record_details", False)}
     scores_by_index = run_batchwise_evals(
         model, dataloader, evaluate_probability, fun_args, "Calculating loss"
     )
@@ -222,10 +222,12 @@ def extraction_strength(model, **kwargs):
         for log_probs, labels in zip(log_probs_batch, labels_batch):
             valid_len = len(labels)
             preds = torch.argmax(log_probs, dim=-1)
+            matching_suffix_start = None
             for k in range(valid_len):
                 suff_preds = preds[k:]
                 suff_labels = labels[k:]
                 if torch.equal(suff_preds, suff_labels):
+                    matching_suffix_start = k
                     break
             if valid_len == 0:
                 # Rarely, tokenization can result in a mismatch with no valid target
@@ -236,10 +238,14 @@ def extraction_strength(model, **kwargs):
                     "ES score for an instance is marked None, due to "
                     "tokenization issues that resulted in no valid target tokens."
                 )
-                es_batch.append({"score": 0})
+                row = {"score": 0}
             else:
                 es_score = 1 - (k / valid_len)
-                es_batch.append({"score": es_score})
+                row = {"score": es_score}
+            if kwargs.get("record_details", False):
+                row.update(target_token_ids=labels.tolist(), predicted_token_ids=preds.tolist(),
+                           matching_suffix_start=matching_suffix_start)
+            es_batch.append(row)
         return es_batch
 
     fun_args = {}

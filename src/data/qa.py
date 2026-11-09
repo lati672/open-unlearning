@@ -15,11 +15,18 @@ class QADataset(Dataset):
         few_shot_dataset_hf_args=None,
         max_length=512,
         predict_with_generate=False,
+        verify_revision=False,
     ):
         super(QADataset, self).__init__()
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.data = load_hf_dataset(**hf_args)
+        if verify_revision:
+            from pathlib import Path
+
+            revision = hf_args["revision"]
+            if not self.data.cache_files or any(revision not in Path(item["filename"]).parts for item in self.data.cache_files):
+                raise ValueError(f"Dataset {hf_args['name']} was not loaded from revision {revision}")
         self.data = add_dataset_index(self.data)
         self.fs_data = None
         if few_shot_dataset_hf_args is not None:

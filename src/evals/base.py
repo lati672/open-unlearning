@@ -35,8 +35,10 @@ class Evaluator:
         logs = dict(sorted(logs.items()))
         os.makedirs(os.path.dirname(file), exist_ok=True)
         try:
-            with open(file, "w") as f:
-                json.dump(logs, f, indent=4)
+            temporary = os.fspath(file) + ".tmp"
+            with open(temporary, "w") as f:
+                json.dump(logs, f, indent=4, allow_nan=not self.eval_cfg.get("strict_outputs", False))
+            os.replace(temporary, file)
         except Exception as e:
             raise RuntimeError(f"Failed to save {file}: {e}")
 
