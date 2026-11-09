@@ -1,16 +1,16 @@
 import torch
 from typing import Dict, Any
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from transformers import Trainer, TrainingArguments
 
 from trainer.base import FinetuneTrainer
 from trainer.unlearn.grad_ascent import GradAscent
 from trainer.unlearn.grad_diff import GradDiff
-from trainer.unlearn.npo import NPO
+from trainer.unlearn.npo import NPO, RandomNPO, TokenNormalizedNPO
 from trainer.unlearn.dpo import DPO
 from trainer.unlearn.simnpo import SimNPO
 from trainer.unlearn.rmu import RMU
-from trainer.unlearn.adaptive_rmu import AdaptiveRMU
+from trainer.unlearn.adaptive_rmu import AdaptiveRMU, RandomRMU
 from trainer.unlearn.undial import UNDIAL
 from trainer.unlearn.ceu import CEU
 from trainer.unlearn.satimp import SatImp
@@ -32,7 +32,7 @@ def _register_trainer(trainer_class):
 
 
 def load_trainer_args(trainer_args: DictConfig, dataset):
-    trainer_args = dict(trainer_args)
+    trainer_args = OmegaConf.to_container(trainer_args, resolve=True) if isinstance(trainer_args, DictConfig) else dict(trainer_args)
     warmup_epochs = trainer_args.pop("warmup_epochs", None)
     if warmup_epochs:
         batch_size = trainer_args["per_device_train_batch_size"]
@@ -94,6 +94,7 @@ _register_trainer(FinetuneTrainer)
 _register_trainer(GradAscent)
 _register_trainer(GradDiff)
 _register_trainer(NPO)
+_register_trainer(TokenNormalizedNPO)
 _register_trainer(DPO)
 _register_trainer(SimNPO)
 _register_trainer(RMU)
@@ -108,3 +109,6 @@ _register_trainer(GradDiffRev)
 _register_trainer(GradDiffKL)
 
 _register_trainer(EntityRMU)  # Register EntityRMU Trainer
+
+_register_trainer(RandomNPO)
+_register_trainer(RandomRMU)

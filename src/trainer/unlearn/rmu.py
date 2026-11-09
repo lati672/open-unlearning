@@ -4,6 +4,7 @@ import re
 import torch
 import deepspeed
 from trainer.unlearn.grad_diff import GradDiff
+from trainer.masking import eligible_positions, nonempty_mean
 
 
 class RMU(GradDiff):
@@ -39,6 +40,21 @@ class RMU(GradDiff):
         self.ref_module = self._get_matching_module(self.ref_model, self.module_regex)
         self.steering_coeff = steering_coeff
         self.control_vec = None
+        self.fixed_control_vec = None
+
+    def _wrap_model(self, model, training=True, dataloader=None):
+        wrapped = super()._wrap_model(model, training=training, dataloader=dataloader)
+        handler = getattr(self.accelerator, "ddp_handler", None)
+        if training and handler is not None:
+            # RMU's loss comes from a fixed intermediate-layer hook, outside the
+            # returned LM logits. DDP's output-based unused-parameter traversal
+            # therefore misidentifies upper layers as used. The set of used
+            # parameters is fixed even for zero masks (graph-connected zeros).
+            # Static graph tracks actual backward usage without adding fake
+            # zero-logit gradients that would enable unwanted weight decay.
+            handler.static_graph = True
+            handler.find_unused_parameters = False
+        return wrapped
 
     def create_optimizer(self):
         self._freeze_all_params(self.model, False)
@@ -92,17 +108,23 @@ class RMU(GradDiff):
             return None
 
         hook_handle = module.register_forward_hook(hook)
-        with torch.set_grad_enabled(not (no_grad)):
-            outputs = model(**inputs)
-        hook_handle.remove()
+        try:
+            with torch.set_grad_enabled(not no_grad):
+                outputs = model(**inputs)
+        finally:
+            hook_handle.remove()
         return cache[0], outputs
 
     def get_control_vector(self, dim):
         if self.control_vec is None:
+            # Preserve the original RNG consumption for paired retain sampling.
             random_vector = torch.rand(1, 1, dim)
-            self.control_vec = (
-                random_vector / torch.norm(random_vector) * self.steering_coeff
-            )
+            if self.fixed_control_vec is None:
+                self.control_vec = random_vector / torch.norm(random_vector) * self.steering_coeff
+            else:
+                if self.fixed_control_vec.shape != random_vector.shape:
+                    raise ValueError("Fixed RMU control vector does not match hidden size")
+                self.control_vec = self.fixed_control_vec
         return self.control_vec
 
     def compute_activation_loss(self, activation1, activation2, mask):
@@ -113,10 +135,7 @@ class RMU(GradDiff):
         squared_diff_sum = (per_token_mse * mask).sum(dim=-1)  # Shape: [b]
         num_tokens = mask.sum(dim=-1)  # Shape: [b], matching squared_diff_sum
         valid = num_tokens > 0
-        if valid.any():
-            return (squared_diff_sum[valid] / num_tokens[valid]).mean()
-        # Preserve the computation graph so an empty mask supports backward().
-        return squared_diff_sum.sum() * 0.0
+        return nonempty_mean(squared_diff_sum / num_tokens.clamp_min(1), valid)
 
     def compute_retain_loss(self, model, retain_inputs):
         retain_loss = 0.0
@@ -128,7 +147,7 @@ class RMU(GradDiff):
             ref_retain_activations, _ = self.forward_with_cache(
                 self.ref_model, retain_inputs, module=self.ref_module, no_grad=True
             )
-            mask = retain_inputs["labels"] != -100  # Shape: [b, s]
+            mask = eligible_positions(retain_inputs).to(model_retain_activations.device)
             retain_loss = self.compute_activation_loss(
                 model_retain_activations,
                 ref_retain_activations.to(model_retain_activations.device),
@@ -150,14 +169,14 @@ class RMU(GradDiff):
             model, forget_inputs, self.model_module, no_grad=False
         )
         # If multiple datasets or concepts need unlearning, pass the control vector during processing; otherwise, default to a random vector during training.
-        control_vec = forget_inputs.get(
+        control_vec = inputs["forget"].get(
             "control_vec", self.get_control_vector(model_forget_activations.shape[-1])
         )
         control_vec = control_vec.to(
             dtype=model_forget_activations.dtype, device=model_forget_activations.device
         )
         control_vec = control_vec.expand_as(model_forget_activations)
-        mask = forget_inputs["labels"] != -100  # Shape: [b, s]
+        mask = eligible_positions(forget_inputs).to(model_forget_activations.device)
         forget_loss = self.compute_activation_loss(
             model_forget_activations, control_vec, mask
         )

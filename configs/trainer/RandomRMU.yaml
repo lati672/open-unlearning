@@ -1,0 +1,7 @@
+defaults:
+  - AdaptiveRMU
+handler: RandomRMU
+method_args:
+  mask_kind: random
+  random_reference: adaptive
+  mask_seed: 1729

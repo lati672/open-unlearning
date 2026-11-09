@@ -2,6 +2,7 @@ import hydra
 import logging
 from omegaconf import DictConfig
 from data import get_data, get_collators
+from data.collators import FrozenMaskCollator
 from compute_logprobs import configure_logprob_collator
 from model import get_model
 from trainer import load_trainer
@@ -64,6 +65,8 @@ def main(cfg: DictConfig):
             collator_cfg,
             tokenizer=tokenizer,
         )
+    if cfg.get("mask_reference_path"):
+        collator = FrozenMaskCollator(collator, cfg.mask_reference_path)
     # Get Trainer
     trainer_cfg = cfg.trainer
     assert trainer_cfg is not None, ValueError("Please set trainer")

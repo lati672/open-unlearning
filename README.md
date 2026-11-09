@@ -256,3 +256,52 @@ This project is licensed under the MIT License. See the [`LICENSE`](LICENSE) fil
 ---
 
 [![Star History Chart](https://api.star-history.com/svg?repos=locuslab/open-unlearning&type=Date)](https://www.star-history.com/#locuslab/open-unlearning&Date)
+
+### Mask eligibility and controlled comparisons
+
+All NPO/RMU variants use the same eligible **target token** positions: `labels != -100`, the token and its predecessor are attended, and position `j > 0`. Real EOS tokens are eligible; only padding introduced by the collator is excluded. NPO scores target `j` using logits at `j-1`, whereas RMU compares the hidden state at `j` after reading that token.
+
+| Variant | Selected positions |
+| --- | --- |
+| Base NPO / RMU | All eligible positions |
+| Entity NPO / RMU | Eligible positions intersected with the entity collator mask |
+| Adaptive NPO / RMU | Finite `base_logprob - current_logprob` below the per-sequence eligible-token mean |
+| Random NPO / RMU | Uniform sample without replacement from eligible positions, with exactly the corresponding Adaptive/Entity count per sample |
+
+Adaptive preserves the existing threshold fallback: if no token is strictly below the mean, select all finite eligible positions; if none are finite, use all eligible positions. This fallback is counted in audit reports. It is distinct from the deleted missing-index fallback: Adaptive and Random now require stable nonnegative sample indices, and an index reused for different tokens/labels raises an error. First-encounter masks are cached per sample, with unpadded positions so batch order, batch size and padding side cannot transfer a mask between samples. The controlled experiments replay audited initialization masks across ranks, epochs and normalization arms instead of allowing first-encounter timing to change the comparison.
+
+The default objective is **summed masked NPO** (`trainer.method_args.normalization=summed`). The ablation is **token-normalized NPO** (`token_mean`): divide both current-policy and frozen-reference summed masked NLL by the identical selected-token count before forming the NPO log ratio. Both forms average only nonempty samples. RMU averages MSE over hidden dimensions, then selected tokens within each sample, then nonempty samples. Empty samples have zero forget gradient; an all-empty forget batch returns graph-connected zero. DDP reductions use the global nonempty count. EntityRMU uses the same activation-loss implementation as RMU.
+
+Retain objectives are unchanged in purpose: NPO uses supervised target-token cross entropy; RMU uses activation MSE against the frozen initial model on eligible retain tokens. Forget-side Entity/Adaptive/Random masks do not restrict retain positions. Total loss remains `gamma * forget_loss + alpha * retain_loss`.
+
+Random masks use their own per-index RNG (`mask_seed=1729` by default), independent of the training seed and global RNG. Configure `trainer=RandomNPO` or `trainer=RandomRMU`, `trainer.method_args.random_reference=adaptive|entity`, and the corresponding logprob/entity collator. `trainer=TokenNormalizedNPO` selects the normalized ablation.
+
+```bash
+python -m unittest discover -s tests -v
+python setup_data.py --logprobs
+python scripts/audit_masks.py --datasets TOFU News Books --device cuda:0
+python scripts/audit_entity_alignment.py
+python scripts/run_mask_experiments.py --objectives NPO RMU
+python scripts/analyze_mask_results.py
+```
+
+The experiment runner uses TOFU forget05/retain95, seed 0, two GPUs, micro-batch 4, accumulation 4, 20 epochs, learning rate `1e-5`, weight decay `0.01`, and the original optimizer/objective coefficients. It uses DDP with non-reentrant gradient checkpointing for the multiple model forwards in each loss; RMU uses DDP static-graph detection because its loss comes from a fixed intermediate-layer hook. It compares five mask variants and both NPO normalizations, and skips completed runs. Metrics cover raw QA answer probability, NLL, forget ROUGE-L recall and loss-membership AUC; they are a focused comparison, not the full official model-utility/forget-quality suite. Token-category analysis is explicitly a lexical heuristic rather than gold factuality annotation. Historical pre-EOS-fix selection ratios remain separate from corrected ratios.
+
+Reference log-probability caches now record their attention-mask policy. Pre-fix caches with masked internal EOS/EOT keys are rejected: regenerate them before auditing. Frozen mask manifests record the reference-logprob SHA256 and original checkpoint revision; regenerate masks whenever the reference cache changes. `scripts/inspect_run_config.py` can inspect historical JSON/YAML or PyTorch `training_args.bin` files using static pickle-opcode inspection.
+
+The mask experiment runner evaluates in memory and removes any saved Safetensors weights and shard indexes from the run directory and its checkpoints after evaluation succeeds. For new training and evaluation scripts, call `python scripts/cleanup_model_weights.py "$run_dir"` after a successful evaluation to retain metrics, configuration, and logs while freeing model storage.
+
+### Frozen TOFU Forget05 multiseed protocol
+
+`configs/protocols/tofu_forget05_multiseed.json` pins the TOFU dataset, initial checkpoint, tokenizer, discrepancy reference, mask inputs, environment, and seeds 0, 1, and 2. The Meta Llama base weights supply the cached discrepancy log probabilities. NPO's frozen policy and RMU's retain reference are copies of the TOFU initial model. Retain95 retrained-model logs are reserved for official evaluation. The checkpoint runner uses the same focused QA metrics as the existing controls.
+
+The legacy optimizer schedule runs for 120 updates. The two checkpoints are step 60 at actual epoch 9.6 and step 120 at actual epoch 19.2. Both save weights, evaluate, and then remove the weights on success. The old seed-0 step-120 metrics remain available with hashes. The old runs did not save step-60 weights or metrics.
+
+From the committed experiment version, freeze the inputs and inspect the 45-run plan with these commands.
+
+```bash
+python scripts/freeze_mask_protocol.py
+python scripts/run_mask_experiments.py --protocol configs/protocols/tofu_forget05_multiseed.json --dry-run
+```
+
+The frozen manifest, package versions, and validated inputs are stored under `saves/experiments/tofu_forget05_multiseed`. Remove `--dry-run` to start training.

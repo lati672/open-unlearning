@@ -1,0 +1,7 @@
+defaults:
+  - NPO
+handler: RandomNPO
+method_args:
+  mask: random
+  random_reference: adaptive
+  mask_seed: 1729

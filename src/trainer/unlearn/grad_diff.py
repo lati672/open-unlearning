@@ -4,6 +4,7 @@ from typing import Optional
 import torch
 
 from data.utils import IGNORE_INDEX
+from trainer.masking import eligible_positions
 from trainer.utils import compute_kl_divergence, compute_masked_batch_nll
 from trainer.unlearn.base import UnlearnTrainer
 
@@ -45,10 +46,11 @@ class GradDiff(UnlearnTrainer):
         return ref_model
 
     def compute_retain_loss(self, model, retain_inputs):
-        retain_outputs = model(**retain_inputs)
         retain_loss = 0.0
         if self.retain_loss_type == "NLL":
-            retain_loss += retain_outputs.loss
+            sums, _ = compute_masked_batch_nll(model, retain_inputs)
+            counts = eligible_positions(retain_inputs).sum().to(sums.device)
+            retain_loss = sums.sum() / counts.clamp_min(1)
         elif self.retain_loss_type == "KL":
             kl_loss, retain_outputs = compute_kl_divergence(
                 self.model, self.ref_model, retain_inputs

@@ -13,7 +13,7 @@ from pathlib import Path
 import hydra
 import torch
 from data import get_datasets
-from data.collators import DataCollatorForSupervisedDataset
+from data.collators import DataCollatorForSupervisedDataset, ATTENTION_MASK_POLICY
 from model import (
     _add_or_replace_eos_token,
     get_model as load_hf_model,
@@ -513,6 +513,15 @@ def main(config):
             f.write('\n')
     
     logger.info(f"Results saved to: {output_json_path}")
+    metadata = {
+        "attention_mask_policy": ATTENTION_MASK_POLICY,
+        "model": config_snapshot.model.model_args.pretrained_model_name_or_path,
+        "model_commit": getattr(model.config, "_commit_hash", None),
+        "tokenizer": tokenizer.name_or_path,
+        "pad_token_id": tokenizer.pad_token_id,
+        "eos_token_id": tokenizer.eos_token_id,
+    }
+    Path(output_json_path).with_suffix(".metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
     logger.info(f"Log file saved to: {log_file}")
     logger.info(f"Config snapshot saved to: {config_path}")
     logger.info(f"Total examples processed: {len(results)}")

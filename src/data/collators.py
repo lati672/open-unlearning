@@ -1,10 +1,15 @@
 import json
+import numbers
+import hashlib
+from pathlib import Path
 import torch
 import transformers
 import unicodedata
 import re
 from typing import Dict, List, Sequence, Any, Callable, Optional, Tuple
 from data.utils import IGNORE_INDEX
+
+ATTENTION_MASK_POLICY = "explicit_or_unpadded_length_v1"
 
 
 class DataCollatorForSupervisedDataset(object):
@@ -49,24 +54,28 @@ class DataCollatorForSupervisedDataset(object):
         else:
             input_ids = [instance["input_ids"] for instance in instances]
             input_ids = self._pad_tokens(input_ids, self.tokenizer.pad_token_id)
-            attention_mask = input_ids.ne(self.tokenizer.pad_token_id)
+            attention_mask = self._pad_tokens(
+                [torch.as_tensor(ex.get("attention_mask", torch.ones(len(ex["input_ids"]))), dtype=torch.bool)
+                 for ex in instances], 0
+            )
             return_dct.update({"input_ids": input_ids})
             return_dct.update({"attention_mask": attention_mask})
             if "labels" in instances[0]:
                 labels = [instance["labels"] for instance in instances]
                 labels = self._pad_tokens(labels, IGNORE_INDEX)
                 return_dct.update({"labels": labels})
-            if self.index:
-                if self.index in instances[0]:
+            index_key = self.index or ("index" if any("index" in ex for ex in instances) else None)
+            if index_key:
+                if all(index_key in ex for ex in instances):
                     return_dct.update(
                         {
-                            self.index: torch.tensor(
-                                [example[self.index] for example in instances]
+                            index_key: torch.tensor(
+                                [example[index_key] for example in instances]
                             )
                         }
                     )
                 else:
-                    raise Warning(f"{self.index} not found in dataset")
+                    raise KeyError(f"Stable sample index {index_key!r} missing from dataset")
         return return_dct
 
 
@@ -78,7 +87,7 @@ class DataCollatorWithLogProbs(DataCollatorForSupervisedDataset):
         tokenizer: transformers.PreTrainedTokenizer,
         logprob_path: str,
         padding_side: str = "right",
-        index: str = None,
+        index: str = "index",
         logprob_key: str = "doc_id",
         anchor_split: str = "forget",
     ):
@@ -86,6 +95,8 @@ class DataCollatorWithLogProbs(DataCollatorForSupervisedDataset):
         self.logprob_key = logprob_key
         self.logprob_path = logprob_path
         self.logprob_store = self._load_logprob_file(logprob_path)
+        metadata_path = Path(logprob_path).with_suffix(".metadata.json")
+        self.attention_policy = json.loads(metadata_path.read_text()).get("attention_mask_policy") if metadata_path.exists() else None
         self.anchor_split = anchor_split
 
     def _load_logprob_file(self, path: str):
@@ -104,6 +115,8 @@ class DataCollatorWithLogProbs(DataCollatorForSupervisedDataset):
                     raise ValueError(
                         f"Missing key '{self.logprob_key}' in log prob record on line {line_num} of {path}"
                     )
+                if str(key) in store:
+                    raise ValueError(f"Duplicate sample index {key} in {path}")
                 store[str(key)] = record
         if not store:
             raise ValueError(f"No log probability records found in {path}")
@@ -137,6 +150,7 @@ class DataCollatorWithLogProbs(DataCollatorForSupervisedDataset):
 
         if split_name is None or split_name == self.anchor_split:
             indices = self._normalize_indices(collated, instances)
+            collated["index"] = torch.tensor([int(i) for i in indices], dtype=torch.long)
             self._attach_logprob_metadata(collated, instances, indices)
         else:
             self._fill_nan_logprobs(collated)
@@ -168,10 +182,9 @@ class DataCollatorWithLogProbs(DataCollatorForSupervisedDataset):
                 raise KeyError(
                     f"Encountered empty '{index_key}' value while aligning log probabilities."
                 )
-            try:
-                normalized.append(str(int(idx)))
-            except (TypeError, ValueError):
-                normalized.append(str(idx))
+            if isinstance(idx, bool) or not isinstance(idx, numbers.Integral) or idx < 0:
+                raise ValueError("Sample indices must be stable nonnegative integers")
+            normalized.append(str(int(idx)))
         return normalized
 
     def _fill_nan_logprobs(self, collated: Dict[str, Any]) -> None:
@@ -190,6 +203,15 @@ class DataCollatorWithLogProbs(DataCollatorForSupervisedDataset):
         )
 
         for row, instance in enumerate(instances):
+            ids = instance["input_ids"]
+            explicit_attention = torch.as_tensor(instance.get("attention_mask", torch.ones(len(ids)))).bool()
+            legacy_attention = ids.ne(self.tokenizer.pad_token_id).cpu()
+            # A terminal EOS cannot affect any scored next-token prediction.
+            # An internal EOT/EOS or other changed key mask can affect all later
+            # predictions, so pre-fix logprobs must be regenerated.
+            changed_context = (explicit_attention.cpu() != legacy_attention)[:-1].any()
+            if changed_context and self.attention_policy != ATTENTION_MASK_POLICY:
+                raise ValueError("Stale logprobs use pre-fix attention masks. Regenerate with setup_data.py --logprobs.")
             key = indices[row]
             record = self.logprob_store.get(key)
             if record is None:
@@ -205,11 +227,59 @@ class DataCollatorWithLogProbs(DataCollatorForSupervisedDataset):
                 )
 
             values = record.get("token_logprobs", [])
-            for col in range(min(len(values), seq_len)):
+            length = len(instance["input_ids"])
+            if len(values) < length:
+                raise ValueError(f"Logprob record {key} is shorter than input tokens")
+            if "tokens" in record:
+                actual = [self.tokenizer.decode([int(t)]) for t in instance["input_ids"]]
+                if record["tokens"][:length] != actual:
+                    raise ValueError(f"Token alignment mismatch for sample index {key}")
+            offset = seq_len - length if self.padding_side == "left" else 0
+            for col in range(length):
                 value = values[col]
-                token_logprobs_tensor[row, col] = float(value) if value is not None else float("nan")
+                token_logprobs_tensor[row, offset + col] = float(value) if value is not None else float("nan")
 
         collated["base_logprobs"] = token_logprobs_tensor
+
+class FrozenMaskCollator:
+    """Replay audited initialization masks for controlled paired experiments."""
+
+    def __init__(self, collator, path):
+        self.collator = collator
+        metadata_path = Path(path).with_suffix(".metadata.json")
+        self.metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
+        if self.metadata.get("logprob_sha256"):
+            if not hasattr(collator, "logprob_path"):
+                raise ValueError("Adaptive reference masks require the logprob collator")
+            actual = hashlib.sha256(Path(collator.logprob_path).read_bytes()).hexdigest()
+            if actual != self.metadata["logprob_sha256"]:
+                raise ValueError("Reference logprobs changed; regenerate frozen adaptive masks with audit_masks.py")
+        self.records = {}
+        with open(path) as stream:
+            for line in stream:
+                record = json.loads(line)
+                key = int(record["doc_id"])
+                if key in self.records:
+                    raise ValueError(f"Duplicate frozen-mask index {key}")
+                self.records[key] = record
+
+    def __call__(self, instances):
+        batch = self.collator(instances)
+        forget = batch["forget"] if "forget" in batch else batch
+        samples = [item["forget"] if "forget" in item else item for item in instances]
+        masks = []
+        for sample in samples:
+            if "index" not in sample:
+                raise KeyError("Frozen masks require stable sample index")
+            record = self.records[int(sample["index"])]
+            if sample["input_ids"].tolist() != record["input_ids"]:
+                raise ValueError("Frozen mask tokens do not match training input")
+            if len(record["mask"]) != len(record["input_ids"]):
+                raise ValueError("Frozen mask length mismatch")
+            masks.append(torch.tensor(record["mask"], dtype=torch.bool))
+        forget["reference_mask"] = self.collator._pad_tokens(masks, 0)
+        return batch
+
 
 # --------- helpers: normalization & regex building (whitespace only, hyphens preserved) ---------
 def _nfkc_lower(s: str) -> str:
@@ -412,7 +482,10 @@ class DataCollatorWithEntityMask(object):
         # LEAF CASE: pad & stack like the baseline collator
         input_ids = [instance["input_ids"] for instance in instances]
         input_ids = self._pad_tokens(input_ids, self.tokenizer.pad_token_id)
-        attention_mask = input_ids.ne(self.tokenizer.pad_token_id)
+        attention_mask = self._pad_tokens(
+            [torch.as_tensor(ex.get("attention_mask", torch.ones(len(ex["input_ids"]))), dtype=torch.bool)
+             for ex in instances], 0
+        )
         return_dct.update({"input_ids": input_ids})
         return_dct.update({"attention_mask": attention_mask})
 
@@ -421,13 +494,11 @@ class DataCollatorWithEntityMask(object):
             labels = self._pad_tokens(labels, IGNORE_INDEX)
             return_dct.update({"labels": labels})
 
-        if self.index:
-            if self.index in instances[0]:
-                return_dct.update({
-                    self.index: torch.tensor([example[self.index] for example in instances])
-                })
-            else:
-                raise Warning(f"{self.index} not found in dataset")
+        index_key = self.index or ("index" if any("index" in ex for ex in instances) else None)
+        if index_key:
+            if not all(index_key in ex for ex in instances):
+                raise KeyError(f"Stable sample index {index_key!r} missing from dataset")
+            return_dct[index_key] = torch.tensor([ex[index_key] for ex in instances])
 
         # --- entity_mask (TEXT-ONLY) ---
         if "entity_mask" in instances[0]:

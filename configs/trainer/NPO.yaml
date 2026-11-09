@@ -9,3 +9,5 @@ method_args:
   retain_loss_type: NLL
   # Disable entity masking by default so datasets without entity annotations work.
   mask: null
+
+  normalization: summed  # summed masked NPO; token_mean is the ablation

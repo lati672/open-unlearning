@@ -1,6 +1,7 @@
 # trainer/unlearn/entity_rmu.py
 import torch
-from trainer.unlearn.rmu import RMU  # or adjust the import path to where your RMU class lives
+from trainer.unlearn.rmu import RMU
+from trainer.masking import eligible_positions
 
 class EntityRMU(RMU):
     """
@@ -22,25 +23,7 @@ class EntityRMU(RMU):
           activation*: [B, S, D]
           mask:       [B, S]  (bool)
         """
-        # [B, S, D]  per-token squared diffs
-        per_tok_mse = torch.nn.functional.mse_loss(
-            activation1, activation2, reduction="none"
-        ).mean(dim=2)  # -> [B, S]
-
-        mask_f = mask.float()                # [B, S]
-        sums   = (per_tok_mse * mask_f).sum(dim=1)      # [B]
-        counts = mask_f.sum(dim=1)                        # [B]
-
-        # Avoid div-by-zero; exclude samples with no masked tokens from the batch mean
-        valid = counts > 0
-        if valid.any():
-            loss_per_sample = torch.zeros_like(sums)
-            loss_per_sample[valid] = sums[valid] / counts[valid]
-            
-            return loss_per_sample[valid].mean()
-        else:
-            # No entities (or no label-active tokens) in this batch -> zero loss
-            return torch.zeros((), dtype=per_tok_mse.dtype, device=per_tok_mse.device)
+        return RMU.compute_activation_loss(None, activation1, activation2, mask)
 
     def compute_loss(self, model, inputs, return_outputs=False):
         # -------- forget branch (entity-masked) --------
@@ -66,15 +49,10 @@ class EntityRMU(RMU):
         #   - label-active (labels != -100)
         #   - attention_mask (optional but safe)
         #   - entity_mask == 1
-        base_mask   = (fg["labels"] != -100) & fg["attention_mask"].bool()
-        if "entity_mask" in fg:
-            ent_mask = fg["entity_mask"].bool()
-            # Ensure device + shape alignment
-            ent_mask = ent_mask.to(device=base_mask.device)
-            forget_mask = base_mask & ent_mask
-        else:
-            # Fallback: if entity_mask not provided, behave like vanilla RMU
-            forget_mask = base_mask
+        base_mask = eligible_positions(fg)
+        if "entity_mask" not in fg:
+            raise KeyError("EntityRMU requires entity_mask from the entity collator")
+        forget_mask = (base_mask & fg["entity_mask"].to(base_mask.device).bool()).to(model_forget_activations.device)
 
         forget_loss = self._safe_activation_loss(
             model_forget_activations, control_vec, forget_mask

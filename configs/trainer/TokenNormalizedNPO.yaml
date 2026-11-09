@@ -1,0 +1,7 @@
+defaults:
+  - NPO
+handler: TokenNormalizedNPO
+method_args:
+  normalization: token_mean
+  random_reference: adaptive
+  mask_seed: 1729

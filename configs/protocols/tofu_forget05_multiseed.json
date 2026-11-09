@@ -1,0 +1,62 @@
+{
+  "name": "tofu_forget05_multiseed_v1",
+  "dataset": {
+    "id": "locuslab/TOFU",
+    "revision": "324592d84ae4f482ac7249b9285c2ecdb53e3a68",
+    "forget": "forget05",
+    "retain": "retain95",
+    "holdout": "holdout05",
+    "forget_samples": 200,
+    "retain_samples": 3800,
+    "holdout_samples": 200
+  },
+  "initial_model": {
+    "id": "open-unlearning/tofu_Llama-3.2-1B-Instruct_full",
+    "revision": "88e31200b97e4c0c04ae0d2f0b591f427046d192"
+  },
+  "adaptive_reference": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "role": "Discrepancy baseline and tokenizer source"
+  },
+  "objective_reference": "Frozen copy of initial_model before any optimizer update, for NPO and RMU",
+  "evaluation_reference": "retain95 retrained-model logs, reserved for official TOFU evaluation",
+  "evaluation_profile": "Controlled raw QA metrics, matching the existing seed-0 runs",
+  "training": {
+    "seeds": [0, 1, 2],
+    "nominal_epochs": 20,
+    "max_steps": 120,
+    "checkpoints": {"60": 9.6, "120": 19.2},
+    "world_size": 2,
+    "per_device_train_batch_size": 4,
+    "gradient_accumulation_steps": 4,
+    "learning_rate": 0.00001,
+    "weight_decay": 0.01,
+    "warmup_steps": 6,
+    "beta": 0.1,
+    "alpha": 1.0,
+    "gamma": 1.0
+  },
+  "random_mask_seed": 1729,
+  "rmu_control": {
+    "cpu_seed": 0,
+    "skip_uniform_draws": 10,
+    "hidden_size": 2048,
+    "steering_coeff": 2,
+    "sha256": "fb7a1f2e06b3f5e77730d95b45491d624d51e4add50520726d40b985c099a24b"
+  },
+  "torch_cuda": "12.1",
+  "packages": {
+    "transformers": "4.45.1", "accelerate": "0.34.2", "torch": "2.4.1",
+    "flash-attn": "2.6.3", "datasets": "3.0.1", "bitsandbytes": "0.44.1", "safetensors": "0.8.0"
+  },
+  "inputs": {
+    "saves/audits/revision/masks_TOFU_forget05_adaptive.jsonl": "39d77bf5af26fd464e918f5f5950b61abe3b6c8990a63689ed27228516ff895f",
+    "saves/audits/revision/masks_TOFU_forget05_adaptive.metadata.json": "392e2630ce5bff921b365e485f86c812e7df39d029f1fcd5c12c49582a950b30",
+    "saves/audits/revision/masks_TOFU_forget05_entity.jsonl": "5092997b8fd827335cde4684bc709090a96a62d3687de6727a56950e98759fbf",
+    "saves/audits/revision/masks_TOFU_forget05_entity.metadata.json": "9899cd26f5abd79526cc3d9e9bc3602f4e88ec9ad677a5fa13d2d32a82e96ac5",
+    "saves/logprobs/TOFU_forget05_Llama-3.2-1B-Instruct/logprobs.json": "4208b33627ed56fa6f31c0280122ef281dd169d05c2cd18598b2a8fc245e3f9f",
+    "saves/logprobs/TOFU_forget05_Llama-3.2-1B-Instruct/logprobs.metadata.json": "7b3970b4e858bb2d38cd6429178c6923c4a8d6b257fc0c580a983d0c136f6940",
+    "saves/eval/tofu_Llama-3.2-1B-Instruct_retain95/TOFU_EVAL.json": "88a1ae92c3fa1feecee18154dc1c5c524ab55a711c11a89ab64cd0cb5bac916d"
+  }
+}
