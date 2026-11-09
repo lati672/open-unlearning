@@ -111,6 +111,13 @@ class MaskSelector:
             frozen = frozen.to(eligible.device).bool()
             if frozen.shape != eligible.shape or (frozen & ~eligible).any():
                 raise ValueError("Frozen reference mask must be a subset of eligible positions")
+        frozen_random = inputs.get("frozen_random_mask") if self.kind == "random" else None
+        if frozen_random is not None:
+            frozen_random = frozen_random.to(eligible.device).bool()
+            if frozen_random.shape != eligible.shape or (frozen_random & ~eligible).any():
+                raise ValueError("Frozen Random mask must be a subset of eligible positions")
+            if frozen is None or not torch.equal(frozen_random.sum(-1), frozen.sum(-1)):
+                raise ValueError("Frozen Random density differs from the source mask")
         if source == "entity":
             if "entity_mask" not in inputs:
                 raise KeyError("Entity masks require 'entity_mask' from the collator.")
@@ -143,7 +150,8 @@ class MaskSelector:
                     else:
                         computed = reference
                     if self.kind == "random":
-                        computed = density_matched_random_mask(eligible, computed, indices, self.seed).to(eligible.device)
+                        computed = frozen_random if frozen_random is not None else density_matched_random_mask(
+                            eligible, computed, indices, self.seed).to(eligible.device)
                 compact = computed[row, positions].detach().cpu().clone()
                 self.cache[index] = (signature, compact)
             restored = torch.zeros_like(eligible[row])

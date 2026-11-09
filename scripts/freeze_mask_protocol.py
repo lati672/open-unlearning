@@ -4,6 +4,7 @@ import argparse
 import hashlib
 from importlib import metadata
 import json
+import math
 from pathlib import Path
 import platform
 import shutil
@@ -12,7 +13,11 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PROTOCOL = ROOT / "configs/protocols/tofu_forget05_multiseed.json"
-FORMAL_OUTPUT = ROOT / "saves/experiments/tofu_forget05_multiseed_v2"
+FORMAL_OUTPUT = ROOT / "saves/experiments/tofu_forget05_multiseed_v3"
+
+
+def run_name(objective, variant, normalization, seed, budget):
+    return f"{objective}_{variant}_{normalization}_forget05_seed{seed}_{budget}"
 
 
 def sha256(path):
@@ -22,6 +27,14 @@ def sha256(path):
 def save_json(path, value):
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
+    temporary.replace(path)
+
+
+def save_jsonl(path, rows):
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    with temporary.open("w") as stream:
+        for row in rows:
+            stream.write(json.dumps(row, allow_nan=False) + "\n")
     temporary.replace(path)
 
 
@@ -52,8 +65,9 @@ def check_frozen_run(protocol_path, output_root):
     for source, expected in protocol["inputs"].items():
         if sha256(frozen / Path(source).name) != expected:
             raise ValueError(f"Frozen input checksum mismatch: {source}")
-    if sha256(frozen / "random_mask_expectations.json") != manifest["random_mask_expectations_sha256"]:
-        raise ValueError("Frozen Random mask expectations changed")
+    for name, expected in manifest["derived_inputs"].items():
+        if sha256(frozen / name) != expected:
+            raise ValueError(f"Frozen derived input checksum mismatch: {name}")
     return protocol, manifest
 
 
@@ -110,13 +124,19 @@ def validate_mask_inputs(protocol, frozen):
         "adaptive": DataCollatorWithLogProbs(tokenizer, str(frozen / "logprobs.json")),
         "entity": DataCollatorWithEntityMask(tokenizer, names),
     }
-    expectations, stats = {}, {}
+    audit_path = frozen / f'tokens_TOFU_{ds["forget"]}.jsonl'
+    with audit_path.open() as stream:
+        audit = {int(row["doc_id"]): row["tokens"] for row in map(json.loads, stream)}
+    if len(audit) != len(dataset):
+        raise ValueError("Audited samples do not cover the frozen forget split")
+    expectations, stats, density = {}, {}, {}
+    base_rows, derived = [], []
     for kind, collator in collators.items():
         manifest = frozen / f'masks_TOFU_{ds["forget"]}_{kind}.jsonl'
         collator = FrozenMaskCollator(collator, manifest)
         if collator.metadata["target_model_commit"] != protocol["target_model"]["revision"]:
             raise ValueError(f"Wrong target checkpoint for {kind} mask")
-        rows = {}
+        rows, random_rows, density_rows = {}, [], []
         selected, eligible_count, empty = 0, 0, 0
         for batch in DataLoader(dataset, batch_size=4, collate_fn=collator):
             eligible = eligible_positions(batch)
@@ -135,13 +155,48 @@ def validate_mask_inputs(protocol, frozen):
             for i, index in enumerate(indices):
                 if str(index) in rows:
                     raise ValueError(f"Duplicate sample index {index}")
-                mask = random_mask[i, batch["attention_mask"][i].bool()]
-                rows[str(index)] = {"count": int(mask.sum()), "hash": hashlib.sha256(mask.numpy().tobytes()).hexdigest()}
+                ids = collator.records[index]["input_ids"]
+                length = len(ids)
+                mask = random_mask[i, :length]
+                eligible_row = eligible[i, :length]
+                source_row = reference[i, :length]
+                counts = {"doc_id": index, "eligible_count": int(eligible_row.sum()),
+                          "selected_count": int(source_row.sum()), "random_selected_count": int(mask.sum()),
+                          "empty": not bool(source_row.any())}
+                if kind == "adaptive":
+                    tokens = audit[index]
+                    if ([t["selected"] for t in tokens] != source_row.tolist()
+                            or [t["eligible"] for t in tokens] != eligible_row.tolist()):
+                        raise ValueError(f"Adaptive mask differs from audited sample {index}")
+                    if any(t["selected"] and (t["delta"] is None or not math.isfinite(t["delta"])) for t in tokens):
+                        raise ValueError(f"Adaptive mask selects a nonfinite position in sample {index}")
+                    counts["finite_eligible_count"] = sum(
+                        e and t["delta"] is not None and math.isfinite(t["delta"])
+                        for e, t in zip(eligible_row.tolist(), tokens))
+                    base_rows.append({"doc_id": index, "input_ids": ids, "mask": eligible_row.int().tolist(),
+                                      "eligible_count": counts["eligible_count"], "selected_count": counts["eligible_count"]})
+                density_rows.append(counts)
+                random_rows.append({"doc_id": index, "input_ids": ids, "mask": mask.int().tolist(),
+                                    "eligible_count": counts["eligible_count"], "selected_count": counts["random_selected_count"]})
+                attended = batch["attention_mask"][i, :length].bool()
+                rows[str(index)] = {"count": int(mask.sum()),
+                                    "hash": hashlib.sha256(mask[attended].numpy().tobytes()).hexdigest()}
         if set(map(int, rows)) != collator.records.keys():
             raise ValueError(f"Frozen {kind} IDs do not cover the dataset")
         expectations[kind] = rows
         stats[kind] = {"samples": len(rows), "selected": selected, "eligible": eligible_count, "empty": empty}
-    return expectations, stats
+        density[kind] = density_rows
+        random_file = f'masks_TOFU_{ds["forget"]}_random_{kind}.jsonl'
+        save_jsonl(frozen / random_file, random_rows)
+        derived.append(random_file)
+    base_file = f'masks_TOFU_{ds["forget"]}_base.jsonl'
+    save_jsonl(frozen / base_file, base_rows)
+    save_json(frozen / "mask_density_validation.json", {
+        "mask_seed": protocol["random_mask_seed"], "per_sample_density_exact": True,
+        "eligible_subset_verified": True, "empty_pattern_matches": True,
+        "adaptive_selected_positions_finite": True, "samples": density})
+    derived += [base_file, "mask_density_validation.json"]
+    return expectations, stats, derived
 
 
 def existing_seed_zero():
@@ -180,7 +235,7 @@ def main():
         if sha256(path) != expected:
             raise ValueError(f"Source artifact checksum mismatch: {source}")
         shutil.copy2(path, frozen / path.name)
-    expectations, stats = validate_mask_inputs(protocol, frozen)
+    expectations, stats, derived = validate_mask_inputs(protocol, frozen)
     random_expectations = frozen / "random_mask_expectations.json"
     save_json(random_expectations, expectations)
     import torch
@@ -198,7 +253,7 @@ def main():
         "code_branch": git("branch", "--show-current"),
         "protocol_sha256": sha256(args.protocol),
         "protocol": protocol,
-        "random_mask_expectations_sha256": sha256(random_expectations),
+        "derived_inputs": {name: sha256(frozen / name) for name in [*derived, random_expectations.name]},
         "mask_validation": stats,
         "seed0_existing_step120": existing_seed_zero(),
         "seed0_note": "Existing focused step-120 metrics are retained with provenance. Step 60 was never saved and requires a new run with the same 120-step schedule.",

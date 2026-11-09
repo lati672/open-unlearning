@@ -304,13 +304,16 @@ The mask experiment runner evaluates in memory and removes any saved Safetensors
 
 Adaptive discrepancy is $\log p_{\theta_{\mathrm{base}}} - \log p_{\theta_{\mathrm{tgt}}}$ at initialization. The NPO objective compares masked NLL from the target and reference models. RMU retain loss also uses frozen target activations from step 0. The checkpoint runner uses the same focused QA metrics as the existing controls.
 
-The legacy optimizer schedule runs for 120 updates. The two checkpoints are step 60 at actual epoch 9.6 and step 120 at actual epoch 19.2. Both save weights, evaluate, and then remove the weights on success. The old seed-0 step-120 metrics remain available with hashes. The old runs did not save step-60 weights or metrics.
+The runner sets `max_steps=120` and `save_steps=60`. Step 60 is approximately 9.6 dataloader epochs and step 120 is approximately 19.2. Warmup uses six optimizer updates, the scheduler's budget for one dataloader epoch. Automatic checkpoint pruning is disabled. Each checkpoint records the tokenizer, model configuration, resolved configuration, trainer state, seed, mask hash, and code commit. Evaluation success triggers weight cleanup. The old seed-0 step-120 metrics remain available with hashes. The old runs did not save step-60 weights or metrics.
+
+The freeze script validates finite discrepancies and eligible positions against the Adaptive audit. It preserves the audited Entity mask, records per-sample counts and empty masks, and writes both density-matched Random masks to disk. Every training seed replays the same mask files by stable sample ID.
 
 From the committed experiment version, freeze the inputs and inspect the 45-run plan with these commands.
 
 ```bash
 python scripts/freeze_mask_protocol.py
+python scripts/run_mask_experiments.py --protocol configs/protocols/tofu_forget05_multiseed.json --objectives NPO --variants random_adaptive --checkpoint-smoke
 python scripts/run_mask_experiments.py --protocol configs/protocols/tofu_forget05_multiseed.json --dry-run
 ```
 
-The v2 manifest, package versions, and validated inputs are stored under `saves/experiments/tofu_forget05_multiseed_v2`. Remove `--dry-run` to start training.
+The v3 manifest, package versions, and validated inputs are stored under `saves/experiments/tofu_forget05_multiseed_v3`. The short run checks both checkpoints after four optimizer updates and reloads each from disk for a small offline QA evaluation. The formal runner requires a successful short run for the same commit and protocol before starting the matrix.

@@ -244,7 +244,7 @@ class DataCollatorWithLogProbs(DataCollatorForSupervisedDataset):
 class FrozenMaskCollator:
     """Replay audited initialization masks for controlled paired experiments."""
 
-    def __init__(self, collator, path):
+    def __init__(self, collator, path, random_path=None):
         self.collator = collator
         metadata_path = Path(path).with_suffix(".metadata.json")
         self.metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
@@ -258,30 +258,48 @@ class FrozenMaskCollator:
             actual = hashlib.sha256(Path(collator.logprob_path).read_bytes()).hexdigest()
             if actual != self.metadata["logprob_sha256"]:
                 raise ValueError("Base model logprobs changed. Regenerate frozen adaptive masks with audit_masks.py")
-        self.records = {}
+        self.records = self._read_records(path)
+        self.random_records = self._read_records(random_path) if random_path is not None else None
+        if self.random_records is not None:
+            if self.random_records.keys() != self.records.keys():
+                raise ValueError("Frozen Random IDs differ from source mask IDs")
+            for index, record in self.records.items():
+                random_record = self.random_records[index]
+                if random_record["input_ids"] != record["input_ids"] or sum(random_record["mask"]) != sum(record["mask"]):
+                    raise ValueError(f"Frozen Random tokens or density differ for sample {index}")
+
+    @staticmethod
+    def _read_records(path):
+        records = {}
         with open(path) as stream:
             for line in stream:
                 record = json.loads(line)
                 key = int(record["doc_id"])
-                if key in self.records:
+                if key in records:
                     raise ValueError(f"Duplicate frozen-mask index {key}")
-                self.records[key] = record
+                if len(record["mask"]) != len(record["input_ids"]):
+                    raise ValueError(f"Frozen mask length mismatch for sample {key}")
+                records[key] = record
+        return records
 
     def __call__(self, instances):
         batch = self.collator(instances)
         forget = batch["forget"] if "forget" in batch else batch
         samples = [item["forget"] if "forget" in item else item for item in instances]
-        masks = []
+        masks, random_masks = [], []
         for sample in samples:
             if "index" not in sample:
                 raise KeyError("Frozen masks require stable sample index")
-            record = self.records[int(sample["index"])]
+            index = int(sample["index"])
+            record = self.records[index]
             if sample["input_ids"].tolist() != record["input_ids"]:
                 raise ValueError("Frozen mask tokens do not match training input")
-            if len(record["mask"]) != len(record["input_ids"]):
-                raise ValueError("Frozen mask length mismatch")
             masks.append(torch.tensor(record["mask"], dtype=torch.bool))
+            if self.random_records is not None:
+                random_masks.append(torch.tensor(self.random_records[index]["mask"], dtype=torch.bool))
         forget["reference_mask"] = self.collator._pad_tokens(masks, 0)
+        if self.random_records is not None:
+            forget["frozen_random_mask"] = self.collator._pad_tokens(random_masks, 0)
         return batch
 
 

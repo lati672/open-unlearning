@@ -305,6 +305,25 @@ class MaskTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "logprobs changed"):
                 FrozenMaskCollator(collator, str(manifest))
 
+    def test_frozen_random_manifest_replays_token_identity(self):
+        from data.collators import FrozenMaskCollator
+
+        examples = [sample(3, (1, 2, 3, 4, 0)), sample(9)]
+        ids = [item["input_ids"].tolist() for item in examples]
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.jsonl"
+            random_mask = Path(directory) / "random.jsonl"
+            for path, masks in [(source, [[0, 1, 0, 1, 0], [0, 0, 0]]),
+                                (random_mask, [[0, 0, 1, 0, 1], [0, 0, 0]])]:
+                path.write_text("\n".join(json.dumps({"doc_id": i, "input_ids": tokens, "mask": mask})
+                    for i, tokens, mask in zip([3, 9], ids, masks)))
+            collator = FrozenMaskCollator(DataCollatorForSupervisedDataset(Tokenizer()), source, random_mask)
+            batch = collator(examples)
+            for seed in [0, 1, 2]:
+                selected = MaskSelector("random", seed=seed)(batch)
+                torch.testing.assert_close(selected, batch["frozen_random_mask"])
+            self.assertEqual(selected.sum(-1).tolist(), [2, 0])
+
     def test_real_trainers_one_optimizer_step(self):
         from transformers import LlamaConfig, LlamaForCausalLM, TrainingArguments
         from data.collators import FrozenMaskCollator

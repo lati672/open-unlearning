@@ -1,5 +1,5 @@
 {
-  "name": "tofu_forget05_multiseed_v2",
+  "name": "tofu_forget05_multiseed_v3",
   "dataset": {
     "id": "locuslab/TOFU",
     "revision": "324592d84ae4f482ac7249b9285c2ecdb53e3a68",
@@ -31,8 +31,8 @@
   "evaluation_profile": "Controlled raw QA metrics, matching the existing seed-0 runs",
   "training": {
     "seeds": [0, 1, 2],
-    "nominal_epochs": 20,
     "max_steps": 120,
+    "save_steps": 60,
     "checkpoints": {"60": 9.6, "120": 19.2},
     "world_size": 2,
     "per_device_train_batch_size": 4,
@@ -43,6 +43,11 @@
     "beta": 0.1,
     "alpha": 1.0,
     "gamma": 1.0
+  },
+  "checkpoint_validation": {
+    "max_steps": 4,
+    "save_steps": 2,
+    "checkpoints": {"2": 0.32, "4": 0.64}
   },
   "random_mask_seed": 1729,
   "rmu_control": {
@@ -58,6 +63,7 @@
     "flash-attn": "2.6.3", "datasets": "3.0.1", "bitsandbytes": "0.44.1", "safetensors": "0.8.0"
   },
   "inputs": {
+    "saves/audits/revision/tokens_TOFU_forget05.jsonl": "5586d9ec18b190e0ccd6ab124571733e76f6883a1330014dab34cc25640b5c05",
     "saves/audits/revision/masks_TOFU_forget05_adaptive.jsonl": "39d77bf5af26fd464e918f5f5950b61abe3b6c8990a63689ed27228516ff895f",
     "saves/audits/revision/masks_TOFU_forget05_adaptive.metadata.json": "392e2630ce5bff921b365e485f86c812e7df39d029f1fcd5c12c49582a950b30",
     "saves/audits/revision/masks_TOFU_forget05_entity.jsonl": "5092997b8fd827335cde4684bc709090a96a62d3687de6727a56950e98759fbf",

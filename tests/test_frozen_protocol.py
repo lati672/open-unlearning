@@ -30,7 +30,7 @@ class FrozenProtocolTests(unittest.TestCase):
             trainer = Trainer(ToyModel(1, 1), TrainingArguments(
                 output_dir=directory, use_cpu=True, num_train_epochs=20,
                 per_device_train_batch_size=4, gradient_accumulation_steps=4,
-                save_strategy="no", report_to=[], disable_tqdm=True,
+                max_steps=120, save_steps=60, save_strategy="no", report_to=[], disable_tqdm=True,
             ), train_dataset=[{"inputs": torch.tensor([1.])}] * 100)
 
             def evaluate(model, target):
