@@ -13,10 +13,8 @@ saves*/
 notebooks/
 output*/
 wandb/
-data/
-!*/data/ 
-evals/
-!*/evals/  
+/data/
+/evals/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
