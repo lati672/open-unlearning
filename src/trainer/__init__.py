@@ -6,6 +6,7 @@ from transformers import Trainer, TrainingArguments
 from trainer.base import FinetuneTrainer
 from trainer.unlearn.grad_ascent import GradAscent
 from trainer.unlearn.grad_diff import GradDiff
+from trainer.unlearn.selective_gradient_difference import SelectiveGradientDifference
 from trainer.unlearn.npo import NPO, RandomNPO, TokenNormalizedNPO
 from trainer.unlearn.dpo import DPO
 from trainer.unlearn.simnpo import SimNPO
@@ -93,6 +94,7 @@ _register_trainer(FinetuneTrainer)
 # Register Unlearning Trainer
 _register_trainer(GradAscent)
 _register_trainer(GradDiff)
+_register_trainer(SelectiveGradientDifference)
 _register_trainer(NPO)
 _register_trainer(TokenNormalizedNPO)
 _register_trainer(DPO)

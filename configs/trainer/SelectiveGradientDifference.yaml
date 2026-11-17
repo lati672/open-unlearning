@@ -1,0 +1,7 @@
+defaults:
+  - finetune
+
+handler: SelectiveGradientDifference
+method_args:
+  gamma_forget: 1.0
+  alpha_retain: 1.0

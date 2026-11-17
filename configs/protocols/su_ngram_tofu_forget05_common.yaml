@@ -1,0 +1,66 @@
+dataset:
+  id: locuslab/TOFU
+  revision: 324592d84ae4f482ac7249b9285c2ecdb53e3a68
+  forget: forget05
+  retain: retain95
+  forget_samples: 200
+  retain_samples: 3800
+  max_length: 512
+model:
+  target_id: open-unlearning/tofu_Llama-3.2-1B-Instruct_full
+  target_revision: 88e31200b97e4c0c04ae0d2f0b591f427046d192
+  tokenizer_id: meta-llama/Llama-3.2-1B-Instruct
+  tokenizer_revision: 9213176726f574b556790deb65791e0c5aa438b6
+  template_config: configs/model/Llama-3.2-1B-Instruct.yaml
+  dtype: bfloat16
+  attention: flash_attention_2
+assistant:
+  n: 3
+  context_length: 2
+  full_training_splits: [forget05, retain95]
+  retain_training_splits: [retain95]
+  token_source: target_chat_token_ids
+  fit_positions: all_attended_chat_tokens
+  sequence_boundary: reset_per_example
+  initial_context: actual_bos_as_context_and_shorter_prefix
+  smoothing: mle
+  alpha: 0.1
+  vocabulary: tokenizer_length_including_added_tokens
+  unseen: zero_for_mle_uniform_context_for_add_alpha
+  training_updates: frozen_precompute
+selection:
+  score: absolute_probability_difference
+  eligible: supervised_attended_shifted_targets
+  eos: include_real_supervised_eos_eot_exclude_padding
+  center_scope: attended_scored_tokens
+  tie_break: ascending_token_position
+  window_combine: clipped_union
+  gamma: 0.9
+  radius: 2
+  sensitivity_gammas: [0.2, 0.5, 0.8, 0.9]
+objective:
+  forget_reduction: mean_of_nonempty_per_sample_nll_sums
+  retain_reduction: mean_over_valid_tokens_in_rank_microbatch
+  empty_mask: skip_empty_samples_graph_connected_zero_when_all_empty
+  gamma_forget: 1.0
+  alpha_retain: 1.0
+training:
+  seeds: [0, 1, 2]
+  world_size: 2
+  max_steps: 120
+  save_steps: 60
+  batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 0.00001
+  weight_decay: 0.01
+  warmup_steps: 6
+  max_grad_norm: 1.0
+  optim: paged_adamw_32bit
+  sampling: forget_anchor_random_retain_with_replacement
+smoke:
+  seed: 0
+  max_steps: 4
+  save_steps: 4
+  warmup_steps: 1
+  eval_samples_per_split: 8
+  eval_max_new_tokens: 16

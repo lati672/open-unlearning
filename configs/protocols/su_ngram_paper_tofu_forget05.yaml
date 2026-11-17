@@ -1,0 +1,5 @@
+common: su_ngram_tofu_forget05_common.yaml
+name: SU-NGram (paper-based reimplementation)
+variant: SU-NGram-Paper
+selection:
+  method: threshold_then_window

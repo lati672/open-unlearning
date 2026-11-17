@@ -1,0 +1,7 @@
+common: su_ngram_tofu_forget05_common.yaml
+name: SU-Score-Matched
+variant: SU-Score-Matched
+role: selection-criterion control
+selection:
+  method: adaptive_density_top_score
+  radius: 0
