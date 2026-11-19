@@ -1,0 +1,7 @@
+defaults:
+  - finetune
+
+handler: SeUL
+method_args:
+  threshold: mean
+  alpha: null

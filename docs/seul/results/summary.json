@@ -1,0 +1,191 @@
+{
+  "method": "SeUL-Paper TOFU adaptation",
+  "learning_rate": 1e-05,
+  "max_steps": 2,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "per_seed": [
+    {
+      "seed": 0,
+      "ES": 0.5622165527361337,
+      "forget_probability": 0.8115868592262268,
+      "forget_rouge": 0.7017598161902145,
+      "forget_ratio": 0.4821045475778923,
+      "forget_quality": 2.5656301025789152e-14,
+      "utility": 0.5888305778960231,
+      "privleak": -99.65103511611495,
+      "abs_privleak": 99.65103511611495
+    },
+    {
+      "seed": 1,
+      "ES": 0.5232652122204294,
+      "forget_probability": 0.7972677566111088,
+      "forget_rouge": 0.6866257917027709,
+      "forget_ratio": 0.483767912249055,
+      "forget_quality": 2.9623487356936016e-13,
+      "utility": 0.5812255779087009,
+      "privleak": -99.01584063691723,
+      "abs_privleak": 99.01584063691723
+    },
+    {
+      "seed": 2,
+      "ES": 0.5428727457257011,
+      "forget_probability": 0.8030187138728797,
+      "forget_rouge": 0.7038522975295954,
+      "forget_ratio": 0.4833815591383663,
+      "forget_quality": 2.9623487356936016e-13,
+      "utility": 0.5881341018775338,
+      "privleak": -98.75705770094775,
+      "abs_privleak": 98.75705770094775
+    }
+  ],
+  "aggregate": {
+    "ES": {
+      "mean": 0.5427848368940881,
+      "sample_std": 0.01947581905760558,
+      "n": 3
+    },
+    "forget_probability": {
+      "mean": 0.8039577765700717,
+      "sample_std": 0.007205591855462845,
+      "n": 3
+    },
+    "forget_rouge": {
+      "mean": 0.6974126351408603,
+      "sample_std": 0.009400085800528795,
+      "n": 3
+    },
+    "forget_ratio": {
+      "mean": 0.4830846729884379,
+      "sample_std": 0.0008705179761685391,
+      "n": 3
+    },
+    "forget_quality": {
+      "mean": 2.060420160548365e-13,
+      "sample_std": 1.562186116949754e-13,
+      "n": 3
+    },
+    "utility": {
+      "mean": 0.5860634192274192,
+      "sample_std": 0.00420414095623669,
+      "n": 3
+    },
+    "privleak": {
+      "mean": -99.14131115132665,
+      "sample_std": 0.46000656755842007,
+      "n": 3
+    },
+    "abs_privleak": {
+      "mean": 99.14131115132665,
+      "sample_std": 0.46000656755842007,
+      "n": 3
+    }
+  },
+  "original_target_baseline": {
+    "ES": 0.7144498553917497,
+    "forget_probability": 0.8781954279541969,
+    "forget_rouge": 0.7946435025116368,
+    "forget_ratio": 0.4739842166976228,
+    "forget_quality": 2.9623487356936016e-13,
+    "utility": 0.5982853159022187,
+    "privleak": -99.9921580771656,
+    "abs_privleak": 99.9921580771656
+  },
+  "delta_from_original_per_seed": [
+    {
+      "seed": 0,
+      "ES": -0.15223330265561597,
+      "forget_probability": -0.06660856872797016,
+      "forget_rouge": -0.0928836863214223,
+      "forget_ratio": 0.008120330880269477,
+      "forget_quality": -2.7057857254357103e-13,
+      "utility": -0.009454738006195562,
+      "privleak": 0.3411229610506439,
+      "abs_privleak": -0.3411229610506439
+    },
+    {
+      "seed": 1,
+      "ES": -0.19118464317132022,
+      "forget_probability": -0.08092767134308809,
+      "forget_rouge": -0.10801771080886591,
+      "forget_ratio": 0.009783695551432214,
+      "forget_quality": 0.0,
+      "utility": -0.017059737993517787,
+      "privleak": 0.9763174402483656,
+      "abs_privleak": -0.9763174402483656
+    },
+    {
+      "seed": 2,
+      "ES": -0.17157710966604856,
+      "forget_probability": -0.07517671408131721,
+      "forget_rouge": -0.0907912049820414,
+      "forget_ratio": 0.009397342440743472,
+      "forget_quality": 0.0,
+      "utility": -0.010151214024684885,
+      "privleak": 1.2351003762178436,
+      "abs_privleak": -1.2351003762178436
+    }
+  ],
+  "delta_from_original_aggregate": {
+    "ES": {
+      "mean": -0.17166501849766158,
+      "sample_std": 0.01947581905760558,
+      "n": 3
+    },
+    "forget_probability": {
+      "mean": -0.07423765138412515,
+      "sample_std": 0.007205591855462845,
+      "n": 3
+    },
+    "forget_rouge": {
+      "mean": -0.09723086737077653,
+      "sample_std": 0.009400085800528795,
+      "n": 3
+    },
+    "forget_ratio": {
+      "mean": 0.009100456290815054,
+      "sample_std": 0.0008705179761685391,
+      "n": 3
+    },
+    "forget_quality": {
+      "mean": -9.019285751452367e-14,
+      "sample_std": 1.5621861169497542e-13,
+      "n": 3
+    },
+    "utility": {
+      "mean": -0.012221896674799412,
+      "sample_std": 0.00420414095623669,
+      "n": 3
+    },
+    "privleak": {
+      "mean": 0.850846925838951,
+      "sample_std": 0.46000656755842007,
+      "n": 3
+    },
+    "abs_privleak": {
+      "mean": -0.850846925838951,
+      "sample_std": 0.46000656755842007,
+      "n": 3
+    }
+  },
+  "seed0_calibration_replay": {
+    "fresh_training": true,
+    "weights_identical_to_calibration": true,
+    "metric_differences_from_calibration": {
+      "ES": 0.0,
+      "forget_probability": 0.0,
+      "forget_rouge": 0.0,
+      "forget_ratio": 0.0,
+      "forget_quality": 0.0,
+      "utility": 0.0,
+      "privleak": 0.0
+    },
+    "note": "Seed0 is a fresh replay of the tuning seed, not independent confirmation."
+  },
+  "caveat": "Seed0 participated in tuning; three-seed summary is descriptive, not independent held-out confirmation. Seeds1/2 are new.",
+  "official_evaluation_seed": 0,
+  "hyperparameters_fixed_after_calibration": true
+}
