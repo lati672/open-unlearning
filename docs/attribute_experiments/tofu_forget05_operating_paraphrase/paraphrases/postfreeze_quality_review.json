@@ -1,0 +1,32 @@
+{
+  "stage": "post-freeze text-only stricter review; original target and first AttributeOnly model had already been evaluated",
+  "model_results_used_to_choose_flags": false,
+  "independent_human_review": false,
+  "questions_modified": false,
+  "primary_all200_unchanged": true,
+  "primary_all400_paraphrases_unchanged": true,
+  "additional_uncertain_items": [
+    {
+      "original_id": 124,
+      "style": "ordinary",
+      "issue": "for her Love Inspired writing may narrow original for her work, which only identifies her as a Love Inspired author"
+    },
+    {
+      "original_id": 128,
+      "style": "ordinary",
+      "issue": "Which writers may narrow source Who when an influence might not itself be a writer"
+    },
+    {
+      "original_id": 151,
+      "style": "substantial",
+      "issue": "fiction may be broader than original novels"
+    }
+  ],
+  "pre_frozen_uncertain_original_ids": [
+    117,
+    131
+  ],
+  "strict_text_self_check_unflagged_rewrites": 393,
+  "strict_text_self_check_flagged_rewrites": 7,
+  "interpretation": "Potential equivalence issues; AI self-review is not a human gold standard. All original IDs remain in primary scoring. Any additional195-ID sensitivity is explicitly post-hoc and cannot override primary conclusions."
+}

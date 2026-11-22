@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "raw_checkpoints": 48,
+  "frontier_dominance_independently_checked": true,
+  "interpolation_rows": 404,
+  "no_extrapolation": true,
+  "secondary_metrics_same_bracket": true,
+  "seed_sample_sd_replayed": true,
+  "grid_points_not_used_as_independent_n": true
+}

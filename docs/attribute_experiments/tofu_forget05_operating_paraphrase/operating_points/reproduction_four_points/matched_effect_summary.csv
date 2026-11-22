@@ -1,0 +1,9 @@
+aggregation,analysis,metric,comparison_types_by_seed,seed0,seed1,seed2,mean,sample_sd,n_seeds,all_three_present,directions
+summed,matched_utility,F-Prob,"{0: 'matched_point', 1: 'common_support_grid_mean', 2: 'common_support_grid_mean'}",-0.03904747145099241,-0.034604325787727645,-0.0383190314123874,-0.037323609550369154,0.0023829675530281625,3,True,"['negative', 'negative', 'negative']"
+summed,matched_utility,ES,"{0: 'matched_point', 1: 'common_support_grid_mean', 2: 'common_support_grid_mean'}",-0.05899082726357324,-0.05174961835826742,-0.04675136571348618,-0.05249727044510895,0.00615388840419078,3,True,"['negative', 'negative', 'negative']"
+summed,matched_utility,F-ROUGE,"{0: 'matched_point', 1: 'common_support_grid_mean', 2: 'common_support_grid_mean'}",0.03828723618149649,0.048592542297190615,0.03341301567403173,0.04009759805090628,0.007750004174157394,3,True,"['positive', 'positive', 'positive']"
+summed,matched_utility,absolute PrivLeak,"{0: 'matched_point', 1: 'common_support_grid_mean', 2: 'common_support_grid_mean'}",-8.394085251531124,-6.513809152607719,-10.492107206615488,-8.466667203584777,1.9901419437953265,3,True,"['negative', 'negative', 'negative']"
+token_mean,matched_utility,F-Prob,{2: 'matched_point'},,,-0.06577902466307813,-0.06577902466307813,,1,False,['negative']
+token_mean,matched_utility,ES,{2: 'matched_point'},,,-0.05076122268872235,-0.05076122268872235,,1,False,['negative']
+token_mean,matched_utility,F-ROUGE,{2: 'matched_point'},,,0.036841623426987324,0.036841623426987324,,1,False,['positive']
+token_mean,matched_utility,absolute PrivLeak,{2: 'matched_point'},,,-30.27565279206566,-30.27565279206566,,1,False,['negative']

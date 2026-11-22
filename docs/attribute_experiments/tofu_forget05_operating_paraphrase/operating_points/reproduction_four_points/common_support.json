@@ -1,0 +1,470 @@
+[
+  {
+    "aggregation": "summed",
+    "seed": 0,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.46050765734006915,
+      0.5685644736038261
+    ],
+    "RandomAttribute_range": [
+      0.5525102269949941,
+      0.5525102269949941
+    ],
+    "common": [
+      0.5525102269949941,
+      0.5525102269949941
+    ],
+    "status": "point only"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 0,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.46050765734006915,
+      0.5685644736038261
+    ],
+    "RandomAttribute_range": [
+      0.4986208776983817,
+      0.5525102269949941
+    ],
+    "common": [
+      0.4986208776983817,
+      0.5525102269949941
+    ],
+    "status": "interval"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 0,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.16523906760383397,
+      0.18907914345152677
+    ],
+    "RandomAttribute_range": [
+      0.22305332200834527,
+      0.22305332200834527
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 0,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.16523906760383397,
+      0.19937110944651068
+    ],
+    "RandomAttribute_range": [
+      0.22305332200834527,
+      0.2619700858555734
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 1,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.44338372899169926,
+      0.5686694471837902
+    ],
+    "RandomAttribute_range": [
+      0.5491172290144369,
+      0.5497575216024848
+    ],
+    "common": [
+      0.5491172290144369,
+      0.5497575216024848
+    ],
+    "status": "interval"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 1,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.44338372899169926,
+      0.5686694471837902
+    ],
+    "RandomAttribute_range": [
+      0.48480738934929607,
+      0.5497575216024848
+    ],
+    "common": [
+      0.48480738934929607,
+      0.5497575216024848
+    ],
+    "status": "interval"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 1,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.144812045651488,
+      0.18363351373001932
+    ],
+    "RandomAttribute_range": [
+      0.21072368348017334,
+      0.21383336228784175
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 1,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.144812045651488,
+      0.19517309058457613
+    ],
+    "RandomAttribute_range": [
+      0.21072368348017334,
+      0.2362823450472206
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 2,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.4590219070089562,
+      0.5744954046798468
+    ],
+    "RandomAttribute_range": [
+      0.5546365311333884,
+      0.5558443946116142
+    ],
+    "common": [
+      0.5546365311333884,
+      0.5558443946116142
+    ],
+    "status": "interval"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 2,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.4590219070089562,
+      0.5744954046798468
+    ],
+    "RandomAttribute_range": [
+      0.4792837757537297,
+      0.5558443946116142
+    ],
+    "common": [
+      0.4792837757537297,
+      0.5558443946116142
+    ],
+    "status": "interval"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 2,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.14901813640142791,
+      0.18409031855873764
+    ],
+    "RandomAttribute_range": [
+      0.2147686352324672,
+      0.2183536522841314
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "summed",
+    "seed": 2,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.14901813640142791,
+      0.1877940472494811
+    ],
+    "RandomAttribute_range": [
+      0.2147686352324672,
+      0.22295863365288823
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 0,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.4936883558094579,
+      0.4936883558094579
+    ],
+    "RandomAttribute_range": [
+      0.4950902341272685,
+      0.5072203368187526
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 0,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.4521299457253666,
+      0.4936883558094579
+    ],
+    "RandomAttribute_range": [
+      0.4903246270819519,
+      0.5072203368187526
+    ],
+    "common": [
+      0.4903246270819519,
+      0.4936883558094579
+    ],
+    "status": "interval"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 0,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.07114677787714754,
+      0.07114677787714754
+    ],
+    "RandomAttribute_range": [
+      0.14108200653805397,
+      0.30616745525039735
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 0,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.07114677787714754,
+      0.1600267737591639
+    ],
+    "RandomAttribute_range": [
+      0.14108200653805397,
+      0.30616745525039735
+    ],
+    "common": [
+      0.14108200653805397,
+      0.1600267737591639
+    ],
+    "status": "interval"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 1,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.4977896377491093,
+      0.4979400506511507
+    ],
+    "RandomAttribute_range": [
+      0.49156837453570734,
+      0.49156837453570734
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 1,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.4327433586252425,
+      0.4979400506511507
+    ],
+    "RandomAttribute_range": [
+      0.48626473842820617,
+      0.49156837453570734
+    ],
+    "common": [
+      0.48626473842820617,
+      0.49156837453570734
+    ],
+    "status": "interval"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 1,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.06730518112148275,
+      0.06940736004886276
+    ],
+    "RandomAttribute_range": [
+      0.13313128635432803,
+      0.13313128635432803
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 1,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.06730518112148275,
+      0.13146655737655238
+    ],
+    "RandomAttribute_range": [
+      0.13313128635432803,
+      0.27915090941358356
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 2,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.502126400866034,
+      0.502126400866034
+    ],
+    "RandomAttribute_range": [
+      0.49928095824007257,
+      0.5068404245507377
+    ],
+    "common": [
+      0.502126400866034,
+      0.502126400866034
+    ],
+    "status": "point only"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 2,
+    "analysis": "matched_utility",
+    "match_axis": "Utility",
+    "outcome": "F-Prob",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.4465004938354266,
+      0.502126400866034
+    ],
+    "RandomAttribute_range": [
+      0.49928095824007257,
+      0.5068404245507377
+    ],
+    "common": [
+      0.49928095824007257,
+      0.502126400866034
+    ],
+    "status": "interval"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 2,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "frontier",
+    "AttributeOnly_range": [
+      0.06666741094701138,
+      0.06666741094701138
+    ],
+    "RandomAttribute_range": [
+      0.13104471931350417,
+      0.29429563079960647
+    ],
+    "common": null,
+    "status": "no common support"
+  },
+  {
+    "aggregation": "token_mean",
+    "seed": 2,
+    "analysis": "matched_fprob",
+    "match_axis": "F-Prob",
+    "outcome": "Utility",
+    "kind": "raw",
+    "AttributeOnly_range": [
+      0.06666741094701138,
+      0.13974141422309913
+    ],
+    "RandomAttribute_range": [
+      0.13104471931350417,
+      0.29429563079960647
+    ],
+    "common": [
+      0.13104471931350417,
+      0.13974141422309913
+    ],
+    "status": "interval"
+  }
+]

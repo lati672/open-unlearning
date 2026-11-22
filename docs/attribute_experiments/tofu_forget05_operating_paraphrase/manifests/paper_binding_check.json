@@ -1,0 +1,288 @@
+{
+  "table": "tables/entity_attribute_ablation.tex",
+  "table_sha256": "73e814631fcba601270e741bb0d2b736069b26c9d4967747c59a913700c59e6c",
+  "paper_edited": false,
+  "all28_metric_cells_passed": true,
+  "checks": [
+    {
+      "aggregation": "summed",
+      "method": "attribute_only",
+      "metric": "ES",
+      "displayed_mean": 0.134,
+      "displayed_sd": 0.004,
+      "archive_mean": 0.13354592982919772,
+      "archive_sd": 0.0038774561464837744,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "attribute_only",
+      "metric": "forget_probability",
+      "displayed_mean": 0.185,
+      "displayed_sd": 0.002,
+      "archive_mean": 0.1850004816086342,
+      "archive_sd": 0.0019852359084180813,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "attribute_only",
+      "metric": "forget_rouge",
+      "displayed_mean": 0.481,
+      "displayed_sd": 0.01,
+      "archive_mean": 0.4812964139101664,
+      "archive_sd": 0.010435142699113322,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "attribute_only",
+      "metric": "forget_ratio",
+      "displayed_mean": 0.537,
+      "displayed_sd": 0.006,
+      "archive_mean": 0.5368437283756101,
+      "archive_sd": 0.006103247727963731,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "attribute_only",
+      "metric": "forget_quality",
+      "displayed_mean": 0.000823,
+      "displayed_sd": 0.000687,
+      "archive_mean": 0.0008228891253984693,
+      "archive_sd": 0.0006869426240084499,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "attribute_only",
+      "metric": "utility",
+      "displayed_mean": 0.571,
+      "displayed_sd": 0.003,
+      "archive_mean": 0.5705715386175239,
+      "archive_sd": 0.003398694554247298,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "attribute_only",
+      "metric": "privleak_abs",
+      "displayed_mean": 60.54,
+      "displayed_sd": 2.38,
+      "archive_mean": 60.54344415612555,
+      "archive_sd": 2.383204481588636,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "random_attribute",
+      "metric": "ES",
+      "displayed_mean": 0.179,
+      "displayed_sd": 0.009,
+      "archive_mean": 0.17942813148051556,
+      "archive_sd": 0.008950594223021946,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "random_attribute",
+      "metric": "forget_probability",
+      "displayed_mean": 0.216,
+      "displayed_sd": 0.006,
+      "archive_mean": 0.2161818802403286,
+      "archive_sd": 0.00628513664513583,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "random_attribute",
+      "metric": "forget_rouge",
+      "displayed_mean": 0.431,
+      "displayed_sd": 0.006,
+      "archive_mean": 0.4312245761899747,
+      "archive_sd": 0.0064636683831967336,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "random_attribute",
+      "metric": "forget_ratio",
+      "displayed_mean": 0.492,
+      "displayed_sd": 0.002,
+      "archive_mean": 0.4915076252849432,
+      "archive_sd": 0.002438352889226505,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "random_attribute",
+      "metric": "forget_quality",
+      "displayed_mean": 1.25e-07,
+      "displayed_sd": 3.8e-08,
+      "archive_mean": 1.246436280986029e-07,
+      "archive_sd": 3.767412158004172e-08,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "random_attribute",
+      "metric": "utility",
+      "displayed_mean": 0.552,
+      "displayed_sd": 0.003,
+      "archive_mean": 0.5520879957142731,
+      "archive_sd": 0.002783771436537124,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "random_attribute",
+      "metric": "privleak_abs",
+      "displayed_mean": 71.69,
+      "displayed_sd": 1.51,
+      "archive_mean": 71.6946361242637,
+      "archive_sd": 1.5083750933275064,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "attribute_only",
+      "metric": "ES",
+      "displayed_mean": 0.083,
+      "displayed_sd": 0.002,
+      "archive_mean": 0.08265695465695867,
+      "archive_sd": 0.002314318324893723,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "attribute_only",
+      "metric": "forget_probability",
+      "displayed_mean": 0.068,
+      "displayed_sd": 0.002,
+      "archive_mean": 0.06837312331521389,
+      "archive_sd": 0.0024231296747311793,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "attribute_only",
+      "metric": "forget_rouge",
+      "displayed_mean": 0.425,
+      "displayed_sd": 0.01,
+      "archive_mean": 0.4253557866190992,
+      "archive_sd": 0.009725939996528155,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "attribute_only",
+      "metric": "forget_ratio",
+      "displayed_mean": 0.473,
+      "displayed_sd": 0.004,
+      "archive_mean": 0.4732897522581822,
+      "archive_sd": 0.004063223035808169,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "attribute_only",
+      "metric": "forget_quality",
+      "displayed_mean": 0.00171,
+      "displayed_sd": 0.00064,
+      "archive_mean": 0.00171079863282863,
+      "archive_sd": 0.000644261846764277,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "attribute_only",
+      "metric": "utility",
+      "displayed_mean": 0.498,
+      "displayed_sd": 0.004,
+      "archive_mean": 0.4978681314748671,
+      "archive_sd": 0.004219570125372905,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "attribute_only",
+      "metric": "privleak_abs",
+      "displayed_mean": 22.32,
+      "displayed_sd": 3.33,
+      "archive_mean": 22.315453781527264,
+      "archive_sd": 3.3338398225789905,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "random_attribute",
+      "metric": "ES",
+      "displayed_mean": 0.143,
+      "displayed_sd": 0.007,
+      "archive_mean": 0.14288485006035004,
+      "archive_sd": 0.006620443312884468,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "random_attribute",
+      "metric": "forget_probability",
+      "displayed_mean": 0.135,
+      "displayed_sd": 0.005,
+      "archive_mean": 0.13508600406862872,
+      "archive_sd": 0.005296458695579374,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "random_attribute",
+      "metric": "forget_rouge",
+      "displayed_mean": 0.401,
+      "displayed_sd": 0.013,
+      "archive_mean": 0.40137744687180515,
+      "archive_sd": 0.013182453911445846,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "random_attribute",
+      "metric": "forget_ratio",
+      "displayed_mean": 0.44,
+      "displayed_sd": 0.01,
+      "archive_mean": 0.4395132124168603,
+      "archive_sd": 0.009645976510481024,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "random_attribute",
+      "metric": "forget_quality",
+      "displayed_mean": 1.67e-08,
+      "displayed_sd": 2.41e-08,
+      "archive_mean": 1.665289105548403e-08,
+      "archive_sd": 2.4120385771188443e-08,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "random_attribute",
+      "metric": "utility",
+      "displayed_mean": 0.495,
+      "displayed_sd": 0.004,
+      "archive_mean": 0.4953131889676828,
+      "archive_sd": 0.0038611226987572077,
+      "matches_display_precision": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "random_attribute",
+      "metric": "privleak_abs",
+      "displayed_mean": 51.15,
+      "displayed_sd": 1.01,
+      "archive_mean": 51.14753240519435,
+      "archive_sd": 1.0133395843331456,
+      "matches_display_precision": true
+    }
+  ]
+}

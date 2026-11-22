@@ -1,0 +1,392 @@
+[
+  {
+    "aggregation": "target",
+    "method": "OriginalTarget",
+    "seed": null,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "target",
+    "method": "OriginalTarget",
+    "seed": null,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "target",
+    "method": "OriginalTarget",
+    "seed": null,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "AttributeOnly",
+    "seed": 0,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "AttributeOnly",
+    "seed": 0,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "AttributeOnly",
+    "seed": 0,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "AttributeOnly",
+    "seed": 1,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "AttributeOnly",
+    "seed": 1,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "AttributeOnly",
+    "seed": 1,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "AttributeOnly",
+    "seed": 2,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "AttributeOnly",
+    "seed": 2,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "AttributeOnly",
+    "seed": 2,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "RandomAttribute",
+    "seed": 0,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "RandomAttribute",
+    "seed": 0,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "RandomAttribute",
+    "seed": 0,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "RandomAttribute",
+    "seed": 1,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "RandomAttribute",
+    "seed": 1,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "RandomAttribute",
+    "seed": 1,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "RandomAttribute",
+    "seed": 2,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "RandomAttribute",
+    "seed": 2,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "summed",
+    "method": "RandomAttribute",
+    "seed": 2,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "AttributeOnly",
+    "seed": 0,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "AttributeOnly",
+    "seed": 0,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "AttributeOnly",
+    "seed": 0,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "AttributeOnly",
+    "seed": 1,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "AttributeOnly",
+    "seed": 1,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "AttributeOnly",
+    "seed": 1,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "AttributeOnly",
+    "seed": 2,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "AttributeOnly",
+    "seed": 2,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "AttributeOnly",
+    "seed": 2,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "RandomAttribute",
+    "seed": 0,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "RandomAttribute",
+    "seed": 0,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "RandomAttribute",
+    "seed": 0,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "RandomAttribute",
+    "seed": 1,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "RandomAttribute",
+    "seed": 1,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "RandomAttribute",
+    "seed": 1,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "RandomAttribute",
+    "seed": 2,
+    "style": "original",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "RandomAttribute",
+    "seed": 2,
+    "style": "ordinary",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  },
+  {
+    "aggregation": "token_mean",
+    "method": "RandomAttribute",
+    "seed": 2,
+    "style": "substantial",
+    "n": 200,
+    "probability_from_token_logps_passed": true,
+    "rouge_replay_passed": true,
+    "same_answer_tokens_and_rouge_reference_across_styles": true
+  }
+]

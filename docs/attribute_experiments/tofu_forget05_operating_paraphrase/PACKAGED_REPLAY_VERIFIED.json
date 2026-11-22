@@ -1,0 +1,26 @@
+{
+  "verified_utc": "2026-11-22T10:43:19.385235+00:00",
+  "archive_sha256": "2a448c1605364d912855515c204eac4cf22207a6f7af66370bc41fd667c39e14",
+  "results": {
+    "replay_scores.py": {
+      "passed": true,
+      "official": 48,
+      "question_conditions": 39,
+      "question_rows": 7800,
+      "all_subgroup_means_recomputed_from_rows": true,
+      "three_seed_sample_sd_replayed": true,
+      "pair_by_seed_before_aggregation_verified": true
+    },
+    "verify_matching.py": {
+      "passed": true,
+      "raw_checkpoints": 48,
+      "frontier_dominance_independently_checked": true,
+      "interpolation_rows": 404,
+      "no_extrapolation": true,
+      "secondary_metrics_same_bracket": true,
+      "seed_sample_sd_replayed": true,
+      "grid_points_not_used_as_independent_n": true
+    }
+  },
+  "models_loaded": false
+}

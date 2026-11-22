@@ -1,0 +1,8 @@
+{
+  "checkpoints": 24,
+  "official_metrics_per_checkpoint": 7,
+  "absolute_privleak_additionally_checked": true,
+  "all_exact": true,
+  "max_absolute_delta": 0.0,
+  "mean_sd_paper_rounding_binding": "paper_binding_check.json"
+}

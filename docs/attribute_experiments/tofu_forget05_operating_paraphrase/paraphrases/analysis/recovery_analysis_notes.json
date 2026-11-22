@@ -1,0 +1,8 @@
+{
+  "kind": "descriptive post-hoc distribution summary of already saved per-question outputs",
+  "grouping": "each rewrite condition uses original question IDs; no 400-independent-fact claim",
+  "positive_cutoff": 1e-12,
+  "no_statistical_test": true,
+  "no_new_model_evaluation": true,
+  "counts_independently_match_prior_direction_table": true
+}

@@ -1,0 +1,21 @@
+{
+  "tool": "Codex assistant in current desktop conversation",
+  "model_id": "unknown",
+  "model_version": "unknown",
+  "reasoning_effort": "unknown",
+  "temperature": "unknown",
+  "sampling_settings": "unknown",
+  "generation_mode": "assistant produced TSV from original questions only; no additional model agent",
+  "inputs": [
+    "original_id",
+    "question"
+  ],
+  "answers_spans_masks_model_outputs_provided": false,
+  "post_generation_programmatic_answer_leak_check": true,
+  "human_review_completed": false,
+  "ambiguous_source_ids": [
+    117,
+    131
+  ],
+  "source_quirks": "Fictitious awards/books requested by original questions retained as fictitious; ambiguous numeric date 08/09/1956 retained unchanged."
+}

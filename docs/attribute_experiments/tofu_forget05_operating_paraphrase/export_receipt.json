@@ -1,0 +1,14 @@
+{
+  "archive": "/workspace/open-unlearning/saves/exports/tofu_forget05_attribute_operating_paraphrase_v1_results.zip",
+  "sha256": "2a448c1605364d912855515c204eac4cf22207a6f7af66370bc41fd667c39e14",
+  "bytes": 120837841,
+  "manifest_entries_verified": 1021,
+  "zip_crc_ok": true,
+  "trial_extraction_rehashed": true,
+  "weights_included": false,
+  "known_identifier_scan_passed": true,
+  "uploaded": false,
+  "packaged_score_replay_passed": true,
+  "packaged_matching_replay_passed": true,
+  "packaged_python_files_syntax_checked": 89
+}

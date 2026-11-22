@@ -1,0 +1,13 @@
+aggregation,analysis,caliper,seed0,seed1,seed2,mean,sample_sd,n_seeds,all_three_present,directions
+summed,matched_utility,0.005,,,,,,0,False,[]
+summed,matched_utility,0.01,,,,,,0,False,[]
+summed,matched_utility,0.02,,,,,,0,False,[]
+summed,matched_fprob,0.005,,,,,,0,False,[]
+summed,matched_fprob,0.01,,,,,,0,False,[]
+summed,matched_fprob,0.02,,,,,,0,False,[]
+token_mean,matched_utility,0.005,-0.08658178044555825,,-0.09085611404585507,-0.08871894724570667,0.0030224102738233894,2,False,"['negative', 'negative']"
+token_mean,matched_utility,0.01,-0.08658178044555825,,-0.09085611404585507,-0.08871894724570667,0.0030224102738233894,2,False,"['negative', 'negative']"
+token_mean,matched_utility,0.02,-0.08658178044555825,,-0.09085611404585507,-0.08871894724570667,0.0030224102738233894,2,False,"['negative', 'negative']"
+token_mean,matched_fprob,0.005,,,,,,0,False,[]
+token_mean,matched_fprob,0.01,,,-0.056749636590910646,-0.056749636590910646,,1,False,['negative']
+token_mean,matched_fprob,0.02,-0.038194681356585325,,-0.056749636590910646,-0.047472158973747985,0.01312033467080426,2,False,"['negative', 'negative']"

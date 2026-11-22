@@ -1,0 +1,11 @@
+{
+  "verified_utc": "2026-11-22T10:19:01.035316+00:00",
+  "original_freeze": "Existing Table4 frozen inputs predating this experiment; verified against gold hashes during initial preparation",
+  "copies_still_identical": true,
+  "readonly_applied_utc": "2026-11-22T10:19:01.035352+00:00",
+  "files_sha256": {
+    "AttributeOnly.jsonl": "256d2a5913e3e8ffa391da09f09b6851e2da51a10450025b658d7eccb839aecd",
+    "RandomAttribute.jsonl": "899bbaa350b91aabd6787f57a8d512ea2404cc811faf63782290fafcff458531",
+    "original_answer_spans.tsv": "ca18b91ff64a3d6d8bac6fed2f7c259b0235e5ee80e871878ddfe567f67b079a"
+  }
+}

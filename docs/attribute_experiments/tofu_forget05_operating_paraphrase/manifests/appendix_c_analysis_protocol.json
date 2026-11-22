@@ -1,0 +1,47 @@
+{
+  "analysis": "post-hoc descriptive",
+  "new_training": false,
+  "extrapolation": false,
+  "source_protocol": "7c448ef706a3a4fecbb11f5134c040fdaab534008ea368f62a2d4bc70673ec3c",
+  "targets": [
+    0.25,
+    0.5,
+    0.75
+  ],
+  "auc_grid_points": 201,
+  "matching_axes": {
+    "utility": [
+      "Utility",
+      "F-Prob"
+    ],
+    "forgetting": [
+      "F-Prob",
+      "Utility"
+    ]
+  },
+  "secondary_metrics_interpolated": [
+    "ES",
+    "F-ROUGE",
+    "F-Ratio",
+    "absolute PrivLeak"
+  ],
+  "forget_quality": "observed bracket endpoints or exact observed matched points",
+  "observed_matching": {
+    "with_replacement": true,
+    "calipers": [
+      0.005,
+      0.01,
+      0.02
+    ],
+    "primary_caliper": 0.01,
+    "support": "both points inside common observed coordinate range",
+    "tie_break": [
+      "lower step",
+      "lower density"
+    ]
+  },
+  "within_density": "Report raw four-step range and repeat matching on each density's observed nondominated points.",
+  "primary_direction_gate": "Both analyses must favor Discrepancy at every target and grid mean in every seed. At caliper .01 each seed needs matched pairs, a favorable mean and zero opposing pairs.",
+  "uniform_advantage_supported": false,
+  "source_script_sha256": "bfc03109b05ce725c66980a00e71a170c49a6f504551f03fa464bd649a487515"
+}

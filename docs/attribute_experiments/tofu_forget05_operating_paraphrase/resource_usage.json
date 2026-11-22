@@ -1,0 +1,23 @@
+{
+  "gpus": "2 x NVIDIA L40S 48GB; original DDP layout retained",
+  "training_wall_seconds": 4931.8312317729,
+  "training_device_hours": 2.739906239873833,
+  "official_evaluation_device_hours": 0.8806489650960753,
+  "question_evaluation_device_hours": 0.09160038868870793,
+  "telemetry_sample_count": 3589,
+  "telemetry_observed_occupied_hours_by_gpu": [
+    1.8617625944915277,
+    1.8911141780095109
+  ],
+  "telemetry_utilization_integral_gpu_hours": [
+    1.2813726512062826,
+    1.3794547576023999
+  ],
+  "telemetry_peak_memory_mib": [
+    43885.0,
+    43885.0
+  ],
+  "training_peak_torch_allocated_gib": 13.328522682189941,
+  "telemetry_limitations": "Sampling began during first training run, after target evaluation; initial interval not imputed. Torch allocator and NVML differ. Stage timing omits some model loading and startup overhead.",
+  "final_gpu": "0, 0 MiB, 0 %\n1, 0 MiB, 0 %\n"
+}

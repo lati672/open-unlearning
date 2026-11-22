@@ -1,0 +1,16 @@
+{
+  "recorded_utc": "2026-11-22T09:37:32.010370+00:00",
+  "successful_training_code": {
+    "worker.py": {
+      "sha256": "2ddeaf9322c515daccc81977cc775a0b2999da738f2690c626690c614bb2051d",
+      "mtime_utc": "2026-11-22T08:22:05.626823+00:00"
+    },
+    "run_jobs.py": {
+      "sha256": "13e164c3311d5a447b8a6a07b6a9e2188a16afd46b11a964f8243a862719ea59",
+      "mtime_utc": "2026-11-22T08:17:58.034944+00:00"
+    }
+  },
+  "scope": "worker unchanged since pre-update audit fix before first successful training; no per-invocation worker hash was in early command records; original source hashes verified at every invocation",
+  "all_other_code_hashes": "final export MANIFEST.json",
+  "source_snapshot_manifest_sha256": "ef8837cc16ca34b3709c006ef73865349a4c2b47ce3d3f0ffd1c0b87afcbc800"
+}

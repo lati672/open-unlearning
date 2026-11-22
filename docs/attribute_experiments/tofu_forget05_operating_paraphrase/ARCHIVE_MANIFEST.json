@@ -1,0 +1,291 @@
+{
+  "experiment": "tofu_forget05_attribute_operating_paraphrase_v1",
+  "original_experiment_root": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1",
+  "kind": "Source snapshots and compact reports; no raw training texts, frozen question contents, token masks, model weights or large evaluation logs",
+  "code_copy_policy": "Exact bytes of numerical training/audit scripts; workstation-specific export helpers omitted",
+  "omitted_workstation_export_helpers": [
+    "package_results.py"
+  ],
+  "files": {
+    "REPORT.md": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/REPORT.md",
+      "sha256": "bae8302760a0599bc484f9bd21d2a3cf4d5b51bf2a6437aef1e3102f14e5ac06",
+      "bytes": 15518
+    },
+    "INTERPRETATION.md": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/INTERPRETATION.md",
+      "sha256": "943442d591a5cf56431950c4d2e6ecce2985057d079151e8a7ff46d75b6cb20d",
+      "bytes": 4461
+    },
+    "INVENTORY.md": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/INVENTORY.md",
+      "sha256": "679c5a708393733b539462b7d24dd4a7082d7185e51c582d7f1b56a557c2c0e6",
+      "bytes": 2114
+    },
+    "protocol.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/protocol.json",
+      "sha256": "fd9bee046bd9a80baef16e18e91c733a76f88918f7af89fd85923e5e6f3833ee",
+      "bytes": 5243
+    },
+    "verification.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/verification.json",
+      "sha256": "01ba6e225da2d66c4ba9c95bce23866ed8f2fef77605c33ccb62824bfb0561b1",
+      "bytes": 2530
+    },
+    "resource_usage.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/resource_usage.json",
+      "sha256": "b59496f9442326b49c97ca0d8636aba324f029ed9ed63c274e874a1fc2465d28",
+      "bytes": 899
+    },
+    "requirements_replay.txt": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/requirements_replay.txt",
+      "sha256": "f7e4505fdb840cb25390f0c3611273b1a9620e53067d5bbb1dfe2dd9debfd617",
+      "bytes": 98
+    },
+    "RESULTS.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/RESULTS.json",
+      "sha256": "81c0d63027c0e4642ed7bfbb5b23105f2b6b16828d7093f2d0a5aeed2299d70e",
+      "bytes": 102743
+    },
+    "PACKAGED_REPLAY_VERIFIED.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/PACKAGED_REPLAY_VERIFIED.json",
+      "sha256": "ca78046868ee222c38a0455e918e4dc167a4c841da49fc33145b25f3dbc10b74",
+      "bytes": 827
+    },
+    "export_receipt.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/export_receipt.json",
+      "sha256": "5c96b20e5c06539cda4e3ba8c878a13a83035a9f845f17a02116b48a7a62a51e",
+      "bytes": 537
+    },
+    "manifests/table4_reproduction_validation.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/manifests/table4_reproduction_validation.json",
+      "sha256": "6cc6a90f7ead4eb320d837dc2c9b35591c85f5acbae76c052ba1e5fcb09d0dfc",
+      "bytes": 228
+    },
+    "manifests/paper_binding_check.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/manifests/paper_binding_check.json",
+      "sha256": "e662503868c5658ad6c5ca689c87d8c430b848d5bf0f496143dc04f568360c66",
+      "bytes": 8532
+    },
+    "manifests/appendix_c_analysis_protocol.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/manifests/appendix_c_analysis_protocol.json",
+      "sha256": "7a10716bf7bfd3aee9b92d38ca0885de9ba8115e23eac055ea32c1a414985962",
+      "bytes": 1325
+    },
+    "manifests/environment.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/manifests/environment.json",
+      "sha256": "13304158da5dd5058ba304a4b7f9f7b4a53b314b1a5b7b5d7bb6fd9d788b5d3f",
+      "bytes": 716
+    },
+    "manifests/execution_code_versions.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/manifests/execution_code_versions.json",
+      "sha256": "afdd97dd0665add58a38f81064ff940c3915f8d1bdee0c4db46d496cf2782a85",
+      "bytes": 788
+    },
+    "manifests/training_input_verification.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/manifests/training_input_verification.json",
+      "sha256": "638567df52fac1ef8b60c1b4e4dff227f7003b6565fc6bfcb6f3afd793604320",
+      "bytes": 606
+    },
+    "paraphrases/generation_prompt.txt": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/generation_prompt.txt",
+      "sha256": "a196d2a8bb7ceda872a8492471810f52e3edb2fd6495d13278fbf351ae3ab1ed",
+      "bytes": 1214
+    },
+    "paraphrases/generation_provenance.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/generation_provenance.json",
+      "sha256": "8035c637c04683af287840c44e07300a0eb143870209331a74abb01ea1c8fb36",
+      "bytes": 724
+    },
+    "paraphrases/quality_checks.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/quality_checks.json",
+      "sha256": "45dea3421913af6ae9f28a343e4ef6b7178b1fae75fbbd73be661b5a3e7b59ff",
+      "bytes": 166056
+    },
+    "paraphrases/postfreeze_quality_review.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/postfreeze_quality_review.json",
+      "sha256": "3ba10bae34bc1c513266ae4a6390a76e3c23c066d02ae6c9bf216e5cca06d406",
+      "bytes": 1262
+    },
+    "paraphrases/FROZEN.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/FROZEN.json",
+      "sha256": "8a9046ad685da0ea3a8f6cd22479c76c2f3eec2d913187a660d373337eade607",
+      "bytes": 946
+    },
+    "operating_points/reproduction_four_points/raw_points.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/raw_points.csv",
+      "sha256": "7796ea568a19e445564c4755f138756d30ae963a72e46d4f4458c5d6c6419922",
+      "bytes": 9794
+    },
+    "operating_points/reproduction_four_points/frontier_points.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/frontier_points.csv",
+      "sha256": "ddbd7d4e9fe63527133b67c4553ffadbb53b409799bfefcc817dc0d3bb1e5d7e",
+      "bytes": 4673
+    },
+    "operating_points/reproduction_four_points/common_support.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/common_support.json",
+      "sha256": "90571d83c8f81387c8f70065eb0c6740e56eb3b73cf28243dc4ecd2a411c8782",
+      "bytes": 10064
+    },
+    "operating_points/reproduction_four_points/matched_points_and_quartiles.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/matched_points_and_quartiles.csv",
+      "sha256": "a3d605d1d73f567841abbe4d97648a55076fd9e1fd29203defacb881c39f3422",
+      "bytes": 5556
+    },
+    "operating_points/reproduction_four_points/matched_effect_by_seed.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/matched_effect_by_seed.csv",
+      "sha256": "77f70cca3801bfce0b48598dc7da70aa9fe4bb65ed7ed0e3fbcd0fc20bcc57c7",
+      "bytes": 3724
+    },
+    "operating_points/reproduction_four_points/matched_effect_summary.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/matched_effect_summary.csv",
+      "sha256": "f712014fd3dc685634134025ade2432ec0a4da5483141dea12353ce98d9d9129",
+      "bytes": 1681
+    },
+    "operating_points/reproduction_four_points/nearest_observed_matches.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/nearest_observed_matches.csv",
+      "sha256": "fd5f69c88d801463f7ba331b5fe6c8f4397d45aca77f45a8c8a9f2a8a3f8bd2b",
+      "bytes": 20569
+    },
+    "operating_points/reproduction_four_points/nearest_observed_summary.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/nearest_observed_summary.csv",
+      "sha256": "992980fc978ba21a68dff7e8331a8182326e4d20fa318134bcaffe72462eb90b",
+      "bytes": 2335
+    },
+    "operating_points/reproduction_four_points/nearest_cross_seed_summary.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/nearest_cross_seed_summary.csv",
+      "sha256": "951ef053b8556808bc5d21ab1273344e5d7dc9a338b8c1a5967f904ea887cd41",
+      "bytes": 1129
+    },
+    "operating_points/reproduction_four_points/independent_verification.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/independent_verification.json",
+      "sha256": "57c33135e343be678978bd630e69bd27e80a4bfacd3222c1dbda1085bb7e3177",
+      "bytes": 281
+    },
+    "operating_points/reproduction_vs_archived_all_metrics.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_vs_archived_all_metrics.csv",
+      "sha256": "5f31a43f3521e778377e7470d8ec5bc547e56318f18aa180718e99ccbf8c9eb0",
+      "bytes": 16453
+    },
+    "paraphrases/analysis/metrics_by_seed.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/analysis/metrics_by_seed.csv",
+      "sha256": "a70b969f5fb1a4630880483882e1cb19fb6e7eb412fe7e5397ee92e94731c057",
+      "bytes": 46711
+    },
+    "paraphrases/analysis/mean_sd.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/analysis/mean_sd.csv",
+      "sha256": "fc69a036dc053a48a5d3d259e60fc0a51c5a33ea5a31630f247779fa263fa61d",
+      "bytes": 33726
+    },
+    "paraphrases/analysis/paired_method_deltas.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/analysis/paired_method_deltas.csv",
+      "sha256": "7dae9470256678a8a0b50242d97c0e3c172b8796116b2f613f1a4509d8ba135d",
+      "bytes": 18562
+    },
+    "paraphrases/analysis/within_model_changes.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/analysis/within_model_changes.csv",
+      "sha256": "c0cb9025f3a8244c60909482232433bf4a2ecbe14ae52b1c2a116c731a2d8473",
+      "bytes": 64149
+    },
+    "paraphrases/analysis/question_direction_counts.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/analysis/question_direction_counts.csv",
+      "sha256": "d43d204bf8ccb093ab49eb63e16b4672887e65ba414e65a0ec258ac40ab5b90c",
+      "bytes": 4216
+    },
+    "paraphrases/analysis/per_question_recovery_summary.csv": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/analysis/per_question_recovery_summary.csv",
+      "sha256": "e6751c8ce17e78bb3ef13d80eb55a18a6ed273d4746cefbbafbd3f7b6a4e740c",
+      "bytes": 29591
+    },
+    "paraphrases/analysis/recovery_analysis_notes.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/analysis/recovery_analysis_notes.json",
+      "sha256": "6508fbdf3a9d80a34d072c847ed1599edcb7141fb72aafd57270e2ca2d5472f5",
+      "bytes": 348
+    },
+    "paraphrases/analysis/scoring_replay.json": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/analysis/scoring_replay.json",
+      "sha256": "9db88b778321d7fabcc351dbd107fb61b06e459e4fff6cb10381f2c67bc53155",
+      "bytes": 10692
+    },
+    "operating_points/reproduction_four_points/summed_trajectories.png": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/summed_trajectories.png",
+      "sha256": "8c4f4714ff3226c7f0096d3d735e82fb14dace660a80f20f4e3f71e8a4742b02",
+      "bytes": 174581
+    },
+    "operating_points/reproduction_four_points/token_mean_trajectories.png": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/operating_points/reproduction_four_points/token_mean_trajectories.png",
+      "sha256": "6f18f8644253c1067900493fc00de50c7591366947d4379d987124a04cf7e60b",
+      "bytes": 156488
+    },
+    "paraphrases/analysis/paraphrase_metrics.png": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/paraphrases/analysis/paraphrase_metrics.png",
+      "sha256": "1a690e5e7b1c4ae2fd5f9ef7ec094fda5ec95bbb62e7ca6f7f5b7d7130737f50",
+      "bytes": 234887
+    },
+    "code/prepare.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/prepare.py",
+      "sha256": "c00f918e34972e59df08c7e3d5efafad50a868fd6fc2e6419a60335902cac360",
+      "bytes": 8607
+    },
+    "code/freeze_paraphrases.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/freeze_paraphrases.py",
+      "sha256": "a08aadd84ecd5361c983aae1aedf1538dab7acd9ccae0a894d243d331b0670c9",
+      "bytes": 4515
+    },
+    "code/worker.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/worker.py",
+      "sha256": "2ddeaf9322c515daccc81977cc775a0b2999da738f2690c626690c614bb2051d",
+      "bytes": 16357
+    },
+    "code/run_jobs.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/run_jobs.py",
+      "sha256": "13e164c3311d5a447b8a6a07b6a9e2188a16afd46b11a964f8243a862719ea59",
+      "bytes": 4165
+    },
+    "code/monitor.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/monitor.py",
+      "sha256": "8630a312a03179ebc6936f0136a1df7b50b1add06df3a7fb3dca4b77aaf53231",
+      "bytes": 904
+    },
+    "code/progress.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/progress.py",
+      "sha256": "c02915a42c7e51379f8604a453fe8626c5ae70cb9eeff21ca3f2885a3c7facf9",
+      "bytes": 919
+    },
+    "code/appendix_c_matching.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/appendix_c_matching.py",
+      "sha256": "bfc03109b05ce725c66980a00e71a170c49a6f504551f03fa464bd649a487515",
+      "bytes": 31559
+    },
+    "code/analyze.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/analyze.py",
+      "sha256": "6136851681e354f6b12ff91fb57138d0a306143d97ca52e5b41b22b55882a18d",
+      "bytes": 16444
+    },
+    "code/verify_matching.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/verify_matching.py",
+      "sha256": "ca55c069725436c90beb4f813c9454daefaec0038bc24d31770e4a10099dcc16",
+      "bytes": 3663
+    },
+    "code/replay_scores.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/replay_scores.py",
+      "sha256": "c948d5f0d39b5479a070d1f27caa26068ae6f358154a88d30007ea53347bbed3",
+      "bytes": 5430
+    },
+    "code/finish_when_done.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/finish_when_done.py",
+      "sha256": "f584941094ff4e5c61cec62bfc9cb19739e8a2c5889ed158b73f9a87f9be8bff",
+      "bytes": 1379
+    },
+    "code/finalize.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/finalize.py",
+      "sha256": "378d911d879230cc2a89b0e1ae14f6887b2c1d82a0fe4519cb6fe6d8edeed81f",
+      "bytes": 19156
+    },
+    "code/interpret_results.py": {
+      "source": "saves/experiments/tofu_forget05_attribute_operating_paraphrase_v1/code/interpret_results.py",
+      "sha256": "d086fcbe7efcf03dda64352bf34578bce5b9a1cdf014d0b7be6c465f6201050a",
+      "bytes": 10069
+    }
+  }
+}

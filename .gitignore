@@ -192,3 +192,7 @@ _cache_data
 
 analysis/
 open_unlearning/
+
+# Keep reviewed compact experiment summaries versioned.
+!/docs/attribute_experiments/**/analysis/
+!/docs/attribute_experiments/**/analysis/**

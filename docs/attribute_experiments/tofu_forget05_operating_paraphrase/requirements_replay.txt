@@ -1,0 +1,6 @@
+numpy==2.2.3
+scipy==1.14.1
+scikit-learn==1.5.2
+rouge-score==0.1.2
+matplotlib==3.11.1
+nltk==3.10.4

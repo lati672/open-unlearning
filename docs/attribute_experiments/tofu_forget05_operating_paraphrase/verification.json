@@ -1,0 +1,110 @@
+{
+  "completed_utc": "2026-11-22T10:29:10.437683+00:00",
+  "counts": {
+    "training_runs": 12,
+    "optimizer_updates": 1440,
+    "official_checkpoints": 48,
+    "qa_models": 13
+  },
+  "original_preservation_files_verified": 137,
+  "old_models_results_masks_unchanged": true,
+  "target_upstream_hash_verified": true,
+  "paraphrases_frozen_unchanged": true,
+  "source_code_frozen_unchanged": true,
+  "same_original_and_paired_data_order": true,
+  "all_losses_gradients_finite": true,
+  "official_metric_replay_passed": true,
+  "paraphrase_scoring_replay_passed": true,
+  "all200_original_ids_included": true,
+  "no_generation_answer_leakage": true,
+  "no_SU_SeUL_MUSE_runs": true,
+  "paper_tables_responses_edited": false,
+  "new_weights_cleanup_only_after_all_requested_evaluations": true,
+  "run_checks": [
+    {
+      "aggregation": "summed",
+      "method": "AttributeOnly",
+      "seed": 0,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "AttributeOnly",
+      "seed": 1,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "AttributeOnly",
+      "seed": 2,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "RandomAttribute",
+      "seed": 0,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "RandomAttribute",
+      "seed": 1,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "summed",
+      "method": "RandomAttribute",
+      "seed": 2,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "AttributeOnly",
+      "seed": 0,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "AttributeOnly",
+      "seed": 1,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "AttributeOnly",
+      "seed": 2,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "RandomAttribute",
+      "seed": 0,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "RandomAttribute",
+      "seed": 1,
+      "steps": 120,
+      "passed": true
+    },
+    {
+      "aggregation": "token_mean",
+      "method": "RandomAttribute",
+      "seed": 2,
+      "steps": 120,
+      "passed": true
+    }
+  ],
+  "all24_archived_steps_all7_official_metrics_exact": true
+}

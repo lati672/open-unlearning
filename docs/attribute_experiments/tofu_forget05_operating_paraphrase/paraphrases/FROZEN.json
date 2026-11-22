@@ -1,0 +1,16 @@
+{
+  "frozen_utc": "2026-11-22T08:14:37.462523+00:00",
+  "before_any_test_model_evaluation": true,
+  "files_sha256": {
+    "original_questions_only.jsonl": "6d4401546d61fdc0e8b544e19efddf0518b6522176baeefe993fa240de233fca",
+    "generation_raw.tsv": "17e911941faf93a508629725b27bba4c7b7641eb2cfe769d4e76b0863f0e66f7",
+    "generation_prompt.txt": "a196d2a8bb7ceda872a8492471810f52e3edb2fd6495d13278fbf351ae3ab1ed",
+    "questions.jsonl": "44798537868dcc3ebe1092d60abd83ddd5ac701c0de688fb3ce351892044500c",
+    "quality_checks.json": "45dea3421913af6ae9f28a343e4ef6b7178b1fae75fbbd73be661b5a3e7b59ff",
+    "generation_provenance.json": "8035c637c04683af287840c44e07300a0eb143870209331a74abb01ea1c8fb36"
+  },
+  "primary_original_ids": 200,
+  "primary_questions_per_style": 200,
+  "uncertainty_sensitivity_original_ids": 198,
+  "change_policy": "No question edits based on model performance; all200 primary plus198 source-equivalence sensitivity."
+}
