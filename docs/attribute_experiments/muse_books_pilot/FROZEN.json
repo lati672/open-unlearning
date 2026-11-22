@@ -1,0 +1,18 @@
+{
+  "frozen_utc": "2026-11-22T07:24:43.006495+00:00",
+  "training_or_evaluation_started": false,
+  "files": {
+    "plan.json": "1d26921d09e91f51ec46dbcd31b25fe9d631ce48052bcfa5118b8914a216acd8",
+    "data_order.json": "cc40deb998beedcda89287c076120f374c3dceb055bd43e9b9d0aeda85ef1196",
+    "annotation_prompt.txt": "09e7a1b68e4ff42cdefbfa2512a1f1faa2e48cf0513cff325e9cff0ad0506b6d",
+    "annotation_provenance.json": "75fea01e6d52b27841e91d5681330b55f4ea4eeccb42112372eb514582f3193d",
+    "annotations_raw.json": "c7bf19a2e9ec8857855a3fc84439bf9eb3b7085346a6c99756880e9f46db4371",
+    "annotations.json": "4737a7c5eb5021d297a078cd5c6b02e8babbaaa5e7dffb02e2f83692165a65a9",
+    "masks_attribute.jsonl": "9e45d81256beb1192231c2be28052e5c73f412a448f19f0809832f6e0e2d954c",
+    "masks_random_attribute.jsonl": "1c46ad07c7cc924ae81e81a58e660cd6019e866379561b418f58a231f58ec260",
+    "mask_audit.json": "1503f6c6e20594256d3d816675643aa68546edf9479ad80c68d6da680bf3ebeb",
+    "inputs/forget_samples.jsonl": "bd702f75c1b77c967481e868e3fd01224b994880b5b48a80ed334fd2fa2cf466",
+    "inputs/retain_samples.jsonl": "5898a6036dcaeade5bd5754af2c8bc8999882e0d40119594e31bc619cafa3028",
+    "inputs/control_vector.json": "a3d464164bd82ef1f97749d901646a16be99844e0d963a723bbcfcb1bf2cd3eb"
+  }
+}

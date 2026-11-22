@@ -1,0 +1,141 @@
+{
+  "experiment": "muse_books_attribute_pilot_v1",
+  "original_experiment_root": "saves/experiments/muse_books_attribute_pilot_v1",
+  "kind": "Source snapshots and compact reports; no raw training texts, frozen question contents, token masks, model weights or large evaluation logs",
+  "code_copy_policy": "Exact bytes of numerical training/audit scripts; workstation-specific export helpers omitted",
+  "omitted_workstation_export_helpers": [
+    "summarize_pilot.py"
+  ],
+  "files": {
+    "REPORT.md": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/REPORT.md",
+      "sha256": "fdcdec6ca8d3154b3822e01f60d21f2d7def604c672be107cb1499d771cd2828",
+      "bytes": 7148
+    },
+    "summary.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/summary.json",
+      "sha256": "d1b318657b8f711f224203b96296c4b54c26250489c5a07154563e067d161c5f",
+      "bytes": 4404
+    },
+    "summary_metrics.csv": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/summary_metrics.csv",
+      "sha256": "0832d3c5e65f816fa6ffee44268def017e61ebcb0549bf1e865451f85ec0cd66",
+      "bytes": 484
+    },
+    "verification.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/verification.json",
+      "sha256": "000b41fd16e4c2dff913e05438dfb771d5bd73e74b0689f605356eac2bb79d4b",
+      "bytes": 591
+    },
+    "attribute/checkpoint_reload_verified.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/attribute/checkpoint_reload_verified.json",
+      "sha256": "32dd08fdf87f1643afaa2b5ccb383c43123334aeb0b5b04155ae4f295ece64d6",
+      "bytes": 380
+    },
+    "random_attribute/checkpoint_reload_verified.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/random_attribute/checkpoint_reload_verified.json",
+      "sha256": "13e60190105a31fe282b102e055bcbaba4f9ec7655c991c2f927d7fa4540d29a",
+      "bytes": 380
+    },
+    "attribute/actual_config.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/attribute/actual_config.json",
+      "sha256": "3ad8950d6fba956ac683af07e94d37e2732436aa16436842b9cd9cdcbc091d7e",
+      "bytes": 3092
+    },
+    "random_attribute/actual_config.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/random_attribute/actual_config.json",
+      "sha256": "59b09594bafcb2ab0c28d932af62f18f200c5464b4590fe1cf6ccf7c1ef0a0ab",
+      "bytes": 3092
+    },
+    "plan.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/plan.json",
+      "sha256": "1d26921d09e91f51ec46dbcd31b25fe9d631ce48052bcfa5118b8914a216acd8",
+      "bytes": 4982
+    },
+    "mask_audit.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/mask_audit.json",
+      "sha256": "1503f6c6e20594256d3d816675643aa68546edf9479ad80c68d6da680bf3ebeb",
+      "bytes": 6709
+    },
+    "preflight_cpu.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/preflight_cpu.json",
+      "sha256": "2ad2a501939d0bd10459e7f08b4276b67bceffeb7a54db6b7bab64106d6e4949",
+      "bytes": 242
+    },
+    "annotation_prompt.txt": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/annotation_prompt.txt",
+      "sha256": "09e7a1b68e4ff42cdefbfa2512a1f1faa2e48cf0513cff325e9cff0ad0506b6d",
+      "bytes": 1074
+    },
+    "annotation_provenance.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/annotation_provenance.json",
+      "sha256": "75fea01e6d52b27841e91d5681330b55f4ea4eeccb42112372eb514582f3193d",
+      "bytes": 781
+    },
+    "FROZEN.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/FROZEN.json",
+      "sha256": "5a245717126f841714c14cc65aac443544bd3299ff460d14bccc1455a2753b70",
+      "bytes": 1278
+    },
+    "forget_knowmem_ROUGE_change_audit.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/forget_knowmem_ROUGE_change_audit.json",
+      "sha256": "04f2c8ab4cdf0e11e020a2af54d9745c5bcac4e7e23f8b003e5db605e6dfc445",
+      "bytes": 48
+    },
+    "retain_knowmem_ROUGE_change_audit.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/retain_knowmem_ROUGE_change_audit.json",
+      "sha256": "3b59eda6f942d17db2178ddaf82abd78230e32d28b009cc8183059175fe9800c",
+      "bytes": 438
+    },
+    "attribute/training_log.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/attribute/training_log.json",
+      "sha256": "d17c93a127789e57f7698ceb08ce1f48bc14b58657f66a7558c8eb239f2ed039",
+      "bytes": 10341
+    },
+    "attribute/parameter_update_audit.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/attribute/parameter_update_audit.json",
+      "sha256": "dab3b241cc881526598c6940a39f91c0a59d4e13afaf3d7902398cf23f83c506",
+      "bytes": 4554
+    },
+    "attribute/completed.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/attribute/completed.json",
+      "sha256": "a55090d97e1560b1e01e235a1615031001b7ba56e74d669e647bbf2f66a2bb6c",
+      "bytes": 1788
+    },
+    "random_attribute/training_log.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/random_attribute/training_log.json",
+      "sha256": "37fa49f30b62c0908f7f157bb7c326b722a9393dc0edaaa2cc1454b205594d32",
+      "bytes": 10346
+    },
+    "random_attribute/parameter_update_audit.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/random_attribute/parameter_update_audit.json",
+      "sha256": "15be3dd217ffe16bd8502603c3a887e8b69b3e24c5894ff415d7e5950082b589",
+      "bytes": 4550
+    },
+    "random_attribute/completed.json": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/random_attribute/completed.json",
+      "sha256": "f4cd4992d490d802795b69891e1081463b1f16b1de5566893b46c666b5a79ce7",
+      "bytes": 1805
+    },
+    "code/prepare_pilot.py": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/code/prepare_pilot.py",
+      "sha256": "fa37ee0a7c5db454ce425d2a29515102e718736ec1cfa43b06c792d82d73816b",
+      "bytes": 8604
+    },
+    "code/freeze_pilot.py": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/code/freeze_pilot.py",
+      "sha256": "a156e534464d1fed9a9bdc17aaecc5a9772946b3bd72fbc74a887c84fe7da8e7",
+      "bytes": 6585
+    },
+    "code/run_pilot.py": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/code/run_pilot.py",
+      "sha256": "da62e770fff25f079835ffb0227b46910355dbd7bf0eebb58191f97238f5b7b5",
+      "bytes": 17124
+    },
+    "code/verify_reload.py": {
+      "source": "saves/experiments/muse_books_attribute_pilot_v1/code/verify_reload.py",
+      "sha256": "2fd90ba1dd5954292e17205ade8ba8ad20dbe3c2b59164b04b76db8e4d8e3e89",
+      "bytes": 1896
+    }
+  }
+}

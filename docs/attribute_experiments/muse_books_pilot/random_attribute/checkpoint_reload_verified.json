@@ -1,0 +1,15 @@
+{
+  "original_target_plus_partial_state_reproduces_saved_diagnostics": true,
+  "checks": {
+    "forget": {
+      "doc_id": 0,
+      "max_abs_logprob_difference": 0.0
+    },
+    "retain": {
+      "doc_id": 0,
+      "max_abs_logprob_difference": 0.0
+    }
+  },
+  "optimizer_updates": 0,
+  "partial_state_sha256": "bb5e29a3e5c112e4b353cb45b78d74a08da891986bd697e74597f296dc8260ab"
+}

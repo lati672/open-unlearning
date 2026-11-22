@@ -1,0 +1,51 @@
+{
+  "arm": "attribute",
+  "phase": "pilot diagnostics only",
+  "seed": 0,
+  "optimizer_updates": 4,
+  "sample_exposures": 64,
+  "unique_forget_samples": 32,
+  "forget_order_sha256": "3252e0ff954d0c00b3a4b533aa212721e992fbf4a3f5f4c074f8d837c0e13a95",
+  "retain_order_sha256": "5b8ab48caedec1de92eac071b1906aab058b97eda738650ba3597dbdb295adb3",
+  "training_seconds": 32.81480877613649,
+  "gpu_peak_allocated_gib": 15.929462909698486,
+  "gpu_peak_reserved_gib": 16.412109375,
+  "gpu": "NVIDIA L40S",
+  "finite_losses_and_gradients": true,
+  "reference_frozen": true,
+  "partial_checkpoint_preserved": "/workspace/open-unlearning/saves/experiments/muse_books_attribute_pilot_v1/attribute/checkpoint-4/updated_layers.safetensors",
+  "text": {
+    "forget": {
+      "token_weighted_answer_nll": 0.97370928275485,
+      "mean_example_nll": 0.9560480396612547,
+      "eligible_tokens": 64260,
+      "examples": 32,
+      "common_attribute_selected_nll": 0.8171554270012694,
+      "common_nonattribute_nll": 0.9781461737042906,
+      "logprob_change_from_original": {
+        "common_attribute_positions": -0.0006325548918628398,
+        "common_nonattribute_positions": -0.0009137081669871432,
+        "common_random_positions": -0.0009847770358066077,
+        "common_nonrandom_positions": -0.0009037258434274061
+      }
+    },
+    "retain": {
+      "token_weighted_answer_nll": 0.04715316693172984,
+      "mean_example_nll": 0.047500990505795926,
+      "eligible_tokens": 32235,
+      "examples": 16
+    }
+  },
+  "qa": {
+    "forget_knowmem_ROUGE": {
+      "rougeL_f1": 0.5595924908424909,
+      "count": 16,
+      "independent_score_replay": true
+    },
+    "retain_knowmem_ROUGE": {
+      "rougeL_f1": 0.6715511204481793,
+      "count": 16,
+      "independent_score_replay": true
+    }
+  }
+}

@@ -1,0 +1,303 @@
+{
+  "samples": 32,
+  "selected_tokens": 1771,
+  "eligible_tokens": 64260,
+  "empty_masks": 0,
+  "span_count": 126,
+  "span_char_length": {
+    "min": 17,
+    "median": 50.0,
+    "mean": 53.833333333333336,
+    "max": 133,
+    "q25": 36.0,
+    "q75": 68.0
+  },
+  "span_token_length": {
+    "min": 5,
+    "median": 13.0,
+    "mean": 14.055555555555555,
+    "max": 33,
+    "q25": 9.25,
+    "q75": 16.75
+  },
+  "per_sample_density": {
+    "min": 0.0166015625,
+    "median": 0.02734375,
+    "mean": 0.02823389873603465,
+    "max": 0.06217616580310881,
+    "q25": 0.0228271484375,
+    "q75": 0.03076171875
+  },
+  "rows": [
+    {
+      "doc_id": 0,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 46,
+      "density": 0.0224609375,
+      "spans": 4
+    },
+    {
+      "doc_id": 17,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 74,
+      "density": 0.0361328125,
+      "spans": 4
+    },
+    {
+      "doc_id": 35,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 84,
+      "density": 0.041015625,
+      "spans": 4
+    },
+    {
+      "doc_id": 53,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 34,
+      "density": 0.0166015625,
+      "spans": 3
+    },
+    {
+      "doc_id": 71,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 46,
+      "density": 0.0224609375,
+      "spans": 4
+    },
+    {
+      "doc_id": 89,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 44,
+      "density": 0.021484375,
+      "spans": 4
+    },
+    {
+      "doc_id": 106,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 38,
+      "density": 0.0185546875,
+      "spans": 4
+    },
+    {
+      "doc_id": 124,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 58,
+      "density": 0.0283203125,
+      "spans": 4
+    },
+    {
+      "doc_id": 142,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 62,
+      "density": 0.0302734375,
+      "spans": 4
+    },
+    {
+      "doc_id": 160,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 50,
+      "density": 0.0244140625,
+      "spans": 4
+    },
+    {
+      "doc_id": 178,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 63,
+      "density": 0.03076171875,
+      "spans": 4
+    },
+    {
+      "doc_id": 195,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 57,
+      "density": 0.02783203125,
+      "spans": 4
+    },
+    {
+      "doc_id": 213,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 47,
+      "density": 0.02294921875,
+      "spans": 4
+    },
+    {
+      "doc_id": 231,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 54,
+      "density": 0.0263671875,
+      "spans": 4
+    },
+    {
+      "doc_id": 249,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 62,
+      "density": 0.0302734375,
+      "spans": 4
+    },
+    {
+      "doc_id": 267,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 52,
+      "density": 0.025390625,
+      "spans": 4
+    },
+    {
+      "doc_id": 284,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 54,
+      "density": 0.0263671875,
+      "spans": 4
+    },
+    {
+      "doc_id": 302,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 59,
+      "density": 0.02880859375,
+      "spans": 4
+    },
+    {
+      "doc_id": 320,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 67,
+      "density": 0.03271484375,
+      "spans": 4
+    },
+    {
+      "doc_id": 338,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 59,
+      "density": 0.02880859375,
+      "spans": 3
+    },
+    {
+      "doc_id": 356,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 41,
+      "density": 0.02001953125,
+      "spans": 4
+    },
+    {
+      "doc_id": 373,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 41,
+      "density": 0.02001953125,
+      "spans": 4
+    },
+    {
+      "doc_id": 391,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 59,
+      "density": 0.02880859375,
+      "spans": 4
+    },
+    {
+      "doc_id": 409,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 63,
+      "density": 0.03076171875,
+      "spans": 4
+    },
+    {
+      "doc_id": 427,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 47,
+      "density": 0.02294921875,
+      "spans": 4
+    },
+    {
+      "doc_id": 445,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 42,
+      "density": 0.0205078125,
+      "spans": 4
+    },
+    {
+      "doc_id": 462,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 79,
+      "density": 0.03857421875,
+      "spans": 4
+    },
+    {
+      "doc_id": 480,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 55,
+      "density": 0.02685546875,
+      "spans": 4
+    },
+    {
+      "doc_id": 498,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 65,
+      "density": 0.03173828125,
+      "spans": 4
+    },
+    {
+      "doc_id": 516,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 48,
+      "density": 0.0234375,
+      "spans": 4
+    },
+    {
+      "doc_id": 534,
+      "input_tokens": 2049,
+      "eligible_tokens": 2048,
+      "selected_tokens": 73,
+      "density": 0.03564453125,
+      "spans": 4
+    },
+    {
+      "doc_id": 552,
+      "input_tokens": 773,
+      "eligible_tokens": 772,
+      "selected_tokens": 48,
+      "density": 0.06217616580310881,
+      "spans": 4
+    }
+  ],
+  "checks": {
+    "same_sample_ids_and_input_tokens": true,
+    "mask_lengths_match_inputs": true,
+    "exact_per_sample_count_and_empty_match": true,
+    "eligible_positions_only": true,
+    "unique_literal_alignment_all_spans": true,
+    "input_aligned_rmu_mask_no_npo_shift": true,
+    "human_review_completed": false,
+    "corrected_per_example_mse_and_counts_shapes_verified": true,
+    "independent_unequal_count_empty_loss_and_gradient_test_passed": true
+  },
+  "random_mask_seed": 20261122,
+  "random_algorithm": "NumPy default_rng(SeedSequence([mask_seed, stable_doc_id])), no replacement",
+  "selection_rate": 0.0275599128540305
+}

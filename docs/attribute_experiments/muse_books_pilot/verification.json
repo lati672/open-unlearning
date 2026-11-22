@@ -1,0 +1,18 @@
+{
+  "completed_utc": "2026-11-22T07:40:16.932626+00:00",
+  "frozen_inputs_unchanged": true,
+  "old_protocol_masks_and_control_unchanged": true,
+  "updates": {
+    "attribute": 4,
+    "random_attribute": 4
+  },
+  "same_forget_retain_order": true,
+  "all_required_audits_passed": true,
+  "qa_count_per_metric_per_model": 16,
+  "all_qa_rouge_scores_independently_replayed": true,
+  "checkpoint_reloads_reproduced_diagnostics": true,
+  "full_es_or_privacy_run": false,
+  "formal_training_started": false,
+  "model_files_deleted": false,
+  "gpu_at_completion": "0, 0 MiB, 0 %\n1, 0 MiB, 0 %\n"
+}

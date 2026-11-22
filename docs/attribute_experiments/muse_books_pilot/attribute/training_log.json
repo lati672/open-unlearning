@@ -1,0 +1,490 @@
+[
+  {
+    "optimizer_step": 1,
+    "gradient_norm_preclip": 34.75,
+    "forget_loss": 3.5752428751438856,
+    "retain_loss": 0.0,
+    "total_loss": 3.5752428751438856,
+    "sample_exposures": 16,
+    "microbatches": [
+      {
+        "microbatch": 0,
+        "forget_ids": [
+          213,
+          552
+        ],
+        "retain_ids": [
+          13,
+          34
+        ],
+        "forget_loss": 0.20739278197288513,
+        "retain_loss": 0.0,
+        "total_loss": 0.20739278197288513
+      },
+      {
+        "microbatch": 1,
+        "forget_ids": [
+          445,
+          498
+        ],
+        "retain_ids": [
+          27,
+          20
+        ],
+        "forget_loss": 0.18598634004592896,
+        "retain_loss": 0.0,
+        "total_loss": 0.18598634004592896
+      },
+      {
+        "microbatch": 2,
+        "forget_ids": [
+          338,
+          516
+        ],
+        "retain_ids": [
+          27,
+          76
+        ],
+        "forget_loss": 0.1975623220205307,
+        "retain_loss": 0.0,
+        "total_loss": 0.1975623220205307
+      },
+      {
+        "microbatch": 3,
+        "forget_ids": [
+          160,
+          178
+        ],
+        "retain_ids": [
+          48,
+          13
+        ],
+        "forget_loss": 0.18706801533699036,
+        "retain_loss": 0.0,
+        "total_loss": 0.18706801533699036
+      },
+      {
+        "microbatch": 4,
+        "forget_ids": [
+          106,
+          480
+        ],
+        "retain_ids": [
+          0,
+          83
+        ],
+        "forget_loss": 0.18521493673324585,
+        "retain_loss": 0.0,
+        "total_loss": 0.18521493673324585
+      },
+      {
+        "microbatch": 5,
+        "forget_ids": [
+          71,
+          35
+        ],
+        "retain_ids": [
+          69,
+          6
+        ],
+        "forget_loss": 5.1192169189453125,
+        "retain_loss": 0.0,
+        "total_loss": 5.1192169189453125
+      },
+      {
+        "microbatch": 6,
+        "forget_ids": [
+          53,
+          356
+        ],
+        "retain_ids": [
+          20,
+          41
+        ],
+        "forget_loss": 9.720874786376953,
+        "retain_loss": 0.0,
+        "total_loss": 9.720874786376953
+      },
+      {
+        "microbatch": 7,
+        "forget_ids": [
+          427,
+          391
+        ],
+        "retain_ids": [
+          34,
+          48
+        ],
+        "forget_loss": 12.798626899719238,
+        "retain_loss": 0.0,
+        "total_loss": 12.798626899719238
+      }
+    ]
+  },
+  {
+    "optimizer_step": 2,
+    "gradient_norm_preclip": 52.0,
+    "forget_loss": 5.676038276404142,
+    "retain_loss": 0.00027225313351664227,
+    "total_loss": 5.6768550388515,
+    "sample_exposures": 32,
+    "microbatches": [
+      {
+        "microbatch": 8,
+        "forget_ids": [
+          249,
+          231
+        ],
+        "retain_ids": [
+          41,
+          0
+        ],
+        "forget_loss": 6.9715752601623535,
+        "retain_loss": 0.00019110096036456525,
+        "total_loss": 6.972148418426514
+      },
+      {
+        "microbatch": 9,
+        "forget_ids": [
+          267,
+          462
+        ],
+        "retain_ids": [
+          6,
+          0
+        ],
+        "forget_loss": 11.41458797454834,
+        "retain_loss": 9.064901678357273e-05,
+        "total_loss": 11.414859771728516
+      },
+      {
+        "microbatch": 10,
+        "forget_ids": [
+          320,
+          284
+        ],
+        "retain_ids": [
+          34,
+          41
+        ],
+        "forget_loss": 12.188172340393066,
+        "retain_loss": 0.0002395600895397365,
+        "total_loss": 12.188891410827637
+      },
+      {
+        "microbatch": 11,
+        "forget_ids": [
+          409,
+          195
+        ],
+        "retain_ids": [
+          62,
+          41
+        ],
+        "forget_loss": 14.078205108642578,
+        "retain_loss": 0.00024480061256326735,
+        "total_loss": 14.078939437866211
+      },
+      {
+        "microbatch": 12,
+        "forget_ids": [
+          373,
+          89
+        ],
+        "retain_ids": [
+          69,
+          0
+        ],
+        "forget_loss": 0.19122636318206787,
+        "retain_loss": 0.00029810480191372335,
+        "total_loss": 0.19212067127227783
+      },
+      {
+        "microbatch": 13,
+        "forget_ids": [
+          142,
+          17
+        ],
+        "retain_ids": [
+          69,
+          90
+        ],
+        "forget_loss": 0.18627652525901794,
+        "retain_loss": 0.0003636107430793345,
+        "total_loss": 0.18736736476421356
+      },
+      {
+        "microbatch": 14,
+        "forget_ids": [
+          302,
+          0
+        ],
+        "retain_ids": [
+          55,
+          48
+        ],
+        "forget_loss": 0.18424183130264282,
+        "retain_loss": 0.0005383543903008103,
+        "total_loss": 0.185856893658638
+      },
+      {
+        "microbatch": 15,
+        "forget_ids": [
+          124,
+          534
+        ],
+        "retain_ids": [
+          34,
+          62
+        ],
+        "forget_loss": 0.1940208077430725,
+        "retain_loss": 0.0002118444535881281,
+        "total_loss": 0.1946563422679901
+      }
+    ]
+  },
+  {
+    "optimizer_step": 3,
+    "gradient_norm_preclip": 38.0,
+    "forget_loss": 4.235135097056627,
+    "retain_loss": 0.0007605005375808105,
+    "total_loss": 4.237416658550501,
+    "sample_exposures": 48,
+    "microbatches": [
+      {
+        "microbatch": 16,
+        "forget_ids": [
+          356,
+          160
+        ],
+        "retain_ids": [
+          27,
+          20
+        ],
+        "forget_loss": 9.38980770111084,
+        "retain_loss": 0.0006242725066840649,
+        "total_loss": 9.391680717468262
+      },
+      {
+        "microbatch": 17,
+        "forget_ids": [
+          35,
+          498
+        ],
+        "retain_ids": [
+          6,
+          97
+        ],
+        "forget_loss": 5.071425437927246,
+        "retain_loss": 0.0007818785961717367,
+        "total_loss": 5.073770999908447
+      },
+      {
+        "microbatch": 18,
+        "forget_ids": [
+          516,
+          106
+        ],
+        "retain_ids": [
+          83,
+          41
+        ],
+        "forget_loss": 0.19425034523010254,
+        "retain_loss": 0.0009575135773047805,
+        "total_loss": 0.19712288677692413
+      },
+      {
+        "microbatch": 19,
+        "forget_ids": [
+          231,
+          320
+        ],
+        "retain_ids": [
+          27,
+          104
+        ],
+        "forget_loss": 5.321308135986328,
+        "retain_loss": 0.000631773320492357,
+        "total_loss": 5.3232035636901855
+      },
+      {
+        "microbatch": 20,
+        "forget_ids": [
+          427,
+          71
+        ],
+        "retain_ids": [
+          97,
+          62
+        ],
+        "forget_loss": 0.18652129173278809,
+        "retain_loss": 0.0008832105668261647,
+        "total_loss": 0.1891709268093109
+      },
+      {
+        "microbatch": 21,
+        "forget_ids": [
+          552,
+          124
+        ],
+        "retain_ids": [
+          6,
+          6
+        ],
+        "forget_loss": 0.194894939661026,
+        "retain_loss": 0.00029332138365134597,
+        "total_loss": 0.1957748979330063
+      },
+      {
+        "microbatch": 22,
+        "forget_ids": [
+          373,
+          249
+        ],
+        "retain_ids": [
+          48,
+          34
+        ],
+        "forget_loss": 6.794005870819092,
+        "retain_loss": 0.00125813705381006,
+        "total_loss": 6.797780513763428
+      },
+      {
+        "microbatch": 23,
+        "forget_ids": [
+          338,
+          267
+        ],
+        "retain_ids": [
+          6,
+          13
+        ],
+        "forget_loss": 6.728867053985596,
+        "retain_loss": 0.0006538972957059741,
+        "total_loss": 6.730828762054443
+      }
+    ]
+  },
+  {
+    "optimizer_step": 4,
+    "gradient_norm_preclip": 43.0,
+    "forget_loss": 4.778760530054569,
+    "retain_loss": 0.0018650328856892884,
+    "total_loss": 4.78435567766428,
+    "sample_exposures": 64,
+    "microbatches": [
+      {
+        "microbatch": 24,
+        "forget_ids": [
+          89,
+          284
+        ],
+        "retain_ids": [
+          90,
+          90
+        ],
+        "forget_loss": 6.878178596496582,
+        "retain_loss": 0.0018018117407336831,
+        "total_loss": 6.883584022521973
+      },
+      {
+        "microbatch": 25,
+        "forget_ids": [
+          409,
+          391
+        ],
+        "retain_ids": [
+          76,
+          41
+        ],
+        "forget_loss": 18.492979049682617,
+        "retain_loss": 0.0016434189165011048,
+        "total_loss": 18.497909545898438
+      },
+      {
+        "microbatch": 26,
+        "forget_ids": [
+          445,
+          17
+        ],
+        "retain_ids": [
+          0,
+          20
+        ],
+        "forget_loss": 0.18127679824829102,
+        "retain_loss": 0.0013415892608463764,
+        "total_loss": 0.18530157208442688
+      },
+      {
+        "microbatch": 27,
+        "forget_ids": [
+          195,
+          178
+        ],
+        "retain_ids": [
+          62,
+          104
+        ],
+        "forget_loss": 7.4329986572265625,
+        "retain_loss": 0.0009883474558591843,
+        "total_loss": 7.4359636306762695
+      },
+      {
+        "microbatch": 28,
+        "forget_ids": [
+          142,
+          462
+        ],
+        "retain_ids": [
+          76,
+          69
+        ],
+        "forget_loss": 4.697464942932129,
+        "retain_loss": 0.00196560425683856,
+        "total_loss": 4.703361988067627
+      },
+      {
+        "microbatch": 29,
+        "forget_ids": [
+          534,
+          53
+        ],
+        "retain_ids": [
+          48,
+          55
+        ],
+        "forget_loss": 0.1776362806558609,
+        "retain_loss": 0.003304900601506233,
+        "total_loss": 0.18755097687244415
+      },
+      {
+        "microbatch": 30,
+        "forget_ids": [
+          302,
+          0
+        ],
+        "retain_ids": [
+          90,
+          20
+        ],
+        "forget_loss": 0.18051014840602875,
+        "retain_loss": 0.0016607954166829586,
+        "total_loss": 0.18549253046512604
+      },
+      {
+        "microbatch": 31,
+        "forget_ids": [
+          213,
+          480
+        ],
+        "retain_ids": [
+          34,
+          97
+        ],
+        "forget_loss": 0.18903976678848267,
+        "retain_loss": 0.0022137954365462065,
+        "total_loss": 0.1956811547279358
+      }
+    ]
+  }
+]

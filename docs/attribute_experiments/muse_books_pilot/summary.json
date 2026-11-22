@@ -1,0 +1,121 @@
+{
+  "phase": "pilot diagnostics only; not Table 5 results",
+  "training_seed": 0,
+  "updates_per_arm": 4,
+  "rows": [
+    {
+      "model": "original",
+      "forget_nll": 0.9728033201144635,
+      "retain_nll": 0.04716127508644801,
+      "common_attribute_nll": 0.8165228544055515,
+      "common_nonattribute_nll": 0.9772324629199249,
+      "FK_R_pilot16": 0.5595924908424909,
+      "Ret_R_pilot16": 0.7340511204481793
+    },
+    {
+      "model": "attribute",
+      "forget_nll": 0.97370928275485,
+      "retain_nll": 0.04715316693172984,
+      "common_attribute_nll": 0.8171554270012694,
+      "common_nonattribute_nll": 0.9781461737042906,
+      "FK_R_pilot16": 0.5595924908424909,
+      "Ret_R_pilot16": 0.6715511204481793
+    },
+    {
+      "model": "random_attribute",
+      "forget_nll": 0.9733910515788482,
+      "retain_nll": 0.047147140529556236,
+      "common_attribute_nll": 0.8164594384901045,
+      "common_nonattribute_nll": 0.9778386485443968,
+      "FK_R_pilot16": 0.5595924908424909,
+      "Ret_R_pilot16": 0.6715511204481793
+    }
+  ],
+  "delta_from_original": {
+    "attribute": {
+      "forget_nll": 0.0009059626403865595,
+      "retain_nll": -8.108154718168559e-06,
+      "common_attribute_nll": 0.0006325725957179174,
+      "common_nonattribute_nll": 0.00091371078436564,
+      "FK_R_pilot16": 0.0,
+      "Ret_R_pilot16": -0.0625
+    },
+    "random_attribute": {
+      "forget_nll": 0.0005877314643847331,
+      "retain_nll": -1.413455689177473e-05,
+      "common_attribute_nll": -6.341591544700709e-05,
+      "common_nonattribute_nll": 0.0006061856244718999,
+      "FK_R_pilot16": 0.0,
+      "Ret_R_pilot16": -0.0625
+    }
+  },
+  "attribute_minus_random_single_seed": {
+    "forget_nll": 0.0003182311760018264,
+    "retain_nll": 6.026402173606171e-06,
+    "common_attribute_nll": 0.0006959885111649244,
+    "common_nonattribute_nll": 0.0003075251598937401,
+    "FK_R_pilot16": 0.0,
+    "Ret_R_pilot16": 0.0
+  },
+  "mask_summary": {
+    "samples": 32,
+    "selected_tokens": 1771,
+    "eligible_tokens": 64260,
+    "selection_rate": 0.0275599128540305,
+    "empty_masks": 0,
+    "span_count": 126,
+    "span_char_length": {
+      "min": 17,
+      "median": 50.0,
+      "mean": 53.833333333333336,
+      "max": 133,
+      "q25": 36.0,
+      "q75": 68.0
+    },
+    "span_token_length": {
+      "min": 5,
+      "median": 13.0,
+      "mean": 14.055555555555555,
+      "max": 33,
+      "q25": 9.25,
+      "q75": 16.75
+    },
+    "per_sample_density": {
+      "min": 0.0166015625,
+      "median": 0.02734375,
+      "mean": 0.02823389873603465,
+      "max": 0.06217616580310881,
+      "q25": 0.0228271484375,
+      "q75": 0.03076171875
+    }
+  },
+  "training": {
+    "attribute": {
+      "optimizer_updates": 4,
+      "sample_exposures": 64,
+      "training_seconds": 32.81480877613649,
+      "gpu_peak_allocated_gib": 15.929462909698486,
+      "gpu_peak_reserved_gib": 16.412109375
+    },
+    "random_attribute": {
+      "optimizer_updates": 4,
+      "sample_exposures": 64,
+      "training_seconds": 32.946990897879004,
+      "gpu_peak_allocated_gib": 15.929462909698486,
+      "gpu_peak_reserved_gib": 16.412109375
+    }
+  },
+  "memory_note": "PyTorch allocator peak across arm training and diagnostics; bitsandbytes may allocate additional memory outside the PyTorch allocator. NVML peak was not sampled.",
+  "recommendation": "Do not proceed directly to formal three-seed training on this evidence. Pipeline is functional, but the relative NLL signal is tiny and no forget-QA advantage appears; obtain independent span review and stronger bounded pilot evidence before committing formal resources.",
+  "scope_caveats": [
+    "One training seed; no statistical significance or stability claim.",
+    "Only 32 forget /16 retain training chunks; non-exhaustive maximum-four-span annotation.",
+    "QA: 16 forget and16 retain only; no full ES/privacy evaluation.",
+    "Single-GPU layout, cached initial-reference activations, non-reentrant gradient checkpointing and frozen out-of-optimizer parameters are documented adaptations.",
+    "QA uses official generation/template/ROUGE pipeline but batch4 and FlashAttention2; original formal evaluator uses batch16 and SDPA.",
+    "Exact annotation model ID/version/effort unavailable; generator self-check is not human review."
+  ],
+  "models_preserved": true,
+  "old_experiment_inputs_unchanged": true,
+  "formal_training_started": false
+}

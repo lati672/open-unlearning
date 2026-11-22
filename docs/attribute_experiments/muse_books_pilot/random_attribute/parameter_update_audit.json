@@ -1,0 +1,143 @@
+{
+  "updated_parameter_changes": {
+    "model.layers.5.self_attn.q_proj.weight": {
+      "changed_elements": 1941957,
+      "delta_l2": 0.050330206751823425,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.5.self_attn.k_proj.weight": {
+      "changed_elements": 2025362,
+      "delta_l2": 0.0511503629386425,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.5.self_attn.v_proj.weight": {
+      "changed_elements": 3224851,
+      "delta_l2": 0.0727570652961731,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.5.self_attn.o_proj.weight": {
+      "changed_elements": 3195948,
+      "delta_l2": 0.07563216984272003,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.5.mlp.gate_proj.weight": {
+      "changed_elements": 5033960,
+      "delta_l2": 0.07092107832431793,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.5.mlp.up_proj.weight": {
+      "changed_elements": 5535776,
+      "delta_l2": 0.07884139567613602,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.5.mlp.down_proj.weight": {
+      "changed_elements": 5714255,
+      "delta_l2": 0.08569703251123428,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.5.input_layernorm.weight": {
+      "changed_elements": 0,
+      "delta_l2": 0.0,
+      "max_abs_delta": 0.0
+    },
+    "model.layers.5.post_attention_layernorm.weight": {
+      "changed_elements": 0,
+      "delta_l2": 0.0,
+      "max_abs_delta": 0.0
+    },
+    "model.layers.6.self_attn.q_proj.weight": {
+      "changed_elements": 1349136,
+      "delta_l2": 0.03366054967045784,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.6.self_attn.k_proj.weight": {
+      "changed_elements": 1487806,
+      "delta_l2": 0.03702642023563385,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.6.self_attn.v_proj.weight": {
+      "changed_elements": 2730075,
+      "delta_l2": 0.06504540145397186,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.6.self_attn.o_proj.weight": {
+      "changed_elements": 2689482,
+      "delta_l2": 0.06127971410751343,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.6.mlp.gate_proj.weight": {
+      "changed_elements": 4972789,
+      "delta_l2": 0.070257768034935,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.6.mlp.up_proj.weight": {
+      "changed_elements": 5489777,
+      "delta_l2": 0.08031203597784042,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.6.mlp.down_proj.weight": {
+      "changed_elements": 5466640,
+      "delta_l2": 0.08197981119155884,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.6.input_layernorm.weight": {
+      "changed_elements": 0,
+      "delta_l2": 0.0,
+      "max_abs_delta": 0.0
+    },
+    "model.layers.6.post_attention_layernorm.weight": {
+      "changed_elements": 1,
+      "delta_l2": 3.814697265625e-05,
+      "max_abs_delta": 3.814697265625e-05
+    },
+    "model.layers.7.self_attn.q_proj.weight": {
+      "changed_elements": 1388918,
+      "delta_l2": 0.03445519879460335,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.7.self_attn.k_proj.weight": {
+      "changed_elements": 1454894,
+      "delta_l2": 0.03623164817690849,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.7.self_attn.v_proj.weight": {
+      "changed_elements": 2595618,
+      "delta_l2": 0.06324516236782074,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.7.self_attn.o_proj.weight": {
+      "changed_elements": 2495363,
+      "delta_l2": 0.05839335918426514,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.7.mlp.gate_proj.weight": {
+      "changed_elements": 4172102,
+      "delta_l2": 0.056293390691280365,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.7.mlp.up_proj.weight": {
+      "changed_elements": 4458104,
+      "delta_l2": 0.06042231619358063,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.7.mlp.down_proj.weight": {
+      "changed_elements": 3701601,
+      "delta_l2": 0.044261135160923004,
+      "max_abs_delta": 6.103515625e-05
+    },
+    "model.layers.7.input_layernorm.weight": {
+      "changed_elements": 0,
+      "delta_l2": 0.0,
+      "max_abs_delta": 0.0
+    },
+    "model.layers.7.post_attention_layernorm.weight": {
+      "changed_elements": 0,
+      "delta_l2": 0.0,
+      "max_abs_delta": 0.0
+    }
+  },
+  "unselected_parameter_versions_unchanged": true,
+  "optimizer_membership_exact": true,
+  "only_layers_5_7_updated": true,
+  "saved_state_matches_model": true
+}

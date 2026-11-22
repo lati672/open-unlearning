@@ -1,0 +1,10 @@
+{
+  "preprocessing_matches_frozen_formal_inputs": true,
+  "original_corrected_rmu_sha_verified": true,
+  "original_data_file_hashes_verified": true,
+  "selected_counts": {
+    "forget": 32,
+    "retain": 16
+  },
+  "no_qa_data_loaded": true
+}

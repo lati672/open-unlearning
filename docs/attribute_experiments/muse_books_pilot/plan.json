@@ -1,0 +1,171 @@
+{
+  "phase": "MUSE Books Attribute-only vs Random-Attribute seed0 bounded pilot diagnostics",
+  "max_optimizer_updates_per_arm": 4,
+  "training_seeds": [
+    0
+  ],
+  "arms": [
+    "attribute",
+    "random_attribute"
+  ],
+  "forget_count": 32,
+  "retain_count": 16,
+  "selection_rule": "32 forget and 16 retain IDs floor(i*(N-1)/(n-1)) across actual training chunks, in ascending order; independent of annotations/evaluation",
+  "sample_ids": {
+    "forget": [
+      0,
+      17,
+      35,
+      53,
+      71,
+      89,
+      106,
+      124,
+      142,
+      160,
+      178,
+      195,
+      213,
+      231,
+      249,
+      267,
+      284,
+      302,
+      320,
+      338,
+      356,
+      373,
+      391,
+      409,
+      427,
+      445,
+      462,
+      480,
+      498,
+      516,
+      534,
+      552
+    ],
+    "retain": [
+      0,
+      6,
+      13,
+      20,
+      27,
+      34,
+      41,
+      48,
+      55,
+      62,
+      69,
+      76,
+      83,
+      90,
+      97,
+      104
+    ]
+  },
+  "full_dataset_counts": {
+    "forget": 553,
+    "retain": 105
+  },
+  "original_protocol_training": {
+    "configured_epochs": 10,
+    "learning_rate": 1e-05,
+    "micro_batch": 2,
+    "accumulation": 4,
+    "world_size": 2,
+    "global_effective_batch": 16,
+    "dataloader_batches_per_rank_per_epoch": 139,
+    "trainer_budget_steps_per_epoch": 34,
+    "budget_rule": "Transformers 4.45.1 Trainer uses floor(dataloader_batches_per_rank / gradient_accumulation_steps)",
+    "actual_epoch_rule": "global_step * gradient_accumulation_steps / dataloader_batches_per_rank",
+    "max_steps": 340,
+    "midpoint_step": 170,
+    "alpha": 3,
+    "steering_coeff": 1,
+    "module_regex": "model\\.layers\\.7",
+    "trainable_params_regex": [
+      "model\\.layers\\.(5|6|7)\\..*"
+    ],
+    "sampling": {
+      "anchor": "forget",
+      "forget": "seeded random shuffle, even distributed batches",
+      "retain": "uniform with replacement, using the seeded Torch stream",
+      "drop_last": false,
+      "dataloader_workers": 0
+    },
+    "optim": "paged_adamw_32bit",
+    "lr_scheduler_type": "constant",
+    "weight_decay": 0.0,
+    "warmup_steps": 0,
+    "warmup_ratio": 0.0,
+    "gradient_checkpointing": true,
+    "bf16": true,
+    "max_grad_norm": 1.0,
+    "max_sequence_length_parameter": 2048,
+    "observed_max_input_tokens": 2049,
+    "retain_loss": "EMBED_DIFF",
+    "forget_coefficient": 1.0
+  },
+  "pilot_layout": {
+    "world_size": 1,
+    "microbatch": 2,
+    "gradient_accumulation": 8,
+    "effective_batch": 16,
+    "numerically_equivalent_to_original_two_gpu_layout": false
+  },
+  "mask_seed": 20261122,
+  "maximum_annotation_spans_per_sample": 4,
+  "max_length_parameter": 2048,
+  "max_actual_input_tokens": 2049,
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "pad_token_id": 2,
+  "tokenizer_revision": "01c7f73d771dfac7d292323805ebc428287df4f9",
+  "target_revision": "c8dd3fb23a726762ec66d277933c7cff6767f3c2",
+  "dataset_revision": "051ba90319e920d410d87cfdbd61f25843c1b892",
+  "model": {
+    "model_args": {
+      "pretrained_model_name_or_path": "/workspace/.hf_home/hub/models--muse-bench--MUSE-books_target/snapshots/c8dd3fb23a726762ec66d277933c7cff6767f3c2",
+      "attn_implementation": "flash_attention_2",
+      "torch_dtype": "bfloat16",
+      "local_files_only": true
+    },
+    "tokenizer_args": {
+      "pretrained_model_name_or_path": "meta-llama/Llama-2-7b-hf",
+      "revision": "01c7f73d771dfac7d292323805ebc428287df4f9",
+      "local_files_only": true
+    },
+    "template_args": {
+      "apply_chat_template": false,
+      "user_start_tag": "Question: ",
+      "user_end_tag": "\n",
+      "asst_start_tag": "Answer: ",
+      "asst_end_tag": "\n\n"
+    }
+  },
+  "method_args": {
+    "gamma": 1.0,
+    "alpha": 3,
+    "retain_loss_type": "EMBED_DIFF",
+    "steering_coeff": 1,
+    "module_regex": "model\\.layers\\.7",
+    "trainable_params_regex": [
+      "model\\.layers\\.(5|6|7)\\..*"
+    ],
+    "mask_negative_diff": false
+  },
+  "original_protocol_sha256": "6631893bc094a48ffce25b76e4ae22642a8be3143b421280e1336204b896a52a",
+  "source_sha256": {
+    "src/trainer/unlearn/rmu.py": "9d72e1928b4995f5e7a9d20b425497c8bab5bacd8bdad83fc51a1a869e9e000b",
+    "src/trainer/masking.py": "60ce0f8eb8b0352268a5125c006ca0ce9946c51f93e90f9636874515c4579f09",
+    "src/data/pretraining.py": "b28780bde742b7f7c6275949353aacfac765c70be55e21526a7578e7113c0a0a",
+    "src/data/utils.py": "11f1a2a43670eb03de8311f407a00695a9da0a35bc6c8e4c46aba7974261d88c",
+    "src/data/collators.py": "d46e73ea6ebcbd31245ccdd67ddfe147b3927cadd9019bcb1841b89acc1c2249"
+  },
+  "git_head": "d3d639857f61b9440aa2e4ca49b9d0c56415a98c",
+  "training_or_eval_started": false,
+  "checkpoint_retention": "Explicit current user instruction: preserve all new and old model checkpoints; no cleanup this pilot.",
+  "qa_protocol": "Optional exactly 16 evenly spaced forget QA and 16 retain QA, official configuration/scorer, only prepared after annotation/mask freeze. No ES/privacy evaluation."
+}

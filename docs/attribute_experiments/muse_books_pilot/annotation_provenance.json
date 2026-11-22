@@ -1,0 +1,14 @@
+{
+  "generator_tool": "Codex assistant in the current desktop conversation",
+  "generation_mode": "Spans selected by the current assistant from displayed original training blocks; no additional model agent or remote Codex exec",
+  "actual_model_id": null,
+  "actual_model_version": null,
+  "reasoning_effort": null,
+  "model_information_note": "Runtime model identifier/version/effort are not exposed to this assistant; do not infer gpt-6.1-sol from older TOFU sessions.",
+  "human_review_completed": false,
+  "semantic_review": "generator self-check only",
+  "alignment_review": "all 126 proposed literal spans uniquely matched; offsets and eligible-token overlaps checked",
+  "evaluation_answers_used_for_annotation": false,
+  "maximum_spans_per_block": 4,
+  "span_count": 126
+}
